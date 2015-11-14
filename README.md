@@ -4,6 +4,7 @@
 [![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.kassiopeia/blob/master/LICENSE)
 
 # Chronix Kassiopeia
+
 A time series framework that can be used within Chronix.
 
 ## Contributing
