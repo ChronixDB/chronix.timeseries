@@ -1,0 +1,164 @@
+//Sonar plugin at the root
+apply plugin: "sonar-runner"
+
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.4.0'
+    }
+}
+
+allprojects {
+
+    apply plugin: 'jacoco'
+    apply plugin: 'com.github.kt3k.coveralls'
+
+
+    group 'de.qaware.chronix'
+
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven {
+            url "http://dl.bintray.com/chronix/maven"
+        }
+    }
+
+    jacoco {
+        toolVersion = '0.7.2.201409121644'
+    }
+
+}
+
+
+subprojects {
+
+    version '0.0.1'
+
+    //Some plugins
+    apply plugin: 'base'
+    apply plugin: 'groovy'
+    apply plugin: 'java'
+
+
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+
+    dependencies {
+        //Guava
+        compile 'com.google.guava:guava:18.0'
+
+        //Logging
+        compile 'org.slf4j:slf4j-api:1.7.12'
+        compile 'org.slf4j:jcl-over-slf4j:1.7.12'
+        compile 'org.apache.logging.log4j:log4j-api:2.4'
+        compile 'org.apache.logging.log4j:log4j-core:2.4'
+        compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.4'
+
+        //Testing
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+        testCompile 'cglib:cglib-nodep:3.1'
+    }
+
+    test {
+        reports {
+            junitXml.enabled = false
+            html.enabled = true
+        }
+    }
+
+    // This disables the pedantic doclint feature of JDK8
+    if (JavaVersion.current().isJava8Compatible()) {
+        tasks.withType(Javadoc) {
+            options.addStringOption('Xdoclint:none', '-quiet')
+        }
+    }
+
+    task sourcesJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    jacocoTestReport {
+        group = 'Coverage'
+        description = 'Generate Jacoco coverage report for subproject'
+
+        additionalSourceDirs = project.files(sourceSets.main.allSource.srcDirs)
+        sourceDirectories = project.files(sourceSets.main.allSource.srcDirs)
+        classDirectories =  project.files(sourceSets.main.output)
+
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
+
+        afterEvaluate {
+            classDirectories = files(classDirectories.files.collect {
+                fileTree(dir: it, exclude: 'de/qaware/chronix/converter/dt/**')
+            })
+        }
+    }
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage') {
+    description = 'Generates aggregate Jacoco coverage report from all subprojects'
+    dependsOn(subprojects.test)
+
+    additionalSourceDirs = files(subprojects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(subprojects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(subprojects.sourceSets.main.output)
+    executionData = files(subprojects.jacocoTestReport.executionData)
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+coveralls {
+    sourceDirs = subprojects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+def isCI = System.env.'CI' == 'true'
+tasks.coveralls {
+    group = 'Coverage'
+    description = 'Upload aggregate Jacoco coverage report to Coveralls'
+
+    dependsOn jacocoRootReport
+    onlyIf { isCI }
+}
+
+//Sonar stuff
+sonarRunner {
+    sonarProperties {
+        property "sonar.sourceEncoding", "UTF-8"
+    }
+}
+
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://localhost:9000/"
+        property "sonar.jdbc.url", "jdbc:h2:tcp://localhost:9092/sonar"
+        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "sonar"
+        property "sonar.exclusions", "**/ProtocolBuffers.java"
+
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2'
+}

@@ -1,0 +1,19 @@
+dependencies {
+
+    compile project(':chronix-kassiopeia')
+
+    compile 'com.google.protobuf:protobuf-java:2.6.1'
+    compile 'commons-io:commons-io:2.4'
+
+    compile 'de.qaware.chronix:chronix-api:0.0.1'
+}
+
+//add the generated classes to the sources
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir 'src/main/generated'
+        }
+    }
+}
