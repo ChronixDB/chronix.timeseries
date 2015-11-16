@@ -98,7 +98,7 @@ class ProtocolBuffersConverterTest extends Specification {
         deserializedPoints.remove()
 
         then:
-        deserializedPoints.toList() == points
+        deserializedPoints.collect() == points
     }
 
     def "test illegal arguments"() {

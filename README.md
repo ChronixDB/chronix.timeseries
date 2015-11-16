@@ -7,6 +7,23 @@
 
 A time series framework that can be used within Chronix.
 
+
+## Usage
+Build script snippet for use in all Gradle versions, using the Bintray Maven repository:
+
+```groovy
+repositories {
+    mavenCentral()
+    maven { 
+        url "http://dl.bintray.com/chronix/maven" 
+    }
+}
+dependencies {
+   compile 'de.qaware.chronix:chronix-kassiopeia:0.0.1'
+   compile 'de.qaware.chronix:chronix-kassiopeia-converter:0.0.1'
+}
+```
+
 ## Contributing
 
 Is there anything missing? Do you have ideas for new features or improvements? You are highly welcome to contribute
