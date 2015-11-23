@@ -14,12 +14,9 @@
  *    limitations under the License.
  */
 package de.qaware.chronix.converter
-
-import chronix.converter.KassiopeiaConverter
 import de.qaware.chronix.dts.Pair
 import de.qaware.chronix.timeseries.TimeSeries
 import spock.lang.Specification
-
 /**
  * Unit test for the kassiopeia converter
  * @author f.lautenschlager

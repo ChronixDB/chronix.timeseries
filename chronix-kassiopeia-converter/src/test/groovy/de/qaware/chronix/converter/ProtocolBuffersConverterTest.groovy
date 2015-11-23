@@ -14,13 +14,10 @@
  *    limitations under the License.
  */
 package de.qaware.chronix.converter
-
-import chronix.converter.ProtocolBuffersConverter
 import de.qaware.chronix.converter.dt.ProtocolBuffers
 import de.qaware.chronix.dts.Pair
 import spock.lang.Specification
 import spock.lang.Unroll
-
 /**
  * Unit test for the protocol buffers converter
  *

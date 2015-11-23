@@ -1,5 +1,5 @@
 /*
- *    Copyright (C) 2015 QAware GmbH
+ * Copyright (C) 2015 QAware GmbH
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -16,8 +16,9 @@
 package de.qaware.chronix.converter
 
 import spock.lang.Specification
+
 /**
- * Unit test for the compression class
+ * The unit test for the compression class
  * @author f.lautenschlager
  */
 class CompressionTest extends Specification {
@@ -29,7 +30,7 @@ class CompressionTest extends Specification {
         def decompressed = Compression.decompress(compressed);
 
         then:
-        data == decompressed.bytes;
+        data == decompressed;
 
         where:
         data << ["Some Bytes".bytes]

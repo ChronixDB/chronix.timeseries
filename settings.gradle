@@ -2,3 +2,6 @@ rootProject.name = 'chronix.kassiopeia'
 
 include 'chronix-kassiopeia-converter'
 include 'chronix-kassiopeia'
+include 'chronix-kassiopeia-simple'
+include 'chronix-kassiopeia-simple-converter'
+

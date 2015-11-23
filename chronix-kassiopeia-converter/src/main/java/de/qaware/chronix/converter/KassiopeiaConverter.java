@@ -13,12 +13,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package chronix.converter;
+package de.qaware.chronix.converter;
 
 
 import de.qaware.chronix.Schema;
-import de.qaware.chronix.converter.BinaryStorageDocument;
-import de.qaware.chronix.converter.DocumentConverter;
 import de.qaware.chronix.converter.dt.ProtocolBuffers;
 import de.qaware.chronix.dts.Pair;
 import de.qaware.chronix.timeseries.TimeSeries;
