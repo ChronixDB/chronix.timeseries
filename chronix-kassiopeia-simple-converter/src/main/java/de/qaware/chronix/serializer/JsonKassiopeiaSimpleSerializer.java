@@ -21,6 +21,7 @@ import com.google.gson.reflect.TypeToken;
 import de.qaware.chronix.dts.MetricDataPoint;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -60,11 +61,31 @@ public class JsonKassiopeiaSimpleSerializer {
     /**
      * Deserialize the given json to a collection of metric data points
      *
-     * @param json - the json representation of collection holding metric data points
-     * @return a collection holding the metric data points
+     * @param json       - the json representation of collection holding metric data points
+     * @param queryStart
+     * @param queryEnd   @return a collection holding the metric data points
      */
-    public Collection<MetricDataPoint> fromJson(String json) {
-        return gson.fromJson(json, listType);
+    public Collection<MetricDataPoint> fromJson(String json, final long queryStart, final long queryEnd) {
+        if (queryStart <= 0 && queryEnd <= 0) {
+            return new ArrayList<>();
+        }
+
+        List<MetricDataPoint> points = new ArrayList<>(gson.fromJson(json, listType));
+
+        List<MetricDataPoint> filtered = new ArrayList<>();
+
+        points.forEach(point -> {
+
+            if (point.getDate() > queryEnd) {
+                return;
+            }
+
+            if (point.getDate() >= queryStart && point.getDate() <=queryEnd) {
+                filtered.add(point);
+            }
+        });
+
+        return filtered;
     }
 
 }

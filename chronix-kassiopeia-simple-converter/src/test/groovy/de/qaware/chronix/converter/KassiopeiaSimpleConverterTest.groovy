@@ -41,7 +41,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
 
         when:
         def binaryDocument = converter.to(ts)
-        def tsReconverted = converter.from(binaryDocument, 0, 0)
+        def tsReconverted = converter.from(binaryDocument, 0, 100)
 
         then:
         tsReconverted.metric == "\\Load\\avg"

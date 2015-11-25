@@ -42,7 +42,7 @@ public class KassiopeiaSimpleConverter implements DocumentConverter<MetricTimeSe
 
         //Second deserialize
         JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-        Collection<MetricDataPoint> points = serializer.fromJson(new String(decompressed));
+        Collection<MetricDataPoint> points = serializer.fromJson(new String(decompressed),queryStart,queryEnd);
 
         //get the metric
         String metric = binaryStorageDocument.get(MetricTSSchema.METRIC).toString();
