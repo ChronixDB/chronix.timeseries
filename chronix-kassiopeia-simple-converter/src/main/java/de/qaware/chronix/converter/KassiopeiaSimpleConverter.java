@@ -15,6 +15,7 @@
  */
 package de.qaware.chronix.converter;
 
+import com.google.common.collect.Lists;
 import de.qaware.chronix.dts.MetricDataPoint;
 import de.qaware.chronix.schema.MetricTSSchema;
 import de.qaware.chronix.serializer.JsonKassiopeiaSimpleSerializer;
@@ -37,15 +38,24 @@ public class KassiopeiaSimpleConverter implements DocumentConverter<MetricTimeSe
     @Override
     public MetricTimeSeries from(BinaryStorageDocument binaryStorageDocument, long queryStart, long queryEnd) {
 
-        //First decompress
-        byte[] decompressed = Compression.decompress(binaryStorageDocument.getData());
-
-        //Second deserialize
-        JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-        Collection<MetricDataPoint> points = serializer.fromJson(new String(decompressed),queryStart,queryEnd);
-
         //get the metric
         String metric = binaryStorageDocument.get(MetricTSSchema.METRIC).toString();
+
+        Collection<MetricDataPoint> points;
+        if (binaryStorageDocument.getData().length > 0) {
+            //Decompress if we have a data field
+            byte[] decompressed = Compression.decompress(binaryStorageDocument.getData());
+
+            //Second deserialize
+            JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
+            points = serializer.fromJson(new String(decompressed), queryStart, queryEnd);
+        } else {
+            //we have a aggregation result
+            double value = Double.valueOf(binaryStorageDocument.get("value").toString());
+
+            long meanDate = meanDate(binaryStorageDocument);
+            points = Lists.newArrayList(new MetricDataPoint(meanDate, value));
+        }
 
         //Third build a minimal time series
         MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(metric)
@@ -61,6 +71,13 @@ public class KassiopeiaSimpleConverter implements DocumentConverter<MetricTimeSe
         });
 
         return builder.build();
+    }
+
+    private long meanDate(BinaryStorageDocument binaryStorageDocument) {
+        long start = binaryStorageDocument.getStart();
+        long end = binaryStorageDocument.getStart();
+
+        return start + ((end - start) / 2);
     }
 
 
