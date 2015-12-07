@@ -31,15 +31,15 @@ import java.util.Iterator;
  *
  * @author f.lautenschlager
  */
-public class KassiopeiaConverter implements DocumentConverter<TimeSeries<Long, Double>> {
+public class KassiopeiaConverter implements TimeSeriesConverter<TimeSeries<Long, Double>> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KassiopeiaConverter.class);
 
     @Override
-    public TimeSeries<Long, Double> from(BinaryStorageDocument binaryStorageDocument, long queryStart, long queryEnd) {
+    public TimeSeries<Long, Double> from(BinaryTimeSeries binaryStorageDocument, long queryStart, long queryEnd) {
 
         //first decompress
-        InputStream decompressedBytes = Compression.decompress(binaryStorageDocument.getData());
+        InputStream decompressedBytes = Compression.decompress(binaryStorageDocument.getPoints());
 
         //second deserialize the points
         Iterator<Pair<Long, Double>> points = ProtocolBuffersConverter.from(decompressedBytes, binaryStorageDocument.getStart(), binaryStorageDocument.getEnd(), queryStart, queryEnd);
@@ -60,7 +60,7 @@ public class KassiopeiaConverter implements DocumentConverter<TimeSeries<Long, D
 
 
     @Override
-    public BinaryStorageDocument to(TimeSeries<Long, Double> document) {
+    public BinaryTimeSeries to(TimeSeries<Long, Double> document) {
 
         //for the case, that someone tries to store an empty time series
         byte[] compressed = new byte[]{};
@@ -84,7 +84,7 @@ public class KassiopeiaConverter implements DocumentConverter<TimeSeries<Long, D
         }
 
         //Create a builder with the minimal required fields
-        BinaryStorageDocument.Builder builder = new BinaryStorageDocument.Builder()
+        BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder()
                 .data(compressed)
                 .start(start)
                 .end(end);

@@ -31,20 +31,20 @@ import java.util.Collection;
  *
  * @author f.lautenschlager
  */
-public class KassiopeiaSimpleConverter implements DocumentConverter<MetricTimeSeries> {
+public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTimeSeries> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KassiopeiaSimpleConverter.class);
 
     @Override
-    public MetricTimeSeries from(BinaryStorageDocument binaryStorageDocument, long queryStart, long queryEnd) {
+    public MetricTimeSeries from(BinaryTimeSeries binaryStorageDocument, long queryStart, long queryEnd) {
 
         //get the metric
         String metric = binaryStorageDocument.get(MetricTSSchema.METRIC).toString();
 
         Collection<MetricDataPoint> points;
-        if (binaryStorageDocument.getData().length > 0) {
+        if (binaryStorageDocument.getPoints().length > 0) {
             //Decompress if we have a data field
-            byte[] decompressed = Compression.decompress(binaryStorageDocument.getData());
+            byte[] decompressed = Compression.decompress(binaryStorageDocument.getPoints());
 
             //Second deserialize
             JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
@@ -73,7 +73,7 @@ public class KassiopeiaSimpleConverter implements DocumentConverter<MetricTimeSe
         return builder.build();
     }
 
-    private long meanDate(BinaryStorageDocument binaryStorageDocument) {
+    private long meanDate(BinaryTimeSeries binaryStorageDocument) {
         long start = binaryStorageDocument.getStart();
         long end = binaryStorageDocument.getStart();
 
@@ -82,8 +82,8 @@ public class KassiopeiaSimpleConverter implements DocumentConverter<MetricTimeSe
 
 
     @Override
-    public BinaryStorageDocument to(MetricTimeSeries document) {
-        BinaryStorageDocument.Builder builder = new BinaryStorageDocument.Builder();
+    public BinaryTimeSeries to(MetricTimeSeries document) {
+        BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         try {
             JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
