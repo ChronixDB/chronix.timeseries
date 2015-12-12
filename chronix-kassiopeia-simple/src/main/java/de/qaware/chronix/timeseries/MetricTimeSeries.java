@@ -337,7 +337,7 @@ public class MetricTimeSeries {
         return new Pair(index);
     }
 
-    private class Pair {
+    class Pair {
         int index;
         long timestamp;
         double value;
