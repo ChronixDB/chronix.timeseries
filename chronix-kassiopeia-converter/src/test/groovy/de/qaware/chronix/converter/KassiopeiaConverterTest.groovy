@@ -23,7 +23,7 @@ import spock.lang.Specification
  */
 class KassiopeiaConverterTest extends Specification {
 
-    def "test to and from storage document"() {
+    def "test to and from storage time series"() {
         given:
         def converter = new KassiopeiaConverter()
         def points = [Pair.pairOf(1l, 1d),
@@ -38,11 +38,11 @@ class KassiopeiaConverterTest extends Specification {
 
 
         when:
-        def binaryDocument = converter.to(timeSeries)
+        def binaryTimeSeries = converter.to(timeSeries)
 
-        def reconvertedTimeSeries = converter.from(binaryDocument, 1l, 50l);
+        def reconvertedTimeSeries = converter.from(binaryTimeSeries, 1l, 50l);
         then:
-        binaryDocument != null
+        binaryTimeSeries != null
         reconvertedTimeSeries.size() == 4
         reconvertedTimeSeries.get(0).getSecond() == null;
         reconvertedTimeSeries.get(1).getSecond() == 1d
@@ -55,7 +55,7 @@ class KassiopeiaConverterTest extends Specification {
         reconvertedTimeSeries.getAttribute("maxValue") == 3d
     }
 
-    def "test from storage document with range query"() {
+    def "test from storage series with range query"() {
         given:
         def converter = new KassiopeiaConverter()
         def points = [Pair.pairOf(1l, 1d),
@@ -68,11 +68,11 @@ class KassiopeiaConverterTest extends Specification {
 
 
         when:
-        def binaryDocument = converter.to(timeSeries)
+        def binaryTimeSeries = converter.to(timeSeries)
 
-        def reconvertedTimeSeries = converter.from(binaryDocument, 50l, 115l);
+        def reconvertedTimeSeries = converter.from(binaryTimeSeries, 50l, 115l);
         then:
-        binaryDocument != null
+        binaryTimeSeries != null
         reconvertedTimeSeries.size() == 4
         reconvertedTimeSeries.get(0).getSecond() == null;
         reconvertedTimeSeries.get(1).getSecond() == 3d
@@ -87,9 +87,9 @@ class KassiopeiaConverterTest extends Specification {
         def points = []
 
         when:
-        def binaryDocument = converter.to(new TimeSeries<Long, Double>(points.iterator()))
+        def binaryTimeSeries = converter.to(new TimeSeries<Long, Double>(points.iterator()))
 
         then:
-        binaryDocument.data == new byte[0];
+        binaryTimeSeries.points == new byte[0];
     }
 }

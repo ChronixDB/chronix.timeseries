@@ -17,13 +17,16 @@ package de.qaware.chronix.serializer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import de.qaware.chronix.dts.MetricDataPoint;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Type;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The json serializer for the kassiopeia simple time series
@@ -32,18 +35,17 @@ import java.util.List;
  */
 public class JsonKassiopeiaSimpleSerializer {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonKassiopeiaSimpleSerializer.class);
+    public static final String UTF_8 = "UTF-8";
+
     private final Gson gson;
-    private final Type listType;
 
     /**
      * Constructs a new JsonKassiopeiaSimpleSerializer.
      */
     public JsonKassiopeiaSimpleSerializer() {
-        listType = new TypeToken<List<MetricDataPoint>>() {
-        }.getType();
 
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(MetricDataPoint.class, new MetricDataPointSerializer());
 
         gson = gsonBuilder.create();
     }
@@ -51,11 +53,26 @@ public class JsonKassiopeiaSimpleSerializer {
     /**
      * Serializes the collection of metric data points to json
      *
-     * @param points - the metric data points
+     * @param timestamps -  the timestamps
+     * @param values     -  the values
      * @return a json serialized collection of metric data points
      */
-    public String toJson(Collection<MetricDataPoint> points) {
-        return gson.toJson(points);
+    public byte[] toJson(Stream<Long> timestamps, Stream<Double> values) {
+
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(baos, UTF_8));
+            List[] data = new List[]{timestamps.collect(Collectors.toList()), values.collect(Collectors.toList())};
+            gson.toJson(data, List[].class, writer);
+
+            writer.close();
+            baos.flush();
+
+            return baos.toByteArray();
+        } catch (IOException e) {
+            LOGGER.error("Could not serialize data to json", e);
+        }
+        return new byte[]{};
     }
 
     /**
@@ -65,27 +82,42 @@ public class JsonKassiopeiaSimpleSerializer {
      * @param queryStart
      * @param queryEnd   @return a collection holding the metric data points
      */
-    public Collection<MetricDataPoint> fromJson(String json, final long queryStart, final long queryEnd) {
+    public List[] fromJson(byte[] json, final long queryStart, final long queryEnd) {
         if (queryStart <= 0 && queryEnd <= 0) {
-            return new ArrayList<>();
+            return new List[]{new ArrayList<>(), new ArrayList<>()};
         }
 
-        List<MetricDataPoint> points = new ArrayList<>(gson.fromJson(json, listType));
+        try {
+            ByteArrayInputStream bais = new ByteArrayInputStream(json);
+            JsonReader reader = new JsonReader(new InputStreamReader(bais, UTF_8));
+            List[] timestampsValues = gson.fromJson(reader, List[].class);
+            reader.close();
 
-        List<MetricDataPoint> filtered = new ArrayList<>();
+            List<Double> times = (List<Double>) timestampsValues[0];
+            List<Double> values = (List<Double>) timestampsValues[1];
 
-        points.forEach(point -> {
+            List<Long> filteredTimes = new ArrayList<>();
+            List<Double> filteredValues = new ArrayList<>();
 
-            if (point.getDate() > queryEnd) {
-                return;
+
+            for (int i = 0; i < times.size(); i++) {
+                if (times.get(i) > queryEnd) {
+                    break;
+                }
+
+                if (times.get(i) >= queryStart && times.get(i) <= queryEnd) {
+                    filteredTimes.add(times.get(i).longValue());
+                    filteredValues.add(values.get(i));
+                }
             }
 
-            if (point.getDate() >= queryStart && point.getDate() <=queryEnd) {
-                filtered.add(point);
-            }
-        });
+            return new List[]{filteredTimes, filteredValues};
 
-        return filtered;
+        } catch (IOException e) {
+            LOGGER.error("Could not deserialize json data", e);
+        }
+        return new List[]{new ArrayList<>(), new ArrayList<>()};
+
     }
 
 }

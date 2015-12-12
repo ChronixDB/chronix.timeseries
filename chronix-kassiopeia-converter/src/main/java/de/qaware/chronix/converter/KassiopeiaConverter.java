@@ -27,7 +27,7 @@ import java.io.InputStream;
 import java.util.Iterator;
 
 /**
- * Kassiopeia converter to convert our time series into a binary storage document and back
+ * Kassiopeia converter to convert our time series into a binary storage time series and back
  *
  * @author f.lautenschlager
  */
@@ -36,18 +36,18 @@ public class KassiopeiaConverter implements TimeSeriesConverter<TimeSeries<Long,
     private static final Logger LOGGER = LoggerFactory.getLogger(KassiopeiaConverter.class);
 
     @Override
-    public TimeSeries<Long, Double> from(BinaryTimeSeries binaryStorageDocument, long queryStart, long queryEnd) {
+    public TimeSeries<Long, Double> from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
 
         //first decompress
-        InputStream decompressedBytes = Compression.decompress(binaryStorageDocument.getPoints());
+        InputStream decompressedBytes = Compression.decompress(binaryTimeSeries.getPoints());
 
         //second deserialize the points
-        Iterator<Pair<Long, Double>> points = ProtocolBuffersConverter.from(decompressedBytes, binaryStorageDocument.getStart(), binaryStorageDocument.getEnd(), queryStart, queryEnd);
+        Iterator<Pair<Long, Double>> points = ProtocolBuffersConverter.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
 
         TimeSeries<Long, Double> timeSeries = new TimeSeries<>(points);
 
         //fourth add attributes
-        binaryStorageDocument.getFields().forEach((attribute, value) -> {
+        binaryTimeSeries.getFields().forEach((attribute, value) -> {
 
             if (Schema.isUserDefined(attribute)) {
                 timeSeries.addAttribute(attribute, value);
@@ -60,23 +60,23 @@ public class KassiopeiaConverter implements TimeSeriesConverter<TimeSeries<Long,
 
 
     @Override
-    public BinaryTimeSeries to(TimeSeries<Long, Double> document) {
+    public BinaryTimeSeries to(TimeSeries<Long, Double> timeSeries) {
 
         //for the case, that someone tries to store an empty time series
         byte[] compressed = new byte[]{};
         long start = 0;
         long end = 0;
 
-        //-oo is represented through the first element that is null, hence if only have one document the time series is empty
-        if (document.size() == 1) {
+        //-oo is represented through the first element that is null, hence if the size is one the time series is empty
+        if (timeSeries.size() == 1) {
             LOGGER.info("Empty time series detected.");
         } else {
             //start of time series
-            start = document.get(1).getFirst();
-            end = document.get(document.size() - 1).getFirst();
+            start = timeSeries.get(1).getFirst();
+            end = timeSeries.get(timeSeries.size() - 1).getFirst();
 
             //first serialize the data
-            ProtocolBuffers.NumericPoints serializedDataProto = ProtocolBuffersConverter.to(document.iterator());
+            ProtocolBuffers.NumericPoints serializedDataProto = ProtocolBuffersConverter.to(timeSeries.iterator());
             byte[] bytes = serializedDataProto.toByteArray();
 
             //then compress the data
@@ -89,10 +89,8 @@ public class KassiopeiaConverter implements TimeSeriesConverter<TimeSeries<Long,
                 .start(start)
                 .end(end);
 
-        //add the attributes to the binary storage document
-        document.getAttributes().forEachRemaining(entry -> {
-            builder.field(entry.getKey(), entry.getValue());
-        });
+        //add the attributes to the binary storage time series
+        timeSeries.getAttributes().forEachRemaining(entry -> builder.field(entry.getKey(), entry.getValue()));
 
         return builder.build();
 

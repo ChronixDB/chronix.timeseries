@@ -15,10 +15,8 @@
  */
 package de.qaware.chronix.converter
 
-import de.qaware.chronix.dts.MetricDataPoint
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import spock.lang.Specification
-
 /**
  * Unit test for the kassiopeia simple converter
  * @author f.lautenschlager
@@ -28,26 +26,22 @@ class KassiopeiaSimpleConverterTest extends Specification {
     def "test to and from"() {
         given:
         def ts = new MetricTimeSeries.Builder("\\Load\\avg")
-                .start(0)
-                .end(100)
                 .attribute("MyField", 4711)
-                .build();
 
         100.times {
-            ts.add(new MetricDataPoint(it, it * 2))
+            ts.point(it, it * 2)
         }
 
         def converter = new KassiopeiaSimpleConverter();
 
         when:
-        def binaryDocument = converter.to(ts)
-        def tsReconverted = converter.from(binaryDocument, 0, 100)
+        def binaryTimeSeries = converter.to(ts.build())
+        def tsReconverted = converter.from(binaryTimeSeries, 0, 100)
 
         then:
         tsReconverted.metric == "\\Load\\avg"
         tsReconverted.size() == 100
-        tsReconverted.get(1).date == 1
-        tsReconverted.get(1).value == 2
+        tsReconverted.get(1) == 2
         tsReconverted.attribute("MyField") == 4711
 
     }

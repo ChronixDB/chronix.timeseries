@@ -15,7 +15,6 @@
  */
 package de.qaware.chronix.serializer
 
-import de.qaware.chronix.dts.MetricDataPoint
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -27,35 +26,45 @@ class JsonKassiopeiaSerializerTest extends Specification {
 
     def "test serialize to and deserialize from json"() {
         given:
-        def metricDataPoints = [new MetricDataPoint(0l, 4711), new MetricDataPoint(1l, 8564), new MetricDataPoint(2l, 1237),]
+        def times = [0l, 1l, 2l]
+        def values = [4711, 8564, 1237]
         def serializer = new JsonKassiopeiaSimpleSerializer()
         def start = 0l
         def end = 2l
 
         when:
-        def json = serializer.toJson(metricDataPoints)
+        def json = serializer.toJson(times.stream(), values.stream())
 
         then:
-        List<MetricDataPoint> deserialize = new ArrayList<>(serializer.fromJson(json, start, end))
-        deserialize.get(0).date == 0l
-        deserialize.get(0).value == 4711
-        deserialize.get(2).date == 2l
-        deserialize.get(2).value == 1237
+        def deserialize = serializer.fromJson(json, start, end)
+
+        def serTimes = deserialize[0]
+        def serValues = deserialize[1]
+
+        times.size() == 3
+        serValues.size() == 3
+
+        serTimes.get(0) == 0l
+        serTimes.get(1) == 1l
+        serTimes.get(2) == 2l
+
+        serValues.get(0) == 4711d
+        serValues.get(1) == 8564d
+        serValues.get(2) == 1237d
     }
 
     @Unroll
     def "test serialize and deserialize from json with filter #start and #end expecting #size elements"() {
         given:
-        def metricDataPoints = [new MetricDataPoint(0l, 4711), new MetricDataPoint(1l, 8564),
-                                new MetricDataPoint(2l, 1237), new MetricDataPoint(3l, 1237),
-                                new MetricDataPoint(4l, 1237), new MetricDataPoint(5l, 1237)]
+        def times = [0l, 1l, 2l, 3l, 4l, 5l]
+        def values = [4711, 8564, 1237, 1237, 1237, 1237]
         def serializer = new JsonKassiopeiaSimpleSerializer()
 
         when:
-        def json = serializer.toJson(metricDataPoints)
-        def deserialize = new ArrayList<>(serializer.fromJson(json, start, end))
+        def json = serializer.toJson(times.stream(), values.stream())
+        def deserialize = serializer.fromJson(json, start, end)
         then:
-        deserialize.size() == size
+        deserialize[0].size() == size
 
         where:
         start << [0, 1, 1, 0]

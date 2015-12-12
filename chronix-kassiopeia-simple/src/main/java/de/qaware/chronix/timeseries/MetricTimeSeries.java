@@ -17,11 +17,14 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.dts.MetricDataPoint;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * A metric time series that have at least the following fields:
@@ -35,9 +38,8 @@ import java.util.*;
 public class MetricTimeSeries {
 
     private String metric;
-    private List<MetricDataPoint> points;
-    private long start;
-    private long end;
+    private List<Long> timestamps;
+    private List<Double> values;
 
     private Map<String, Object> attributes = new HashMap<>();
 
@@ -46,77 +48,96 @@ public class MetricTimeSeries {
      * To instantiate a metric time series use the builder class.
      */
     private MetricTimeSeries() {
-        points = new ArrayList<>();
+        timestamps = new ArrayList<>();
+        values = new ArrayList<>();
     }
 
     /**
      * @return a copy of the metric data points
      */
-    public List<MetricDataPoint> getPoints() {
-        return new ArrayList<>(points);
+    public Stream<Long> getTimestamps() {
+        return timestamps.stream();
+    }
+
+    /**
+     * @return a copy of the metric data points
+     */
+    public Stream<Double> getValues() {
+        return values.stream();
     }
 
 
     /**
      * Gets the metric data point at the index i
      *
-     * @param i - the index position of the metric data point
-     * @return the metric data point
+     * @param i - the index position of the metric value
+     * @return the metric value
      */
-    public MetricDataPoint get(int i) {
-        return points.get(i);
+    public double get(int i) {
+        return values.get(i);
     }
 
     /**
-     * Adds a point to the time series.
-     * Sets the start or end date if necessary.
-     *
-     * @param pointToAdd - the point
+     * Sorts the time series values.
      */
-    public final void add(MetricDataPoint pointToAdd) {
-        if (pointToAdd == null) {
-            return;
-        }
-        long time = pointToAdd.getDate();
-        if (empty()) {
-            start = end = time;
-        }
-        boolean requireSort = setStartOrEndDate(time);
-        points.add(pointToAdd);
+    public void sort() {
+        if (timestamps.size() > 1) {
 
-        if (requireSort) {
-            Collections.sort(points);
+            List<Long> sortedTimes = new ArrayList<>(timestamps.size());
+            List<Double> sortedValues = new ArrayList<>(values.size());
+
+            points().sorted((o1, o2) -> Long.compare(o1.timestamp, o2.timestamp)).forEachOrdered(p -> {
+                sortedTimes.add(p.timestamp);
+                sortedValues.add(p.value);
+            });
+
+            timestamps = sortedTimes;
+            values = sortedValues;
         }
+    }
+
+    /**
+     * A stream over the points
+     *
+     * @return the points as points
+     */
+    public Stream<Pair> points() {
+        return Stream.iterate(of(0), pair -> of(pair.index + 1)).limit(timestamps.size());
     }
 
 
     /**
-     * Sets the min an max date of this time series
+     * Sets the timestamps and values as data
      *
-     * @param date - the date
+     * @param timestamps - the timestamps
+     * @param values     - the values
      */
-    private boolean setStartOrEndDate(long date) {
-        boolean requireSort = false;
-
-        if (start > date) {
-            start = date;
-            requireSort = true;
-        }
-        if (end < date) {
-            end = date;
-            requireSort = true;
-        }
-
-        return requireSort;
+    private void setAll(List<Long> timestamps, List<Double> values) {
+        this.timestamps = timestamps;
+        this.values = values;
     }
 
     /**
      * Adds all the given points to the time series
      *
-     * @param points - the points
+     * @param timestamps - the timestamps
+     * @param values     - the values
      */
-    public final void addAll(Collection<MetricDataPoint> points) {
-        points.forEach(this::add);
+    public final void addAll(List<Long> timestamps, List<Double> values) {
+        for (int i = 0; i < timestamps.size(); i++) {
+            add(timestamps.get(i), values.get(i));
+        }
+    }
+
+    /**
+     * Adds a single timestamp and value
+     *
+     * @param timestamp - the timestamp
+     * @param value     - the value
+     */
+    public final void add(long timestamp, double value) {
+        this.timestamps.add(timestamp);
+        this.values.add(value);
     }
 
     /**
@@ -157,8 +178,8 @@ public class MetricTimeSeries {
      * Clears the time series
      */
     public void clear() {
-        start = end = -1;
-        points.clear();
+        timestamps.clear();
+        values.clear();
     }
 
 
@@ -166,7 +187,7 @@ public class MetricTimeSeries {
      * @return true if empty, otherwise false
      */
     public boolean empty() {
-        return points.isEmpty();
+        return timestamps.isEmpty();
     }
 
 
@@ -205,14 +226,22 @@ public class MetricTimeSeries {
      * @return the start of the time series
      */
     public long getStart() {
-        return start;
+        if (timestamps.isEmpty()) {
+            return -1;
+        } else {
+            return timestamps.get(0);
+        }
     }
 
     /**
      * @return the end of the time series
      */
     public long getEnd() {
-        return end;
+        if (timestamps.isEmpty()) {
+            return -1;
+        } else {
+            return timestamps.get(timestamps.size() - 1);
+        }
     }
 
 
@@ -220,7 +249,7 @@ public class MetricTimeSeries {
      * @return the size
      */
     public int size() {
-        return points.size();
+        return timestamps.size();
     }
 
 
@@ -254,47 +283,27 @@ public class MetricTimeSeries {
 
 
         /**
-         * Adds the data (base64 encoded) to the current series
+         * Adds the time series data
          *
-         * @param points - the encoded data
+         * @param timestamps - the time stamps
+         * @param values     - the values
          * @return the builder
          */
-        public Builder data(Collection<MetricDataPoint> points) {
-            metricTimeSeries.addAll(points);
-            return this;
-        }
-
-
-        /**
-         * Adds the start date to the current series
-         *
-         * @param startDate - the start date
-         * @return the builder
-         */
-        public Builder start(long startDate) {
-            metricTimeSeries.start = startDate;
-            return this;
-        }
-
-        /**
-         * Adds the start date to the current series
-         *
-         * @param endDate - the end date
-         * @return the builder
-         */
-        public Builder end(long endDate) {
-            metricTimeSeries.end = endDate;
+        public Builder data(List<Long> timestamps, List<Double> values) {
+            metricTimeSeries.setAll(timestamps, values);
             return this;
         }
 
         /**
          * Adds the given single data point to the time series
          *
-         * @param metricDataPoint - a metric data point
+         * @param timestamp - the timestamp of the value
+         * @param value     - the value
          * @return the builder
          */
-        public Builder point(MetricDataPoint metricDataPoint) {
-            metricTimeSeries.add(metricDataPoint);
+        public Builder point(long timestamp, double value) {
+            metricTimeSeries.timestamps.add(timestamp);
+            metricTimeSeries.values.add(value);
             return this;
         }
 
@@ -310,7 +319,35 @@ public class MetricTimeSeries {
             return this;
         }
 
+        /**
+         * Sets the attributes for this time series
+         *
+         * @param attributes - the attributes
+         * @return the builder
+         */
+        public Builder attributes(Map<String, Object> attributes) {
+            metricTimeSeries.attributes = attributes;
+            return this;
+        }
+
     }
 
+
+    private Pair of(int index) {
+        return new Pair(index);
+    }
+
+    private class Pair {
+        int index;
+        long timestamp;
+        double value;
+
+
+        public Pair(int index) {
+            this.index = index;
+            this.timestamp = timestamps.get(index);
+            this.value = values.get(index);
+        }
+    }
 
 }

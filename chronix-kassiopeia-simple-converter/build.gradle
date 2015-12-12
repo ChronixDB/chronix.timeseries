@@ -3,7 +3,8 @@ dependencies {
     compile project(':chronix-kassiopeia-simple')
 
     compile 'de.qaware.chronix:chronix-api:0.0.2'
-    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.google.code.gson:gson:2.5'
+
     compile 'commons-io:commons-io:2.4'
 }
 task copyTestResources(type: Copy) {

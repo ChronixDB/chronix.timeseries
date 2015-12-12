@@ -15,7 +15,6 @@
  */
 package de.qaware.chronix.timeseries
 
-import de.qaware.chronix.dts.MetricDataPoint
 import spock.lang.Specification
 
 /**
@@ -27,20 +26,19 @@ class MetricTimeSeriesTest extends Specification {
     def "test create a metric time series and access its values"() {
 
         given:
-        def points = []
+        def times = []
+        def values = []
         10.times {
-            points.add(new MetricDataPoint(it, it * 10))
-            points.add(null)
+            times.add(it as long)
+            values.add(it * 10 as double)
         }
 
         when:
         def ts = new MetricTimeSeries.Builder("//CPU//Load")
                 .attribute("host", "laptop")
                 .attribute("avg", 2.23)
-                .start(0)
-                .end(9)
-                .data(points)
-                .point(new MetricDataPoint(10, 100))
+                .data(times, values)
+                .point(10 as long, 100)
                 .build();
 
         then:
@@ -51,37 +49,58 @@ class MetricTimeSeriesTest extends Specification {
         ts.attribute("host") == "laptop"
         ts.attribute("avg") == 2.23
         ts.size() == 11
-        ts.getPoints().size() == 11
-        ts.get(0) == new MetricDataPoint(0, 0)
+        ts.getTimestamps().count() == 11
+        ts.get(0) == 0
     }
 
-    def "test add newer date"() {
+    def "test pairs"() {
         given:
-        def points = []
+        def times = []
+        def values = []
         10.times {
-            points.add(new MetricDataPoint((it + 1) * 10, it * 10))
-            points.add(null)
+            times.add(100 - it as long)
+            values.add(it * 10 as double)
         }
-
-        def ts = new MetricTimeSeries.Builder("//CPU//Load").data(points).build()
+        def ts = new MetricTimeSeries.Builder("//CPU//Load").data(times, values).build();
 
         when:
-        ts.add(new MetricDataPoint(0, 0))
+
+        def stream = ts.points()
+        then:
+        stream.count() == 10
+
+    }
+
+    def "test sort"() {
+        given:
+        def times = []
+        def values = []
+        10.times {
+            times.add(100 - it as long)
+            values.add(100 - it as double)
+        }
+        def ts = new MetricTimeSeries.Builder("//CPU//Load").data(times, values).build();
+
+        when:
+        ts.sort()
 
         then:
-        ts.get(0) == new MetricDataPoint(0, 0)
+        ts.get(0) == 91
     }
 
     def "test clear time series"() {
         given:
 
-        def points = []
+        def times = []
+        def values = []
+
         10.times {
-            points.add(new MetricDataPoint(it, it * 10))
+            times.add(it as long)
+            values.add(it * 10 as double)
         }
 
         def ts = new MetricTimeSeries.Builder("//CPU//Load")
-                .data(points)
+                .data(times, values)
                 .build();
 
         when:
@@ -89,6 +108,7 @@ class MetricTimeSeriesTest extends Specification {
 
         then:
         ts.size() == 0
+        ts.empty()
     }
 
     def "test to string"() {
