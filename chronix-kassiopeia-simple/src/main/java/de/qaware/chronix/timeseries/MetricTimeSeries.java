@@ -86,9 +86,9 @@ public class MetricTimeSeries {
             List<Long> sortedTimes = new ArrayList<>(timestamps.size());
             List<Double> sortedValues = new ArrayList<>(values.size());
 
-            points().sorted((o1, o2) -> Long.compare(o1.timestamp, o2.timestamp)).forEachOrdered(p -> {
-                sortedTimes.add(p.timestamp);
-                sortedValues.add(p.value);
+            points().sorted((o1, o2) -> Long.compare(o1.getTimestamp(), o2.getTimestamp())).forEachOrdered(p -> {
+                sortedTimes.add(p.getTimestamp());
+                sortedValues.add(p.getValue());
             });
 
             timestamps = sortedTimes;
@@ -102,7 +102,7 @@ public class MetricTimeSeries {
      * @return the points as points
      */
     public Stream<Pair> points() {
-        return Stream.iterate(of(0), pair -> of(pair.index + 1)).limit(timestamps.size());
+        return Stream.iterate(of(0), pair -> of(pair.getIndex() + 1)).limit(timestamps.size());
     }
 
 
@@ -334,20 +334,8 @@ public class MetricTimeSeries {
 
 
     private Pair of(int index) {
-        return new Pair(index);
+        return new Pair(index, timestamps.get(index), values.get(index));
     }
 
-    class Pair {
-        int index;
-        long timestamp;
-        double value;
-
-
-        public Pair(int index) {
-            this.index = index;
-            this.timestamp = timestamps.get(index);
-            this.value = values.get(index);
-        }
-    }
 
 }

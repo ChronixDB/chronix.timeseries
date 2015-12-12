@@ -32,9 +32,12 @@ class MetricTimeSeriesTest extends Specification {
             times.add(it as long)
             values.add(it * 10 as double)
         }
+        def attributes = new HashMap<String, Object>()
+        attributes.put("thread", 2 as long)
 
         when:
         def ts = new MetricTimeSeries.Builder("//CPU//Load")
+                .attributes(attributes)
                 .attribute("host", "laptop")
                 .attribute("avg", 2.23)
                 .data(times, values)
@@ -45,9 +48,10 @@ class MetricTimeSeriesTest extends Specification {
         ts.start == 0
         ts.end == 10
         ts.metric == "//CPU//Load"
-        ts.attributes().size() == 2
+        ts.attributes().size() == 3
         ts.attribute("host") == "laptop"
         ts.attribute("avg") == 2.23
+        ts.attribute("thread") == 2 as long
         ts.size() == 11
         ts.getTimestamps().count() == 11
         ts.get(0) == 0
