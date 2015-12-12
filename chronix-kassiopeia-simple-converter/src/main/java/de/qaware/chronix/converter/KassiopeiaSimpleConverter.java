@@ -18,7 +18,10 @@ package de.qaware.chronix.converter;
 import de.qaware.chronix.schema.MetricTSSchema;
 import de.qaware.chronix.serializer.JsonKassiopeiaSimpleSerializer;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -27,6 +30,11 @@ import java.util.List;
  * @author f.lautenschlager
  */
 public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTimeSeries> {
+
+    public static final String DATA_AS_JSON_FIELD = "dataAsJson";
+    public static final String DATA_AGGREGATED_FIELD = "value";
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KassiopeiaSimpleConverter.class);
 
     @Override
     public MetricTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
@@ -38,19 +46,15 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(metric);
 
         if (binaryTimeSeries.getPoints().length > 0) {
-            //Decompress if we have a data field
-            byte[] decompressedJson = Compression.decompress(binaryTimeSeries.getPoints());
-
-            //Second deserialize
-            JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-            List[] timestampValues = serializer.fromJson(decompressedJson, queryStart, queryEnd);
-
+            List[] timestampValues = fromCompressedData(binaryTimeSeries, queryStart, queryEnd);
             builder.data((List<Long>) timestampValues[0], (List<Double>) timestampValues[1]);
 
+        } else if (binaryTimeSeries.getFields().containsKey(DATA_AS_JSON_FIELD)) {
+            List[] timestampValues = fromDecompressedData(binaryTimeSeries, queryStart, queryEnd);
+            builder.data((List<Long>) timestampValues[0], (List<Double>) timestampValues[1]);
         } else {
             //we have a aggregation result
-            double value = Double.valueOf(binaryTimeSeries.get("value").toString());
-
+            double value = Double.valueOf(binaryTimeSeries.get(DATA_AGGREGATED_FIELD).toString());
             long meanDate = meanDate(binaryTimeSeries);
             builder.point(meanDate, value);
         }
@@ -66,9 +70,32 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         return builder.build();
     }
 
+    private List[] fromDecompressedData(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
+        String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
+        //Second deserialize
+        JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
+        List[] timestampValues = new List[0];
+
+        try {
+            timestampValues = serializer.fromJson(jsonString.getBytes(JsonKassiopeiaSimpleSerializer.UTF_8), queryStart, queryEnd);
+        } catch (UnsupportedEncodingException e) {
+            LOGGER.error("Could not encode string to UTF-8", e);
+        }
+        return timestampValues;
+    }
+
+    private List[] fromCompressedData(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
+        //Decompress if we have a data field
+        byte[] decompressedJson = Compression.decompress(binaryTimeSeries.getPoints());
+
+        //Second deserialize
+        JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
+        return serializer.fromJson(decompressedJson, queryStart, queryEnd);
+    }
+
     private long meanDate(BinaryTimeSeries binaryTimeSeries) {
         long start = binaryTimeSeries.getStart();
-        long end = binaryTimeSeries.getStart();
+        long end = binaryTimeSeries.getEnd();
 
         return start + ((end - start) / 2);
     }

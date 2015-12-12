@@ -17,13 +17,14 @@ package de.qaware.chronix.converter
 
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import spock.lang.Specification
+
 /**
  * Unit test for the kassiopeia simple converter
  * @author f.lautenschlager
  */
 class KassiopeiaSimpleConverterTest extends Specification {
 
-    def "test to and from"() {
+    def "test to and from compressed data"() {
         given:
         def ts = new MetricTimeSeries.Builder("\\Load\\avg")
                 .attribute("MyField", 4711)
@@ -44,5 +45,48 @@ class KassiopeiaSimpleConverterTest extends Specification {
         tsReconverted.get(1) == 2
         tsReconverted.attribute("MyField") == 4711
 
+    }
+
+    def "test to and from aggregated value"() {
+        given:
+        def converter = new KassiopeiaSimpleConverter();
+
+        def binTs = new BinaryTimeSeries.Builder()
+                .field("value", 4711d)
+                .field("metric", "\\Load\\avg")
+                .start(0)
+                .end(10)
+
+        when:
+        def tsReconverted = converter.from(binTs.build(), 0, 100)
+
+        then:
+        tsReconverted.metric == "\\Load\\avg"
+        tsReconverted.size() == 1
+        tsReconverted.get(0) == 4711d
+        tsReconverted.start == 5
+        tsReconverted.end == 5
+    }
+
+    def "test to and from uncompressed data"() {
+        given:
+        def converter = new KassiopeiaSimpleConverter();
+
+        def binTs = new BinaryTimeSeries.Builder()
+                .field("value", 4711d)
+                .field("metric", "\\Load\\avg")
+                .field("dataAsJson", "[[0,1,2,3],[4711.0,4712.0,4713.0,4714.0]]")
+                .start(0)
+                .end(10)
+
+        when:
+        def tsReconverted = converter.from(binTs.build(), 0, 100)
+
+        then:
+        tsReconverted.metric == "\\Load\\avg"
+        tsReconverted.size() == 4
+        tsReconverted.get(3) == 4714d
+        tsReconverted.start == 0
+        tsReconverted.end == 3
     }
 }
