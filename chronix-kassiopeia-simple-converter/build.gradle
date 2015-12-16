@@ -2,7 +2,7 @@ dependencies {
 
     compile project(':chronix-kassiopeia-simple')
 
-    compile 'de.qaware.chronix:chronix-api:0.0.2'
+    compile 'de.qaware.chronix:chronix-api:0.1'
     compile 'com.google.code.gson:gson:2.5'
 
     compile 'commons-io:commons-io:2.4'
