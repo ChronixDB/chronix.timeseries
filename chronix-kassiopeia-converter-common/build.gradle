@@ -1,0 +1,4 @@
+dependencies {
+    compile 'de.qaware.chronix:chronix-api:0.1'
+    compile 'commons-io:commons-io:2.4'
+}

@@ -1,12 +1,25 @@
 dependencies {
 
     compile project(':chronix-kassiopeia-simple')
+    compile project(':chronix-kassiopeia-converter-common')
 
     compile 'de.qaware.chronix:chronix-api:0.1'
     compile 'com.google.code.gson:gson:2.5'
+    compile 'com.google.protobuf:protobuf-java:2.6.1'
 
-    compile 'commons-io:commons-io:2.4'
+
 }
+
+//add the generated classes to the sources
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir 'src/main/generated'
+        }
+    }
+}
+
 task copyTestResources(type: Copy) {
     from "${projectDir}/src/test/resources"
     into "${buildDir}/classes/test"

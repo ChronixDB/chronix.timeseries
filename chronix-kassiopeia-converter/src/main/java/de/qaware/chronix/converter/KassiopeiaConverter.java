@@ -17,6 +17,7 @@ package de.qaware.chronix.converter;
 
 
 import de.qaware.chronix.Schema;
+import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.dt.ProtocolBuffers;
 import de.qaware.chronix.dts.Pair;
 import de.qaware.chronix.timeseries.TimeSeries;
@@ -39,7 +40,7 @@ public class KassiopeiaConverter implements TimeSeriesConverter<TimeSeries<Long,
     public TimeSeries<Long, Double> from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
 
         //first decompress
-        InputStream decompressedBytes = Compression.decompress(binaryTimeSeries.getPoints());
+        InputStream decompressedBytes = Compression.decompressToStream(binaryTimeSeries.getPoints());
 
         //second deserialize the points
         Iterator<Pair<Long, Double>> points = ProtocolBuffersConverter.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);

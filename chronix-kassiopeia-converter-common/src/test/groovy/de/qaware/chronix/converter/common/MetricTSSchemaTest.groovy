@@ -13,46 +13,30 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.converter
+package de.qaware.chronix.converter.common
 
 import spock.lang.Specification
 
 /**
- * The unit test for the compression class
+ * Unit test fot the metric time series schema
  * @author f.lautenschlager
  */
-class CompressionTest extends Specification {
-
-    def "test compress and decompress"() {
-
-        when:
-        def compressed = Compression.compress(data)
-        def decompressed = Compression.decompress(compressed);
-
-        then:
-        data == decompressed;
-
-        where:
-        data << ["Some Bytes".bytes]
-
-    }
-
-    def "test compression exception behaviour"() {
-        when:
-        def result = Compression.compress(null)
-        def uncompressedResult = Compression.decompress(null)
-
-        then:
-        noExceptionThrown()
-        result == null
-        uncompressedResult == null;
-    }
+class MetricTSSchemaTest extends Specification {
 
     def "test private constructor"() {
         when:
-        Compression.newInstance()
-
+        MetricTSSchema.newInstance()
         then:
         noExceptionThrown()
+    }
+
+    def "test is user defined attribute"() {
+        when:
+        def result = MetricTSSchema.isUserDefined(field)
+        then:
+        result == expected
+        where:
+        field << ["metric", "id", "start", "end", "data", "my field"]
+        expected << [false, false, false, false, false, true]
     }
 }

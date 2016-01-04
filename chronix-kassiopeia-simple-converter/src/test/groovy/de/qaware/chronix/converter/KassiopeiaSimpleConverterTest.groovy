@@ -18,6 +18,8 @@ package de.qaware.chronix.converter
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import spock.lang.Specification
 
+import java.time.Instant
+
 /**
  * Unit test for the kassiopeia simple converter
  * @author f.lautenschlager
@@ -28,20 +30,21 @@ class KassiopeiaSimpleConverterTest extends Specification {
         given:
         def ts = new MetricTimeSeries.Builder("\\Load\\avg")
                 .attribute("MyField", 4711)
+        def start = Instant.now()
 
         100.times {
-            ts.point(it, it * 2)
+            ts.point(start.plusSeconds(it).toEpochMilli(), it * 2)
         }
 
         def converter = new KassiopeiaSimpleConverter();
 
         when:
         def binaryTimeSeries = converter.to(ts.build())
-        def tsReconverted = converter.from(binaryTimeSeries, 0, 100)
+        def tsReconverted = converter.from(binaryTimeSeries, start.toEpochMilli(), start.plusSeconds(20).toEpochMilli())
 
         then:
         tsReconverted.metric == "\\Load\\avg"
-        tsReconverted.size() == 100
+        tsReconverted.size() == 21
         tsReconverted.get(1) == 2
         tsReconverted.attribute("MyField") == 4711
 

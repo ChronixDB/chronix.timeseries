@@ -15,13 +15,19 @@
  */
 package de.qaware.chronix.converter;
 
-import de.qaware.chronix.schema.MetricTSSchema;
+import de.qaware.chronix.converter.common.Compression;
+import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.serializer.JsonKassiopeiaSimpleSerializer;
+import de.qaware.chronix.serializer.ProtocolBuffers;
+import de.qaware.chronix.serializer.ProtocolBuffersConverter;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
+import de.qaware.chronix.timeseries.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,13 +51,14 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         //Third build a minimal time series
         MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(metric);
 
+        //Default serialization is protocol buffers.
         if (binaryTimeSeries.getPoints().length > 0) {
-            List[] timestampValues = fromCompressedData(binaryTimeSeries, queryStart, queryEnd);
-            builder.data((List<Long>) timestampValues[0], (List<Double>) timestampValues[1]);
+            fromProtocolBuffers(binaryTimeSeries, queryStart, queryEnd, builder);
 
         } else if (binaryTimeSeries.getFields().containsKey(DATA_AS_JSON_FIELD)) {
-            List[] timestampValues = fromDecompressedData(binaryTimeSeries, queryStart, queryEnd);
-            builder.data((List<Long>) timestampValues[0], (List<Double>) timestampValues[1]);
+            //do it from json
+            fromJson(binaryTimeSeries, queryStart, queryEnd, builder);
+
         } else {
             //we have a aggregation result
             double value = Double.valueOf(binaryTimeSeries.get(DATA_AGGREGATED_FIELD).toString());
@@ -70,7 +77,16 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         return builder.build();
     }
 
-    private List[] fromDecompressedData(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
+    private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
+        InputStream decompressedBytes = Compression.decompressToStream(binaryTimeSeries.getPoints());
+        Iterator<Pair> points = ProtocolBuffersConverter.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
+        while (points.hasNext()) {
+            Pair p = points.next();
+            builder.point(p.getTimestamp(), p.getValue());
+        }
+    }
+
+    private void fromJson(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
         String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
         //Second deserialize
         JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
@@ -81,16 +97,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("Could not encode string to UTF-8", e);
         }
-        return timestampValues;
-    }
-
-    private List[] fromCompressedData(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
-        //Decompress if we have a data field
-        byte[] decompressedJson = Compression.decompress(binaryTimeSeries.getPoints());
-
-        //Second deserialize
-        JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-        return serializer.fromJson(decompressedJson, queryStart, queryEnd);
+        builder.data((List<Long>) timestampValues[0], (List<Double>) timestampValues[1]);
     }
 
     private long meanDate(BinaryTimeSeries binaryTimeSeries) {
@@ -105,10 +112,9 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
     public BinaryTimeSeries to(MetricTimeSeries timeSeries) {
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
-        JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
         //serialize
-        byte[] json = serializer.toJson(timeSeries.getTimestamps(), timeSeries.getValues());
-        byte[] compressedJson = Compression.compress(json);
+        ProtocolBuffers.Points serializedPoints = ProtocolBuffersConverter.to(timeSeries.points().iterator());
+        byte[] compressedJson = Compression.compress(serializedPoints.toByteArray());
 
         //Add the minimum required fields
         builder.start(timeSeries.getStart())

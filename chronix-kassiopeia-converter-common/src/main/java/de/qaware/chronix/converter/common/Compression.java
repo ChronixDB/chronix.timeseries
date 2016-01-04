@@ -13,16 +13,13 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.converter;
+package de.qaware.chronix.converter.common;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -46,6 +43,10 @@ public class Compression {
      * @return the byte[] compressed
      */
     public static byte[] compress(byte[] decompressed) {
+        if (decompressed == null) {
+            return new byte[]{};
+        }
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         OutputStream gzos = null;
         try {
@@ -53,7 +54,7 @@ public class Compression {
             gzos.write(decompressed);
             gzos.flush();
             baos.flush();
-        } catch (Exception e) {
+        } catch (IOException e) {
             LOGGER.error("Exception occurred while compressing gzip stream.", e);
             return null;
         } finally {
@@ -64,19 +65,40 @@ public class Compression {
         return baos.toByteArray();
     }
 
-
     /**
      * Decompressed the given byte[]
      *
      * @param compressed - the compressed byte[]
      * @return an input stream of the uncompressed byte[]
      */
-    public static InputStream decompress(byte[] compressed) {
+    public static byte[] decompress(byte[] compressed) {
 
+        if (compressed == null) {
+            return new byte[]{};
+        }
+        try {
+            InputStream decompressed = decompressToStream(compressed);
+            if (decompressed != null) {
+                return IOUtils.toByteArray(decompressed);
+            }
+
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred while decompressing gzip stream. Returning empty byte[].", e);
+        }
+        return new byte[]{};
+    }
+
+    /**
+     * Decompresses the given byte[]
+     *
+     * @param compressed - the compressed bytes
+     * @return an input stream on the decompressed bytes
+     */
+    public static InputStream decompressToStream(byte[] compressed) {
         try {
             return new GZIPInputStream(new ByteArrayInputStream(compressed));
-        } catch (Exception e) {
-            LOGGER.error("Exception occurred while decompressing gzip stream.", e);
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred while decompressing gzip stream. Returning null.", e);
         }
         return null;
     }
