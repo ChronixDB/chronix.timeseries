@@ -18,8 +18,8 @@
 
 package de.qaware.chronix.converter.serializer.gen;
 
-public final class ProtocolBuffers {
-  private ProtocolBuffers() {}
+public final class SimpleProtocolBuffers {
+  private SimpleProtocolBuffers() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistry registry) {
   }
@@ -133,14 +133,14 @@ public final class ProtocolBuffers {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ProtocolBuffers.internal_static_Point_descriptor;
+      return SimpleProtocolBuffers.internal_static_Point_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ProtocolBuffers.internal_static_Point_fieldAccessorTable
+      return SimpleProtocolBuffers.internal_static_Point_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ProtocolBuffers.Point.class, ProtocolBuffers.Point.Builder.class);
+              SimpleProtocolBuffers.Point.class, SimpleProtocolBuffers.Point.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Point> PARSER =
@@ -253,53 +253,53 @@ public final class ProtocolBuffers {
       return super.writeReplace();
     }
 
-    public static ProtocolBuffers.Point parseFrom(
+    public static SimpleProtocolBuffers.Point parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.Point parseFrom(
+    public static SimpleProtocolBuffers.Point parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.Point parseFrom(byte[] data)
+    public static SimpleProtocolBuffers.Point parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.Point parseFrom(
+    public static SimpleProtocolBuffers.Point parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.Point parseFrom(java.io.InputStream input)
+    public static SimpleProtocolBuffers.Point parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.Point parseFrom(
+    public static SimpleProtocolBuffers.Point parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.Point parseDelimitedFrom(java.io.InputStream input)
+    public static SimpleProtocolBuffers.Point parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static ProtocolBuffers.Point parseDelimitedFrom(
+    public static SimpleProtocolBuffers.Point parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.Point parseFrom(
+    public static SimpleProtocolBuffers.Point parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.Point parseFrom(
+    public static SimpleProtocolBuffers.Point parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -308,7 +308,7 @@ public final class ProtocolBuffers {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ProtocolBuffers.Point prototype) {
+    public static Builder newBuilder(SimpleProtocolBuffers.Point prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -329,20 +329,20 @@ public final class ProtocolBuffers {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Point)
-        ProtocolBuffers.PointOrBuilder {
+        SimpleProtocolBuffers.PointOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ProtocolBuffers.internal_static_Point_descriptor;
+        return SimpleProtocolBuffers.internal_static_Point_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ProtocolBuffers.internal_static_Point_fieldAccessorTable
+        return SimpleProtocolBuffers.internal_static_Point_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ProtocolBuffers.Point.class, ProtocolBuffers.Point.Builder.class);
+                SimpleProtocolBuffers.Point.class, SimpleProtocolBuffers.Point.Builder.class);
       }
 
-      // Construct using de.qaware.chronix.serializer.ProtocolBuffers.Point.newBuilder()
+      // Construct using de.qaware.chronix.serializer.SimpleProtocolBuffers.Point.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -375,23 +375,23 @@ public final class ProtocolBuffers {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ProtocolBuffers.internal_static_Point_descriptor;
+        return SimpleProtocolBuffers.internal_static_Point_descriptor;
       }
 
-      public ProtocolBuffers.Point getDefaultInstanceForType() {
-        return ProtocolBuffers.Point.getDefaultInstance();
+      public SimpleProtocolBuffers.Point getDefaultInstanceForType() {
+        return SimpleProtocolBuffers.Point.getDefaultInstance();
       }
 
-      public ProtocolBuffers.Point build() {
-        ProtocolBuffers.Point result = buildPartial();
+      public SimpleProtocolBuffers.Point build() {
+        SimpleProtocolBuffers.Point result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ProtocolBuffers.Point buildPartial() {
-        ProtocolBuffers.Point result = new ProtocolBuffers.Point(this);
+      public SimpleProtocolBuffers.Point buildPartial() {
+        SimpleProtocolBuffers.Point result = new SimpleProtocolBuffers.Point(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -408,16 +408,16 @@ public final class ProtocolBuffers {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ProtocolBuffers.Point) {
-          return mergeFrom((ProtocolBuffers.Point)other);
+        if (other instanceof SimpleProtocolBuffers.Point) {
+          return mergeFrom((SimpleProtocolBuffers.Point)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ProtocolBuffers.Point other) {
-        if (other == ProtocolBuffers.Point.getDefaultInstance()) return this;
+      public Builder mergeFrom(SimpleProtocolBuffers.Point other) {
+        if (other == SimpleProtocolBuffers.Point.getDefaultInstance()) return this;
         if (other.hasT()) {
           setT(other.getT());
         }
@@ -440,11 +440,11 @@ public final class ProtocolBuffers {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ProtocolBuffers.Point parsedMessage = null;
+        SimpleProtocolBuffers.Point parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ProtocolBuffers.Point) e.getUnfinishedMessage();
+          parsedMessage = (SimpleProtocolBuffers.Point) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -557,7 +557,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    java.util.List<ProtocolBuffers.Point>
+    java.util.List<SimpleProtocolBuffers.Point>
         getPList();
     /**
      * <code>repeated .Point p = 1;</code>
@@ -566,7 +566,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    ProtocolBuffers.Point getP(int index);
+    SimpleProtocolBuffers.Point getP(int index);
     /**
      * <code>repeated .Point p = 1;</code>
      *
@@ -582,7 +582,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    java.util.List<? extends ProtocolBuffers.PointOrBuilder>
+    java.util.List<? extends SimpleProtocolBuffers.PointOrBuilder>
         getPOrBuilderList();
     /**
      * <code>repeated .Point p = 1;</code>
@@ -591,7 +591,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    ProtocolBuffers.PointOrBuilder getPOrBuilder(
+    SimpleProtocolBuffers.PointOrBuilder getPOrBuilder(
         int index);
   }
   /**
@@ -652,10 +652,10 @@ public final class ProtocolBuffers {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                p_ = new java.util.ArrayList<ProtocolBuffers.Point>();
+                p_ = new java.util.ArrayList<SimpleProtocolBuffers.Point>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              p_.add(input.readMessage(ProtocolBuffers.Point.PARSER, extensionRegistry));
+              p_.add(input.readMessage(SimpleProtocolBuffers.Point.PARSER, extensionRegistry));
               break;
             }
           }
@@ -675,14 +675,14 @@ public final class ProtocolBuffers {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ProtocolBuffers.internal_static_Points_descriptor;
+      return SimpleProtocolBuffers.internal_static_Points_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ProtocolBuffers.internal_static_Points_fieldAccessorTable
+      return SimpleProtocolBuffers.internal_static_Points_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ProtocolBuffers.Points.class, ProtocolBuffers.Points.Builder.class);
+              SimpleProtocolBuffers.Points.class, SimpleProtocolBuffers.Points.Builder.class);
     }
 
     public static com.google.protobuf.Parser<Points> PARSER =
@@ -701,7 +701,7 @@ public final class ProtocolBuffers {
     }
 
     public static final int P_FIELD_NUMBER = 1;
-    private java.util.List<ProtocolBuffers.Point> p_;
+    private java.util.List<SimpleProtocolBuffers.Point> p_;
     /**
      * <code>repeated .Point p = 1;</code>
      *
@@ -709,7 +709,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public java.util.List<ProtocolBuffers.Point> getPList() {
+    public java.util.List<SimpleProtocolBuffers.Point> getPList() {
       return p_;
     }
     /**
@@ -719,7 +719,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public java.util.List<? extends ProtocolBuffers.PointOrBuilder>
+    public java.util.List<? extends SimpleProtocolBuffers.PointOrBuilder>
         getPOrBuilderList() {
       return p_;
     }
@@ -740,7 +740,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public ProtocolBuffers.Point getP(int index) {
+    public SimpleProtocolBuffers.Point getP(int index) {
       return p_.get(index);
     }
     /**
@@ -750,7 +750,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public ProtocolBuffers.PointOrBuilder getPOrBuilder(
+    public SimpleProtocolBuffers.PointOrBuilder getPOrBuilder(
         int index) {
       return p_.get(index);
     }
@@ -805,53 +805,53 @@ public final class ProtocolBuffers {
       return super.writeReplace();
     }
 
-    public static ProtocolBuffers.Points parseFrom(
+    public static SimpleProtocolBuffers.Points parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.Points parseFrom(
+    public static SimpleProtocolBuffers.Points parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.Points parseFrom(byte[] data)
+    public static SimpleProtocolBuffers.Points parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.Points parseFrom(
+    public static SimpleProtocolBuffers.Points parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.Points parseFrom(java.io.InputStream input)
+    public static SimpleProtocolBuffers.Points parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.Points parseFrom(
+    public static SimpleProtocolBuffers.Points parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.Points parseDelimitedFrom(java.io.InputStream input)
+    public static SimpleProtocolBuffers.Points parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static ProtocolBuffers.Points parseDelimitedFrom(
+    public static SimpleProtocolBuffers.Points parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.Points parseFrom(
+    public static SimpleProtocolBuffers.Points parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.Points parseFrom(
+    public static SimpleProtocolBuffers.Points parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -860,7 +860,7 @@ public final class ProtocolBuffers {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ProtocolBuffers.Points prototype) {
+    public static Builder newBuilder(SimpleProtocolBuffers.Points prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
@@ -881,20 +881,20 @@ public final class ProtocolBuffers {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:Points)
-        ProtocolBuffers.PointsOrBuilder {
+        SimpleProtocolBuffers.PointsOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ProtocolBuffers.internal_static_Points_descriptor;
+        return SimpleProtocolBuffers.internal_static_Points_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ProtocolBuffers.internal_static_Points_fieldAccessorTable
+        return SimpleProtocolBuffers.internal_static_Points_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ProtocolBuffers.Points.class, ProtocolBuffers.Points.Builder.class);
+                SimpleProtocolBuffers.Points.class, SimpleProtocolBuffers.Points.Builder.class);
       }
 
-      // Construct using de.qaware.chronix.serializer.ProtocolBuffers.Points.newBuilder()
+      // Construct using de.qaware.chronix.serializer.SimpleProtocolBuffers.Points.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -930,23 +930,23 @@ public final class ProtocolBuffers {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ProtocolBuffers.internal_static_Points_descriptor;
+        return SimpleProtocolBuffers.internal_static_Points_descriptor;
       }
 
-      public ProtocolBuffers.Points getDefaultInstanceForType() {
-        return ProtocolBuffers.Points.getDefaultInstance();
+      public SimpleProtocolBuffers.Points getDefaultInstanceForType() {
+        return SimpleProtocolBuffers.Points.getDefaultInstance();
       }
 
-      public ProtocolBuffers.Points build() {
-        ProtocolBuffers.Points result = buildPartial();
+      public SimpleProtocolBuffers.Points build() {
+        SimpleProtocolBuffers.Points result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ProtocolBuffers.Points buildPartial() {
-        ProtocolBuffers.Points result = new ProtocolBuffers.Points(this);
+      public SimpleProtocolBuffers.Points buildPartial() {
+        SimpleProtocolBuffers.Points result = new SimpleProtocolBuffers.Points(this);
         int from_bitField0_ = bitField0_;
         if (pBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -962,16 +962,16 @@ public final class ProtocolBuffers {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ProtocolBuffers.Points) {
-          return mergeFrom((ProtocolBuffers.Points)other);
+        if (other instanceof SimpleProtocolBuffers.Points) {
+          return mergeFrom((SimpleProtocolBuffers.Points)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ProtocolBuffers.Points other) {
-        if (other == ProtocolBuffers.Points.getDefaultInstance()) return this;
+      public Builder mergeFrom(SimpleProtocolBuffers.Points other) {
+        if (other == SimpleProtocolBuffers.Points.getDefaultInstance()) return this;
         if (pBuilder_ == null) {
           if (!other.p_.isEmpty()) {
             if (p_.isEmpty()) {
@@ -1016,11 +1016,11 @@ public final class ProtocolBuffers {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ProtocolBuffers.Points parsedMessage = null;
+        SimpleProtocolBuffers.Points parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ProtocolBuffers.Points) e.getUnfinishedMessage();
+          parsedMessage = (SimpleProtocolBuffers.Points) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -1031,17 +1031,17 @@ public final class ProtocolBuffers {
       }
       private int bitField0_;
 
-      private java.util.List<ProtocolBuffers.Point> p_ =
+      private java.util.List<SimpleProtocolBuffers.Point> p_ =
         java.util.Collections.emptyList();
       private void ensurePIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          p_ = new java.util.ArrayList<ProtocolBuffers.Point>(p_);
+          p_ = new java.util.ArrayList<SimpleProtocolBuffers.Point>(p_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          ProtocolBuffers.Point, ProtocolBuffers.Point.Builder, ProtocolBuffers.PointOrBuilder> pBuilder_;
+          SimpleProtocolBuffers.Point, SimpleProtocolBuffers.Point.Builder, SimpleProtocolBuffers.PointOrBuilder> pBuilder_;
 
       /**
        * <code>repeated .Point p = 1;</code>
@@ -1050,7 +1050,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public java.util.List<ProtocolBuffers.Point> getPList() {
+      public java.util.List<SimpleProtocolBuffers.Point> getPList() {
         if (pBuilder_ == null) {
           return java.util.Collections.unmodifiableList(p_);
         } else {
@@ -1078,7 +1078,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.Point getP(int index) {
+      public SimpleProtocolBuffers.Point getP(int index) {
         if (pBuilder_ == null) {
           return p_.get(index);
         } else {
@@ -1093,7 +1093,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder setP(
-          int index, ProtocolBuffers.Point value) {
+          int index, SimpleProtocolBuffers.Point value) {
         if (pBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1114,7 +1114,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder setP(
-          int index, ProtocolBuffers.Point.Builder builderForValue) {
+          int index, SimpleProtocolBuffers.Point.Builder builderForValue) {
         if (pBuilder_ == null) {
           ensurePIsMutable();
           p_.set(index, builderForValue.build());
@@ -1131,7 +1131,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public Builder addP(ProtocolBuffers.Point value) {
+      public Builder addP(SimpleProtocolBuffers.Point value) {
         if (pBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1152,7 +1152,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addP(
-          int index, ProtocolBuffers.Point value) {
+          int index, SimpleProtocolBuffers.Point value) {
         if (pBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1173,7 +1173,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addP(
-          ProtocolBuffers.Point.Builder builderForValue) {
+          SimpleProtocolBuffers.Point.Builder builderForValue) {
         if (pBuilder_ == null) {
           ensurePIsMutable();
           p_.add(builderForValue.build());
@@ -1191,7 +1191,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addP(
-          int index, ProtocolBuffers.Point.Builder builderForValue) {
+          int index, SimpleProtocolBuffers.Point.Builder builderForValue) {
         if (pBuilder_ == null) {
           ensurePIsMutable();
           p_.add(index, builderForValue.build());
@@ -1209,7 +1209,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addAllP(
-          java.lang.Iterable<? extends ProtocolBuffers.Point> values) {
+          java.lang.Iterable<? extends SimpleProtocolBuffers.Point> values) {
         if (pBuilder_ == null) {
           ensurePIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1261,7 +1261,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.Point.Builder getPBuilder(
+      public SimpleProtocolBuffers.Point.Builder getPBuilder(
           int index) {
         return getPFieldBuilder().getBuilder(index);
       }
@@ -1272,7 +1272,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.PointOrBuilder getPOrBuilder(
+      public SimpleProtocolBuffers.PointOrBuilder getPOrBuilder(
           int index) {
         if (pBuilder_ == null) {
           return p_.get(index);  } else {
@@ -1286,7 +1286,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public java.util.List<? extends ProtocolBuffers.PointOrBuilder>
+      public java.util.List<? extends SimpleProtocolBuffers.PointOrBuilder>
            getPOrBuilderList() {
         if (pBuilder_ != null) {
           return pBuilder_.getMessageOrBuilderList();
@@ -1301,9 +1301,9 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.Point.Builder addPBuilder() {
+      public SimpleProtocolBuffers.Point.Builder addPBuilder() {
         return getPFieldBuilder().addBuilder(
-            ProtocolBuffers.Point.getDefaultInstance());
+            SimpleProtocolBuffers.Point.getDefaultInstance());
       }
       /**
        * <code>repeated .Point p = 1;</code>
@@ -1312,10 +1312,10 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.Point.Builder addPBuilder(
+      public SimpleProtocolBuffers.Point.Builder addPBuilder(
           int index) {
         return getPFieldBuilder().addBuilder(
-            index, ProtocolBuffers.Point.getDefaultInstance());
+            index, SimpleProtocolBuffers.Point.getDefaultInstance());
       }
       /**
        * <code>repeated .Point p = 1;</code>
@@ -1324,16 +1324,16 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public java.util.List<ProtocolBuffers.Point.Builder>
+      public java.util.List<SimpleProtocolBuffers.Point.Builder>
            getPBuilderList() {
         return getPFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          ProtocolBuffers.Point, ProtocolBuffers.Point.Builder, ProtocolBuffers.PointOrBuilder>
+          SimpleProtocolBuffers.Point, SimpleProtocolBuffers.Point.Builder, SimpleProtocolBuffers.PointOrBuilder>
           getPFieldBuilder() {
         if (pBuilder_ == null) {
           pBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              ProtocolBuffers.Point, ProtocolBuffers.Point.Builder, ProtocolBuffers.PointOrBuilder>(
+              SimpleProtocolBuffers.Point, SimpleProtocolBuffers.Point.Builder, SimpleProtocolBuffers.PointOrBuilder>(
                   p_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),

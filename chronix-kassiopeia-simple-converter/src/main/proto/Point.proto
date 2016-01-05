@@ -16,7 +16,7 @@
 
 option java_package = "de.qaware.chronix.converter.serializer.gen";
 
-option java_outer_classname = "ProtocolBuffers";
+option java_outer_classname = "SimpleProtocolBuffers";
 
 option optimize_for = SPEED;
 

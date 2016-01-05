@@ -19,7 +19,7 @@ import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSimpleSerializer;
-import de.qaware.chronix.converter.serializer.gen.ProtocolBuffers;
+import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.Pair;
 import org.slf4j.Logger;
@@ -113,7 +113,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         //serialize
-        ProtocolBuffers.Points serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(timeSeries.points().iterator());
+        SimpleProtocolBuffers.Points serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(timeSeries.points().iterator());
         byte[] compressedJson = Compression.compress(serializedPoints.toByteArray());
 
         //Add the minimum required fields
