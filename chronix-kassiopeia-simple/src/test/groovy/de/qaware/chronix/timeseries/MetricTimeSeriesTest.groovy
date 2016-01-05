@@ -42,7 +42,7 @@ class MetricTimeSeriesTest extends Specification {
                 .attribute("avg", 2.23)
                 .data(times, values)
                 .point(10 as long, 100)
-                .build();
+                .build()
 
         then:
         ts.start == 0
@@ -54,8 +54,10 @@ class MetricTimeSeriesTest extends Specification {
         ts.attribute("thread") == 2 as long
         ts.size() == 11
         ts.getTimestamps().count() == 11
+        ts.getValues().count() == 11
         ts.get(0) == 0
     }
+
 
     def "test pairs"() {
         given:
@@ -65,7 +67,7 @@ class MetricTimeSeriesTest extends Specification {
             times.add(100 - it as long)
             values.add(it * 10 as double)
         }
-        def ts = new MetricTimeSeries.Builder("//CPU//Load").data(times, values).build();
+        def ts = new MetricTimeSeries.Builder("//CPU//Load").data(times, values).build()
 
         when:
 
@@ -83,7 +85,8 @@ class MetricTimeSeriesTest extends Specification {
             times.add(100 - it as long)
             values.add(100 - it as double)
         }
-        def ts = new MetricTimeSeries.Builder("//CPU//Load").data(times, values).build();
+        def ts = new MetricTimeSeries.Builder("//CPU//Load").build()
+        ts.addAll(times, values)
 
         when:
         ts.sort()
@@ -105,7 +108,7 @@ class MetricTimeSeriesTest extends Specification {
 
         def ts = new MetricTimeSeries.Builder("//CPU//Load")
                 .data(times, values)
-                .build();
+                .build()
 
         when:
         ts.clear()
@@ -113,6 +116,8 @@ class MetricTimeSeriesTest extends Specification {
         then:
         ts.size() == 0
         ts.empty()
+        ts.getEnd() == 0
+        ts.getStart() == 0
     }
 
     def "test to string"() {

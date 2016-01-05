@@ -37,15 +37,28 @@ class CompressionTest extends Specification {
 
     }
 
-    def "test compression exception behaviour"() {
+    def "test compression null value behaviour"() {
         when:
         def result = Compression.compress(null)
-        def uncompressedResult = Compression.decompress(null)
+        def decompressedResult = Compression.decompress(null)
+        def decompressedResultAsStream = Compression.decompressToStream(null)
 
         then:
         noExceptionThrown()
         result.length == 0
-        uncompressedResult.length == 0
+        decompressedResult.length == 0
+        decompressedResultAsStream == null
+    }
+
+    def "test compression exceptional behaviour"() {
+        when:
+        def notGzipCompressed = "notCompresseed".bytes
+        def result = Compression.decompress(notGzipCompressed)
+
+        then:
+        noExceptionThrown()
+        result.length == 0
+
     }
 
     def "test private constructor"() {

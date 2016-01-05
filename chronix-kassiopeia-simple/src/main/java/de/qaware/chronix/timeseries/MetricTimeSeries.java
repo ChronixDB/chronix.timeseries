@@ -19,6 +19,7 @@ package de.qaware.chronix.timeseries;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -217,17 +218,19 @@ public class MetricTimeSeries {
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("");
-        sb.append("metric='").append(getMetric()).append('\'');
-        return sb.toString();
+        return new ToStringBuilder(this)
+                .append("metric", metric)
+                .append("attributes", attributes)
+                .toString();
     }
+
 
     /**
      * @return the start of the time series
      */
     public long getStart() {
         if (timestamps.isEmpty()) {
-            return -1;
+            return 0;
         } else {
             return timestamps.get(0);
         }
@@ -238,7 +241,7 @@ public class MetricTimeSeries {
      */
     public long getEnd() {
         if (timestamps.isEmpty()) {
-            return -1;
+            return 0;
         } else {
             return timestamps.get(timestamps.size() - 1);
         }

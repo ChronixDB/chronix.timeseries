@@ -74,6 +74,7 @@ public class Compression {
     public static byte[] decompress(byte[] compressed) {
 
         if (compressed == null) {
+            LOGGER.debug("Compressed bytes[] are null. Returning empty byte[].");
             return new byte[]{};
         }
         try {
@@ -95,6 +96,11 @@ public class Compression {
      * @return an input stream on the decompressed bytes
      */
     public static InputStream decompressToStream(byte[] compressed) {
+        if (compressed == null) {
+            LOGGER.debug("Compressed bytes[] are null. Returning null.");
+            return null;
+        }
+
         try {
             return new GZIPInputStream(new ByteArrayInputStream(compressed));
         } catch (IOException e) {
