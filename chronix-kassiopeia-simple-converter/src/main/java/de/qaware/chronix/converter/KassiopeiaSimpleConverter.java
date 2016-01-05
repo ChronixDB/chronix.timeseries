@@ -17,9 +17,9 @@ package de.qaware.chronix.converter;
 
 import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
-import de.qaware.chronix.serializer.JsonKassiopeiaSimpleSerializer;
-import de.qaware.chronix.serializer.ProtocolBuffers;
-import de.qaware.chronix.serializer.ProtocolBuffersConverter;
+import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
+import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSimpleSerializer;
+import de.qaware.chronix.converter.serializer.gen.ProtocolBuffers;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.Pair;
 import org.slf4j.Logger;
@@ -79,7 +79,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
 
     private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
         InputStream decompressedBytes = Compression.decompressToStream(binaryTimeSeries.getPoints());
-        Iterator<Pair> points = ProtocolBuffersConverter.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
+        Iterator<Pair> points = ProtoBufKassiopeiaSimpleSerializer.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
         while (points.hasNext()) {
             Pair p = points.next();
             builder.point(p.getTimestamp(), p.getValue());
@@ -113,7 +113,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         //serialize
-        ProtocolBuffers.Points serializedPoints = ProtocolBuffersConverter.to(timeSeries.points().iterator());
+        ProtocolBuffers.Points serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(timeSeries.points().iterator());
         byte[] compressedJson = Compression.compress(serializedPoints.toByteArray());
 
         //Add the minimum required fields

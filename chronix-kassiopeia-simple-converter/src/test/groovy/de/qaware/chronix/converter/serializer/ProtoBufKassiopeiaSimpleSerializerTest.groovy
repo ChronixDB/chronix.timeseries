@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.serializer
+package de.qaware.chronix.converter.serializer
 
 import de.qaware.chronix.timeseries.Pair
 import spock.lang.Specification
@@ -21,20 +21,20 @@ import spock.lang.Specification
 import java.time.Instant
 
 /**
- * Unit test for the protocol buffers converter
+ * Unit test for the protocol buffers serializer
  * @author f.lautenschlager
  */
-class ProtocolBuffersConverterTest extends Specification {
+class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
     def "test from without range query"() {
         given:
         def points = []
         100.times {
             points.add(new Pair(it, it + 1, it * 100))
         }
-        def protoPoints = ProtocolBuffersConverter.to(points.iterator())
+        def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
 
         when:
-        def pairs = ProtocolBuffersConverter.from(protoPoints.toByteString().newInput(), 0, points.size())
+        def pairs = ProtoBufKassiopeiaSimpleSerializer.from(protoPoints.toByteString().newInput(), 0, points.size())
         then:
         100.times {
             def point = pairs.next()
@@ -52,13 +52,13 @@ class ProtocolBuffersConverterTest extends Specification {
         100.times {
             points.add(new Pair(it, start.plusSeconds(it).toEpochMilli(), it * 100))
         }
-        def protoPoints = ProtocolBuffersConverter.to(points.iterator())
+        def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
 
         def queryStart = start.plusSeconds(50).toEpochMilli()
         def queryEnd = start.plusSeconds(70).toEpochMilli()
 
         when:
-        def pairs = ProtocolBuffersConverter.from(protoPoints.toByteString().newInput(), start.toEpochMilli(), end.toEpochMilli(), queryStart, queryEnd)
+        def pairs = ProtoBufKassiopeiaSimpleSerializer.from(protoPoints.toByteString().newInput(), start.toEpochMilli(), end.toEpochMilli(), queryStart, queryEnd)
         then:
         //should do nothing
         pairs.remove()
@@ -75,7 +75,7 @@ class ProtocolBuffersConverterTest extends Specification {
             points.add(new Pair(it, it, it * 100))
         }
         when:
-        def protoPoints = ProtocolBuffersConverter.to(points.iterator())
+        def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
 
         then:
         protoPoints.getPList().size() == 100
@@ -83,7 +83,7 @@ class ProtocolBuffersConverterTest extends Specification {
 
     def "test private constructor"() {
         when:
-        ProtocolBuffersConverter.newInstance()
+        ProtoBufKassiopeiaSimpleSerializer.newInstance()
         then:
         noExceptionThrown()
     }

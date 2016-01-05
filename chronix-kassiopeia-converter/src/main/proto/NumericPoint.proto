@@ -18,7 +18,7 @@
 Represents our list of numeric points
 */
 
-option java_package = "de.qaware.chronix.converter.dt";
+option java_package = "de.qaware.chronix.converter.serializer.gen";
 
 option java_outer_classname = "ProtocolBuffers";
 

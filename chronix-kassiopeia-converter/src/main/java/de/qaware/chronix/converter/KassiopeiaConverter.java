@@ -18,7 +18,8 @@ package de.qaware.chronix.converter;
 
 import de.qaware.chronix.Schema;
 import de.qaware.chronix.converter.common.Compression;
-import de.qaware.chronix.converter.dt.ProtocolBuffers;
+import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSerializer;
+import de.qaware.chronix.converter.serializer.gen.ProtocolBuffers;
 import de.qaware.chronix.dts.Pair;
 import de.qaware.chronix.timeseries.TimeSeries;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class KassiopeiaConverter implements TimeSeriesConverter<TimeSeries<Long,
         InputStream decompressedBytes = Compression.decompressToStream(binaryTimeSeries.getPoints());
 
         //second deserialize the points
-        Iterator<Pair<Long, Double>> points = ProtocolBuffersConverter.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
+        Iterator<Pair<Long, Double>> points = ProtoBufKassiopeiaSerializer.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
 
         TimeSeries<Long, Double> timeSeries = new TimeSeries<>(points);
 
@@ -77,7 +78,7 @@ public class KassiopeiaConverter implements TimeSeriesConverter<TimeSeries<Long,
             end = timeSeries.get(timeSeries.size() - 1).getFirst();
 
             //first serialize the data
-            ProtocolBuffers.NumericPoints serializedDataProto = ProtocolBuffersConverter.to(timeSeries.iterator());
+            ProtocolBuffers.NumericPoints serializedDataProto = ProtoBufKassiopeiaSerializer.to(timeSeries.iterator());
             byte[] bytes = serializedDataProto.toByteArray();
 
             //then compress the data

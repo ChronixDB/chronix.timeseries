@@ -14,20 +14,23 @@
  *    limitations under the License.
  */
 package de.qaware.chronix.converter
-import de.qaware.chronix.converter.dt.ProtocolBuffers
+
+import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSerializer
+import de.qaware.chronix.converter.serializer.gen.ProtocolBuffers
 import de.qaware.chronix.dts.Pair
 import spock.lang.Specification
 import spock.lang.Unroll
+
 /**
- * Unit test for the protocol buffers converter
+ * Unit test for the protocol buffers serializer
  *
  * @author f.lautenschlager
  */
-class ProtocolBuffersConverterTest extends Specification {
+class ProtoBufKassiopeiaSerializerTest extends Specification {
 
     def "test private constructor"() {
         when:
-        ProtocolBuffersConverter.newInstance()
+        ProtoBufKassiopeiaSerializer.newInstance()
 
         then:
         noExceptionThrown()
@@ -36,11 +39,11 @@ class ProtocolBuffersConverterTest extends Specification {
     def "test to and from"() {
         given:
         def points = [Pair.pairOf(1L, 45d), Pair.pairOf(2L, 90d), Pair.pairOf(3L, 60d), Pair.pairOf(4L, 66d),]
-        ProtocolBuffers.NumericPoints protoPoints = ProtocolBuffersConverter.to(points.iterator())
+        ProtocolBuffers.NumericPoints protoPoints = ProtoBufKassiopeiaSerializer.to(points.iterator())
         def serializedPoints = new ByteArrayInputStream(protoPoints.toByteArray())
 
         when:
-        def deserializedPoints = ProtocolBuffersConverter.from(serializedPoints, 1, 4);
+        def deserializedPoints = ProtoBufKassiopeiaSerializer.from(serializedPoints, 1, 4);
 
         then:
         deserializedPoints.toList() == points
@@ -49,11 +52,11 @@ class ProtocolBuffersConverterTest extends Specification {
     def "test to and from with range query"() {
         given:
         def points = [null, Pair.pairOf(null, 60d), Pair.pairOf(0L, null), Pair.pairOf(1L, 45d), Pair.pairOf(2L, 90d), Pair.pairOf(3L, 60d), Pair.pairOf(4L, 66d),]
-        ProtocolBuffers.NumericPoints protoPoints = ProtocolBuffersConverter.to(points.iterator())
+        ProtocolBuffers.NumericPoints protoPoints = ProtoBufKassiopeiaSerializer.to(points.iterator())
         def serializedPoints = new ByteArrayInputStream(protoPoints.toByteArray())
 
         when:
-        def deserializedPoints = ProtocolBuffersConverter.from(serializedPoints, 1, 4, 2, 3);
+        def deserializedPoints = ProtoBufKassiopeiaSerializer.from(serializedPoints, 1, 4, 2, 3);
 
         then:
         def resultingPoints = deserializedPoints.toList()
@@ -68,11 +71,11 @@ class ProtocolBuffersConverterTest extends Specification {
 
         given:
         def points = [Pair.pairOf(1L, 45d), Pair.pairOf(2L, 90d), Pair.pairOf(3L, 60d), Pair.pairOf(4L, 66d),]
-        ProtocolBuffers.NumericPoints protoPoints = ProtocolBuffersConverter.to(points.iterator())
+        ProtocolBuffers.NumericPoints protoPoints = ProtoBufKassiopeiaSerializer.to(points.iterator())
         def serializedPoints = new ByteArrayInputStream(protoPoints.toByteArray())
 
         when:
-        def deserializedPoints = ProtocolBuffersConverter.from(serializedPoints, 1, 4, from, to);
+        def deserializedPoints = ProtoBufKassiopeiaSerializer.from(serializedPoints, 1, 4, from, to);
 
         then:
 
@@ -86,11 +89,11 @@ class ProtocolBuffersConverterTest extends Specification {
     def "test remove method - does nothing"() {
         given:
         def points = [Pair.pairOf(1L, 45d), Pair.pairOf(2L, 90d), Pair.pairOf(3L, 60d), Pair.pairOf(4L, 66d),]
-        ProtocolBuffers.NumericPoints protoPoints = ProtocolBuffersConverter.to(points.iterator())
+        ProtocolBuffers.NumericPoints protoPoints = ProtoBufKassiopeiaSerializer.to(points.iterator())
         def serializedPoints = new ByteArrayInputStream(protoPoints.toByteArray())
 
         when:
-        def deserializedPoints = ProtocolBuffersConverter.from(serializedPoints, 1, 4);
+        def deserializedPoints = ProtoBufKassiopeiaSerializer.from(serializedPoints, 1, 4);
 
         deserializedPoints.remove()
 
@@ -100,7 +103,7 @@ class ProtocolBuffersConverterTest extends Specification {
 
     def "test illegal arguments"() {
         when:
-        ProtocolBuffersConverter.from(null, 1, 4, from, to)
+        ProtoBufKassiopeiaSerializer.from(null, 1, 4, from, to)
 
         then:
         thrown IllegalArgumentException.class
@@ -113,7 +116,7 @@ class ProtocolBuffersConverterTest extends Specification {
 
     def "test exception during creation"() {
         when:
-        ProtocolBuffersConverter.from(new ByteArrayInputStream("invalid_Bytes".getBytes("UTF-8")), 1, 4)
+        ProtoBufKassiopeiaSerializer.from(new ByteArrayInputStream("invalid_Bytes".getBytes("UTF-8")), 1, 4)
 
         then:
         thrown IllegalStateException.class
@@ -122,7 +125,7 @@ class ProtocolBuffersConverterTest extends Specification {
     @Unroll
     def "test NoSuchElementException for query from '#from' to '#to' on time series from '1' to '4'"() {
         when:
-        ProtocolBuffersConverter.from(null, 1, 4, from, to).next()
+        ProtoBufKassiopeiaSerializer.from(null, 1, 4, from, to).next()
 
         then:
         thrown NoSuchElementException.class

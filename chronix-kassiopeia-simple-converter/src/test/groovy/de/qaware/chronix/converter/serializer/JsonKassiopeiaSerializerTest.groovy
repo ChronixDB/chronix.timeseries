@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.serializer
+package de.qaware.chronix.converter.serializer
 
 import spock.lang.Specification
 import spock.lang.Unroll

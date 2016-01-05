@@ -13,10 +13,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.converter;
+package de.qaware.chronix.converter.serializer;
 
 
-import de.qaware.chronix.converter.dt.ProtocolBuffers;
+import de.qaware.chronix.converter.serializer.gen.ProtocolBuffers;
 import de.qaware.chronix.dts.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,18 +28,18 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Class to easily convert the protocol buffer into Pair<Long,Double>
+ * Class to convert the protocol buffer points into Pair<Long,Double>
  *
  * @author f.lautenschlager
  */
-public final class ProtocolBuffersConverter {
+public final class ProtoBufKassiopeiaSerializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolBuffersConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufKassiopeiaSerializer.class);
 
     /**
      * Private constructor
      */
-    private ProtocolBuffersConverter() {
+    private ProtoBufKassiopeiaSerializer() {
         //utility class
     }
 

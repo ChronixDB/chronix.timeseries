@@ -13,9 +13,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.serializer;
+package de.qaware.chronix.converter.serializer;
 
 
+import de.qaware.chronix.converter.serializer.gen.ProtocolBuffers;
 import de.qaware.chronix.timeseries.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,15 +32,15 @@ import java.util.NoSuchElementException;
  *
  * @author f.lautenschlager
  */
-public final class ProtocolBuffersConverter {
+public final class ProtoBufKassiopeiaSimpleSerializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtocolBuffersConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufKassiopeiaSimpleSerializer.class);
     private static final long ALMOST_EQUALS_OFFSET_MS = 10;
 
     /**
      * Private constructor
      */
-    private ProtocolBuffersConverter() {
+    private ProtoBufKassiopeiaSimpleSerializer() {
         //utility class
     }
 

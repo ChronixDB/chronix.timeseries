@@ -14,7 +14,7 @@
  *    limitations under the License.
  */
 
-option java_package = "de.qaware.chronix.serializer";
+option java_package = "de.qaware.chronix.converter.serializer.gen";
 
 option java_outer_classname = "ProtocolBuffers";
 
