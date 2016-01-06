@@ -81,7 +81,7 @@ public final class ProtocolBuffers {
     }
 
     private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
         getUnknownFields() {
       return this.unknownFields;
@@ -133,14 +133,14 @@ public final class ProtocolBuffers {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ProtocolBuffers.internal_static_NumericPoint_descriptor;
+      return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoint_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ProtocolBuffers.internal_static_NumericPoint_fieldAccessorTable
+      return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoint_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ProtocolBuffers.NumericPoint.class, ProtocolBuffers.NumericPoint.Builder.class);
+              de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.class, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder.class);
     }
 
     public static com.google.protobuf.Parser<NumericPoint> PARSER =
@@ -153,7 +153,7 @@ public final class ProtocolBuffers {
       }
     };
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<NumericPoint> getParserForType() {
       return PARSER;
     }
@@ -247,59 +247,59 @@ public final class ProtocolBuffers {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    protected Object writeReplace()
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
 
-    public static ProtocolBuffers.NumericPoint parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.NumericPoint parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoint parseFrom(byte[] data)
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.NumericPoint parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoint parseFrom(java.io.InputStream input)
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.NumericPoint parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoint parseDelimitedFrom(java.io.InputStream input)
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static ProtocolBuffers.NumericPoint parseDelimitedFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoint parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.NumericPoint parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -308,12 +308,12 @@ public final class ProtocolBuffers {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ProtocolBuffers.NumericPoint prototype) {
+    public static Builder newBuilder(de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -329,20 +329,20 @@ public final class ProtocolBuffers {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:NumericPoint)
-        ProtocolBuffers.NumericPointOrBuilder {
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ProtocolBuffers.internal_static_NumericPoint_descriptor;
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoint_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ProtocolBuffers.internal_static_NumericPoint_fieldAccessorTable
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoint_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ProtocolBuffers.NumericPoint.class, ProtocolBuffers.NumericPoint.Builder.class);
+                de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.class, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder.class);
       }
 
-      // Construct using de.qaware.chronix.converter.serializer.ProtocolBuffers.NumericPoint.newBuilder()
+      // Construct using de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -375,23 +375,23 @@ public final class ProtocolBuffers {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ProtocolBuffers.internal_static_NumericPoint_descriptor;
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoint_descriptor;
       }
 
-      public ProtocolBuffers.NumericPoint getDefaultInstanceForType() {
-        return ProtocolBuffers.NumericPoint.getDefaultInstance();
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint getDefaultInstanceForType() {
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.getDefaultInstance();
       }
 
-      public ProtocolBuffers.NumericPoint build() {
-        ProtocolBuffers.NumericPoint result = buildPartial();
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint build() {
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ProtocolBuffers.NumericPoint buildPartial() {
-        ProtocolBuffers.NumericPoint result = new ProtocolBuffers.NumericPoint(this);
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint buildPartial() {
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint result = new de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint(this);
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) == 0x00000001)) {
@@ -408,16 +408,16 @@ public final class ProtocolBuffers {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ProtocolBuffers.NumericPoint) {
-          return mergeFrom((ProtocolBuffers.NumericPoint)other);
+        if (other instanceof de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint) {
+          return mergeFrom((de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ProtocolBuffers.NumericPoint other) {
-        if (other == ProtocolBuffers.NumericPoint.getDefaultInstance()) return this;
+      public Builder mergeFrom(de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint other) {
+        if (other == de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.getDefaultInstance()) return this;
         if (other.hasT()) {
           setT(other.getT());
         }
@@ -440,11 +440,11 @@ public final class ProtocolBuffers {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ProtocolBuffers.NumericPoint parsedMessage = null;
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ProtocolBuffers.NumericPoint) e.getUnfinishedMessage();
+          parsedMessage = (de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -557,7 +557,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    java.util.List<ProtocolBuffers.NumericPoint>
+    java.util.List<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint> 
         getMList();
     /**
      * <code>repeated .NumericPoint m = 1;</code>
@@ -566,7 +566,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    ProtocolBuffers.NumericPoint getM(int index);
+    de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint getM(int index);
     /**
      * <code>repeated .NumericPoint m = 1;</code>
      *
@@ -582,7 +582,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    java.util.List<? extends ProtocolBuffers.NumericPointOrBuilder>
+    java.util.List<? extends de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder> 
         getMOrBuilderList();
     /**
      * <code>repeated .NumericPoint m = 1;</code>
@@ -591,8 +591,8 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    ProtocolBuffers.NumericPointOrBuilder getMOrBuilder(
-            int index);
+    de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder getMOrBuilder(
+        int index);
   }
   /**
    * Protobuf type {@code NumericPoints}
@@ -622,7 +622,7 @@ public final class ProtocolBuffers {
     }
 
     private final com.google.protobuf.UnknownFieldSet unknownFields;
-    @Override
+    @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
         getUnknownFields() {
       return this.unknownFields;
@@ -652,10 +652,10 @@ public final class ProtocolBuffers {
             }
             case 10: {
               if (!((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
-                m_ = new java.util.ArrayList<ProtocolBuffers.NumericPoint>();
+                m_ = new java.util.ArrayList<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              m_.add(input.readMessage(ProtocolBuffers.NumericPoint.PARSER, extensionRegistry));
+              m_.add(input.readMessage(de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.PARSER, extensionRegistry));
               break;
             }
           }
@@ -675,14 +675,14 @@ public final class ProtocolBuffers {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return ProtocolBuffers.internal_static_NumericPoints_descriptor;
+      return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoints_descriptor;
     }
 
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return ProtocolBuffers.internal_static_NumericPoints_fieldAccessorTable
+      return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoints_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              ProtocolBuffers.NumericPoints.class, ProtocolBuffers.NumericPoints.Builder.class);
+              de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints.class, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints.Builder.class);
     }
 
     public static com.google.protobuf.Parser<NumericPoints> PARSER =
@@ -695,13 +695,13 @@ public final class ProtocolBuffers {
       }
     };
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<NumericPoints> getParserForType() {
       return PARSER;
     }
 
     public static final int M_FIELD_NUMBER = 1;
-    private java.util.List<ProtocolBuffers.NumericPoint> m_;
+    private java.util.List<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint> m_;
     /**
      * <code>repeated .NumericPoint m = 1;</code>
      *
@@ -709,7 +709,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public java.util.List<ProtocolBuffers.NumericPoint> getMList() {
+    public java.util.List<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint> getMList() {
       return m_;
     }
     /**
@@ -719,7 +719,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public java.util.List<? extends ProtocolBuffers.NumericPointOrBuilder>
+    public java.util.List<? extends de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder> 
         getMOrBuilderList() {
       return m_;
     }
@@ -740,7 +740,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public ProtocolBuffers.NumericPoint getM(int index) {
+    public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint getM(int index) {
       return m_.get(index);
     }
     /**
@@ -750,7 +750,7 @@ public final class ProtocolBuffers {
      *The list of points
      * </pre>
      */
-    public ProtocolBuffers.NumericPointOrBuilder getMOrBuilder(
+    public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder getMOrBuilder(
         int index) {
       return m_.get(index);
     }
@@ -799,59 +799,59 @@ public final class ProtocolBuffers {
     }
 
     private static final long serialVersionUID = 0L;
-    @Override
-    protected Object writeReplace()
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
         throws java.io.ObjectStreamException {
       return super.writeReplace();
     }
 
-    public static ProtocolBuffers.NumericPoints parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.NumericPoints parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoints parseFrom(byte[] data)
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static ProtocolBuffers.NumericPoints parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoints parseFrom(java.io.InputStream input)
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.NumericPoints parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoints parseDelimitedFrom(java.io.InputStream input)
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input);
     }
-    public static ProtocolBuffers.NumericPoints parseDelimitedFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return PARSER.parseDelimitedFrom(input, extensionRegistry);
     }
-    public static ProtocolBuffers.NumericPoints parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return PARSER.parseFrom(input);
     }
-    public static ProtocolBuffers.NumericPoints parseFrom(
+    public static de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -860,12 +860,12 @@ public final class ProtocolBuffers {
 
     public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder(ProtocolBuffers.NumericPoints prototype) {
+    public static Builder newBuilder(de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints prototype) {
       return newBuilder().mergeFrom(prototype);
     }
     public Builder toBuilder() { return newBuilder(this); }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessage.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -881,20 +881,20 @@ public final class ProtocolBuffers {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessage.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:NumericPoints)
-        ProtocolBuffers.NumericPointsOrBuilder {
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointsOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return ProtocolBuffers.internal_static_NumericPoints_descriptor;
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoints_descriptor;
       }
 
       protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return ProtocolBuffers.internal_static_NumericPoints_fieldAccessorTable
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoints_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                ProtocolBuffers.NumericPoints.class, ProtocolBuffers.NumericPoints.Builder.class);
+                de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints.class, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints.Builder.class);
       }
 
-      // Construct using de.qaware.chronix.converter.serializer.ProtocolBuffers.NumericPoints.newBuilder()
+      // Construct using de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -930,23 +930,23 @@ public final class ProtocolBuffers {
 
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return ProtocolBuffers.internal_static_NumericPoints_descriptor;
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.internal_static_NumericPoints_descriptor;
       }
 
-      public ProtocolBuffers.NumericPoints getDefaultInstanceForType() {
-        return ProtocolBuffers.NumericPoints.getDefaultInstance();
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints getDefaultInstanceForType() {
+        return de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints.getDefaultInstance();
       }
 
-      public ProtocolBuffers.NumericPoints build() {
-        ProtocolBuffers.NumericPoints result = buildPartial();
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints build() {
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public ProtocolBuffers.NumericPoints buildPartial() {
-        ProtocolBuffers.NumericPoints result = new ProtocolBuffers.NumericPoints(this);
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints buildPartial() {
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints result = new de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints(this);
         int from_bitField0_ = bitField0_;
         if (mBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
@@ -962,16 +962,16 @@ public final class ProtocolBuffers {
       }
 
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof ProtocolBuffers.NumericPoints) {
-          return mergeFrom((ProtocolBuffers.NumericPoints)other);
+        if (other instanceof de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints) {
+          return mergeFrom((de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(ProtocolBuffers.NumericPoints other) {
-        if (other == ProtocolBuffers.NumericPoints.getDefaultInstance()) return this;
+      public Builder mergeFrom(de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints other) {
+        if (other == de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints.getDefaultInstance()) return this;
         if (mBuilder_ == null) {
           if (!other.m_.isEmpty()) {
             if (m_.isEmpty()) {
@@ -1016,11 +1016,11 @@ public final class ProtocolBuffers {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        ProtocolBuffers.NumericPoints parsedMessage = null;
+        de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (ProtocolBuffers.NumericPoints) e.getUnfinishedMessage();
+          parsedMessage = (de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoints) e.getUnfinishedMessage();
           throw e;
         } finally {
           if (parsedMessage != null) {
@@ -1031,17 +1031,17 @@ public final class ProtocolBuffers {
       }
       private int bitField0_;
 
-      private java.util.List<ProtocolBuffers.NumericPoint> m_ =
+      private java.util.List<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint> m_ =
         java.util.Collections.emptyList();
       private void ensureMIsMutable() {
         if (!((bitField0_ & 0x00000001) == 0x00000001)) {
-          m_ = new java.util.ArrayList<ProtocolBuffers.NumericPoint>(m_);
+          m_ = new java.util.ArrayList<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint>(m_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilder<
-          ProtocolBuffers.NumericPoint, ProtocolBuffers.NumericPoint.Builder, ProtocolBuffers.NumericPointOrBuilder> mBuilder_;
+          de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder> mBuilder_;
 
       /**
        * <code>repeated .NumericPoint m = 1;</code>
@@ -1050,7 +1050,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public java.util.List<ProtocolBuffers.NumericPoint> getMList() {
+      public java.util.List<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint> getMList() {
         if (mBuilder_ == null) {
           return java.util.Collections.unmodifiableList(m_);
         } else {
@@ -1078,7 +1078,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.NumericPoint getM(int index) {
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint getM(int index) {
         if (mBuilder_ == null) {
           return m_.get(index);
         } else {
@@ -1093,7 +1093,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder setM(
-          int index, ProtocolBuffers.NumericPoint value) {
+          int index, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint value) {
         if (mBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1114,7 +1114,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder setM(
-          int index, ProtocolBuffers.NumericPoint.Builder builderForValue) {
+          int index, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder builderForValue) {
         if (mBuilder_ == null) {
           ensureMIsMutable();
           m_.set(index, builderForValue.build());
@@ -1131,7 +1131,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public Builder addM(ProtocolBuffers.NumericPoint value) {
+      public Builder addM(de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint value) {
         if (mBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1152,7 +1152,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addM(
-          int index, ProtocolBuffers.NumericPoint value) {
+          int index, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint value) {
         if (mBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -1173,7 +1173,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addM(
-          ProtocolBuffers.NumericPoint.Builder builderForValue) {
+          de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder builderForValue) {
         if (mBuilder_ == null) {
           ensureMIsMutable();
           m_.add(builderForValue.build());
@@ -1191,7 +1191,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addM(
-          int index, ProtocolBuffers.NumericPoint.Builder builderForValue) {
+          int index, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder builderForValue) {
         if (mBuilder_ == null) {
           ensureMIsMutable();
           m_.add(index, builderForValue.build());
@@ -1209,7 +1209,7 @@ public final class ProtocolBuffers {
        * </pre>
        */
       public Builder addAllM(
-          Iterable<? extends ProtocolBuffers.NumericPoint> values) {
+          java.lang.Iterable<? extends de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint> values) {
         if (mBuilder_ == null) {
           ensureMIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
@@ -1261,7 +1261,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.NumericPoint.Builder getMBuilder(
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder getMBuilder(
           int index) {
         return getMFieldBuilder().getBuilder(index);
       }
@@ -1272,7 +1272,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.NumericPointOrBuilder getMOrBuilder(
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder getMOrBuilder(
           int index) {
         if (mBuilder_ == null) {
           return m_.get(index);  } else {
@@ -1286,7 +1286,7 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public java.util.List<? extends ProtocolBuffers.NumericPointOrBuilder>
+      public java.util.List<? extends de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder> 
            getMOrBuilderList() {
         if (mBuilder_ != null) {
           return mBuilder_.getMessageOrBuilderList();
@@ -1301,9 +1301,9 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.NumericPoint.Builder addMBuilder() {
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder addMBuilder() {
         return getMFieldBuilder().addBuilder(
-            ProtocolBuffers.NumericPoint.getDefaultInstance());
+            de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.getDefaultInstance());
       }
       /**
        * <code>repeated .NumericPoint m = 1;</code>
@@ -1312,10 +1312,10 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public ProtocolBuffers.NumericPoint.Builder addMBuilder(
+      public de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder addMBuilder(
           int index) {
         return getMFieldBuilder().addBuilder(
-            index, ProtocolBuffers.NumericPoint.getDefaultInstance());
+            index, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.getDefaultInstance());
       }
       /**
        * <code>repeated .NumericPoint m = 1;</code>
@@ -1324,16 +1324,16 @@ public final class ProtocolBuffers {
        *The list of points
        * </pre>
        */
-      public java.util.List<ProtocolBuffers.NumericPoint.Builder>
+      public java.util.List<de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder> 
            getMBuilderList() {
         return getMFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilder<
-          ProtocolBuffers.NumericPoint, ProtocolBuffers.NumericPoint.Builder, ProtocolBuffers.NumericPointOrBuilder>
+          de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder> 
           getMFieldBuilder() {
         if (mBuilder_ == null) {
           mBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
-              ProtocolBuffers.NumericPoint, ProtocolBuffers.NumericPoint.Builder, ProtocolBuffers.NumericPointOrBuilder>(
+              de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPoint.Builder, de.qaware.chronix.converter.serializer.gen.ProtocolBuffers.NumericPointOrBuilder>(
                   m_,
                   ((bitField0_ & 0x00000001) == 0x00000001),
                   getParentForChildren(),
@@ -1372,11 +1372,12 @@ public final class ProtocolBuffers {
   private static com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
+    java.lang.String[] descriptorData = {
       "\n\022NumericPoint.proto\"$\n\014NumericPoint\022\t\n\001" +
       "t\030\001 \001(\003\022\t\n\001v\030\002 \002(\001\")\n\rNumericPoints\022\030\n\001m" +
-      "\030\001 \003(\0132\r.NumericPointB3\n\036de.qaware.chron" +
-      "ix.converter.dtB\017ProtocolBuffersH\001"
+      "\030\001 \003(\0132\r.NumericPointB?\n*de.qaware.chron" +
+      "ix.converter.serializer.genB\017ProtocolBuf" +
+      "fersH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1395,13 +1396,13 @@ public final class ProtocolBuffers {
     internal_static_NumericPoint_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_NumericPoint_descriptor,
-        new String[] { "T", "V", });
+        new java.lang.String[] { "T", "V", });
     internal_static_NumericPoints_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_NumericPoints_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_NumericPoints_descriptor,
-        new String[] { "M", });
+        new java.lang.String[] { "M", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

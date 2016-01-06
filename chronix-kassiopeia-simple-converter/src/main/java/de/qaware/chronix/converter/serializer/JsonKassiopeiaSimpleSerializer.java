@@ -19,6 +19,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
+import de.qaware.chronix.timeseries.DoubleList;
+import de.qaware.chronix.timeseries.LongList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +84,7 @@ public class JsonKassiopeiaSimpleSerializer {
      * @param queryStart
      * @param queryEnd   @return a collection holding the metric data points
      */
-    public List[] fromJson(byte[] json, final long queryStart, final long queryEnd) {
+    public Object[] fromJson(byte[] json, final long queryStart, final long queryEnd) {
         if (queryStart <= 0 && queryEnd <= 0) {
             return new List[]{new ArrayList<>(), new ArrayList<>()};
         }
@@ -96,8 +98,8 @@ public class JsonKassiopeiaSimpleSerializer {
             List<Double> times = (List<Double>) timestampsValues[0];
             List<Double> values = (List<Double>) timestampsValues[1];
 
-            List<Long> filteredTimes = new ArrayList<>();
-            List<Double> filteredValues = new ArrayList<>();
+            LongList filteredTimes = new LongList(times.size());
+            DoubleList filteredValues = new DoubleList(values.size());
 
 
             for (int i = 0; i < times.size(); i++) {
@@ -111,7 +113,7 @@ public class JsonKassiopeiaSimpleSerializer {
                 }
             }
 
-            return new List[]{filteredTimes, filteredValues};
+            return new Object[]{filteredTimes, filteredValues};
 
         } catch (IOException e) {
             LOGGER.error("Could not deserialize json data", e);

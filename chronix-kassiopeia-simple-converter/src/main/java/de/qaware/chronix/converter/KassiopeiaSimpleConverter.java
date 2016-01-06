@@ -20,6 +20,8 @@ import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
+import de.qaware.chronix.timeseries.DoubleList;
+import de.qaware.chronix.timeseries.LongList;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.Pair;
 import org.slf4j.Logger;
@@ -28,7 +30,6 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * The kassiopeia time series converter for the simple time series class
@@ -90,14 +91,14 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
         //Second deserialize
         JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-        List[] timestampValues = new List[0];
 
         try {
-            timestampValues = serializer.fromJson(jsonString.getBytes(JsonKassiopeiaSimpleSerializer.UTF_8), queryStart, queryEnd);
+            Object[] timestampValues = serializer.fromJson(jsonString.getBytes(JsonKassiopeiaSimpleSerializer.UTF_8), queryStart, queryEnd);
+            builder.data((LongList) timestampValues[0], (DoubleList) timestampValues[1]);
+
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("Could not encode string to UTF-8", e);
         }
-        builder.data((List<Long>) timestampValues[0], (List<Double>) timestampValues[1]);
     }
 
     private long meanDate(BinaryTimeSeries binaryTimeSeries) {

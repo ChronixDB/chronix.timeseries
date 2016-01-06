@@ -21,7 +21,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +38,8 @@ import java.util.stream.Stream;
 public class MetricTimeSeries {
 
     private String metric;
-    private List<Long> timestamps;
-    private List<Double> values;
+    private LongList timestamps;
+    private DoubleList values;
 
     private Map<String, Object> attributes = new HashMap<>();
 
@@ -49,22 +48,22 @@ public class MetricTimeSeries {
      * To instantiate a metric time series use the builder class.
      */
     private MetricTimeSeries() {
-        timestamps = new ArrayList<>();
-        values = new ArrayList<>();
+        timestamps = new LongList(5000);
+        values = new DoubleList(5000);
     }
 
     /**
      * @return a copy of the metric data points
      */
-    public Stream<Long> getTimestamps() {
-        return timestamps.stream();
+    public LongList getTimestamps() {
+        return timestamps.copy();
     }
 
     /**
      * @return a copy of the metric data points
      */
-    public Stream<Double> getValues() {
-        return values.stream();
+    public DoubleList getValues() {
+        return values.copy();
     }
 
 
@@ -84,8 +83,8 @@ public class MetricTimeSeries {
     public void sort() {
         if (timestamps.size() > 1) {
 
-            List<Long> sortedTimes = new ArrayList<>(timestamps.size());
-            List<Double> sortedValues = new ArrayList<>(values.size());
+            LongList sortedTimes = new LongList(timestamps.size());
+            DoubleList sortedValues = new DoubleList(values.size());
 
             points().sorted((o1, o2) -> Long.compare(o1.getTimestamp(), o2.getTimestamp())).forEachOrdered(p -> {
                 sortedTimes.add(p.getTimestamp());
@@ -113,7 +112,7 @@ public class MetricTimeSeries {
      * @param timestamps - the timestamps
      * @param values     - the values
      */
-    private void setAll(List<Long> timestamps, List<Double> values) {
+    private void setAll(LongList timestamps, DoubleList values) {
         this.timestamps = timestamps;
         this.values = values;
     }
@@ -292,7 +291,7 @@ public class MetricTimeSeries {
          * @param values     - the values
          * @return the builder
          */
-        public Builder data(List<Long> timestamps, List<Double> values) {
+        public Builder data(LongList timestamps, DoubleList values) {
             metricTimeSeries.setAll(timestamps, values);
             return this;
         }

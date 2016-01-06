@@ -26,8 +26,8 @@ class MetricTimeSeriesTest extends Specification {
     def "test create a metric time series and access its values"() {
 
         given:
-        def times = []
-        def values = []
+        def times = new LongList()
+        def values = new DoubleList()
         10.times {
             times.add(it as long)
             values.add(it * 10 as double)
@@ -53,16 +53,16 @@ class MetricTimeSeriesTest extends Specification {
         ts.attribute("avg") == 2.23
         ts.attribute("thread") == 2 as long
         ts.size() == 11
-        ts.getTimestamps().count() == 11
-        ts.getValues().count() == 11
+        ts.getTimestamps().size() == 11
+        ts.getValues().size() == 11
         ts.get(0) == 0
     }
 
 
     def "test pairs"() {
         given:
-        def times = []
-        def values = []
+        def times = new LongList()
+        def values = new DoubleList()
         10.times {
             times.add(100 - it as long)
             values.add(it * 10 as double)
@@ -98,8 +98,8 @@ class MetricTimeSeriesTest extends Specification {
     def "test clear time series"() {
         given:
 
-        def times = []
-        def values = []
+        def times = new LongList()
+        def values = new DoubleList()
 
         10.times {
             times.add(it as long)
