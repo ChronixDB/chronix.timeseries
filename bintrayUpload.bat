@@ -1,1 +1,0 @@
-gradle clean build bintrayUpload -PbintrayUsername=chronix -PbintrayApiKey=204a830f743f718a2ce7754a7112615921bd5988
