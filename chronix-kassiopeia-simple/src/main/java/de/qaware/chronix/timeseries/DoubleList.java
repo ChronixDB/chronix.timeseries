@@ -15,11 +15,16 @@
  */
 package de.qaware.chronix.timeseries;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Created by f.lautenschlager on 06.01.2016.
+ * Implementation of a list with primitive doubles
+ *
+ * @author f.lautenschlager
  */
 public class DoubleList {
 
@@ -46,7 +51,7 @@ public class DoubleList {
      * empty LongList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
      */
-    private double[] elementData; // non-private to simplify nested class access
+    private double[] elementData;
 
     /**
      * The size of the LongList (the number of elements it contains).
@@ -54,7 +59,6 @@ public class DoubleList {
      * @serial
      */
     private int size;
-    private int modCount;
 
     /**
      * Constructs an empty list with the specified initial capacity.
@@ -91,8 +95,6 @@ public class DoubleList {
     }
 
     private void ensureExplicitCapacity(int minCapacity) {
-        modCount++;
-
         // overflow-conscious code
         if (minCapacity - elementData.length > 0)
             grow(minCapacity);
@@ -209,6 +211,19 @@ public class DoubleList {
     }
 
     /**
+     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
+     * list's current size.  An application can use this operation to minimize
+     * the storage of an <tt>ArrayList</tt> instance.
+     */
+    private double[] trimToSize(int size, double[] elements) {
+        double[] copy = Arrays.copyOf(elements, elements.length);
+        if (size < elements.length) {
+            copy = (size == 0) ? EMPTY_ELEMENTDATA : Arrays.copyOf(elements, size);
+        }
+        return copy;
+    }
+
+    /**
      * Returns an array containing all of the elements in this list
      * in proper sequence (from first to last element).
      * <p>
@@ -267,7 +282,7 @@ public class DoubleList {
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
     public boolean add(double e) {
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
+        ensureCapacityInternal(size + 1);
         elementData[size++] = e;
         return true;
     }
@@ -284,7 +299,7 @@ public class DoubleList {
     public void add(int index, double element) {
         rangeCheckForAdd(index);
 
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
+        ensureCapacityInternal(size + 1);
         System.arraycopy(elementData, index, elementData, index + 1,
                 size - index);
         elementData[index] = element;
@@ -303,14 +318,13 @@ public class DoubleList {
     public double remove(int index) {
         rangeCheck(index);
 
-        modCount++;
         double oldValue = elementData(index);
 
         int numMoved = size - index - 1;
         if (numMoved > 0)
             System.arraycopy(elementData, index + 1, elementData, index,
                     numMoved);
-        //elementData[--size] = null; // clear to let GC do its work
+        elementData[--size] = 0;
 
         return oldValue;
     }
@@ -345,12 +359,11 @@ public class DoubleList {
      * return the value removed.
      */
     private void fastRemove(int index) {
-        modCount++;
         int numMoved = size - index - 1;
         if (numMoved > 0)
             System.arraycopy(elementData, index + 1, elementData, index,
                     numMoved);
-        // elementData[--size] = null; // clear to let GC do its work
+        elementData[--size] = 0;
     }
 
     /**
@@ -358,7 +371,6 @@ public class DoubleList {
      * be empty after this call returns.
      */
     public void clear() {
-        modCount++;
         elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
         size = 0;
     }
@@ -379,7 +391,7 @@ public class DoubleList {
     public boolean addAll(DoubleList c) {
         double[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);  // Increments modCount
+        ensureCapacityInternal(size + numNew);
         System.arraycopy(a, 0, elementData, size, numNew);
         size += numNew;
         return numNew != 0;
@@ -405,7 +417,7 @@ public class DoubleList {
 
         double[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);  // Increments modCount
+        ensureCapacityInternal(size + numNew);
 
         int numMoved = size - index;
         if (numMoved > 0)
@@ -432,16 +444,14 @@ public class DoubleList {
      *                                   toIndex < fromIndex})
      */
     protected void removeRange(int fromIndex, int toIndex) {
-        modCount++;
         int numMoved = size - toIndex;
         System.arraycopy(elementData, toIndex, elementData, fromIndex,
                 numMoved);
 
-        // clear to let GC do its work
         int newSize = size - (toIndex - fromIndex);
-        /*for (int i = newSize; i < size; i++) {
-            elementData[i] = null;
-        }*/
+        for (int i = newSize; i < size; i++) {
+            elementData[i] = 0;
+        }
         size = newSize;
     }
 
@@ -471,5 +481,45 @@ public class DoubleList {
      */
     private String outOfBoundsMsg(int index) {
         return "Index: " + index + ", Size: " + size;
+    }
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        DoubleList rhs = (DoubleList) obj;
+
+        double[] thisTrimmed = trimToSize(this.size, this.elementData);
+        double[] otherTrimmed = trimToSize(rhs.size, rhs.elementData);
+
+        return new EqualsBuilder()
+                .append(thisTrimmed, otherTrimmed)
+                .append(this.size, rhs.size)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(elementData)
+                .append(size)
+                .toHashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "DoubleList{" +
+                "elementData=" + Arrays.toString(trimToSize(size, elementData)) +
+                ", size=" + size +
+                '}';
     }
 }
