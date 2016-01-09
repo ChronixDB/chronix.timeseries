@@ -13,40 +13,47 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.timeseries;
+package de.qaware.chronix.timeseries.dt;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Created by f.lautenschlager on 06.01.2016.
+ * The long list implementation contains primitive longs and acts like an array list.
+ * Parts are copied from array list.
+ *
+ * @author f.lautenschlager
  */
 public class LongList {
 
     /**
      * Default initial capacity.
      */
-    private static final int DEFAULT_CAPACITY = 10;
+    private static final int DEFAULT_CAPACITY = 100;
 
     /**
      * Shared empty array instance used for empty instances.
      */
-    private static final long[] EMPTY_ELEMENTDATA = {};
+    private static final long[] EMPTY_ELEMENT_DATA = {};
 
     /**
      * Shared empty array instance used for default sized empty instances. We
-     * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
+     * distinguish this from EMPTY_ELEMENT_DATA to know how much to inflate when
      * first element is added.
      */
-    private static final long[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
+    private static final long[] DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA = {};
 
     /**
      * The array buffer into which the elements of the LongList are stored.
      * The capacity of the LongList is the length of this array buffer. Any
-     * empty LongList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
+     * empty LongList with longs == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
      */
-    private long[] elementData; // non-private to simplify nested class access
+    private long[] longs;
 
     /**
      * The size of the LongList (the number of elements it contains).
@@ -54,7 +61,6 @@ public class LongList {
      * @serial
      */
     private int size;
-    private int modCount;
 
     /**
      * Constructs an empty list with the specified initial capacity.
@@ -65,9 +71,9 @@ public class LongList {
      */
     public LongList(int initialCapacity) {
         if (initialCapacity > 0) {
-            this.elementData = new long[initialCapacity];
+            this.longs = new long[initialCapacity];
         } else if (initialCapacity == 0) {
-            this.elementData = EMPTY_ELEMENTDATA;
+            this.longs = EMPTY_ELEMENT_DATA;
         } else {
             throw new IllegalArgumentException("Illegal Capacity: " +
                     initialCapacity);
@@ -78,12 +84,12 @@ public class LongList {
      * Constructs an empty list with an initial capacity of ten.
      */
     public LongList() {
-        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+        this.longs = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
     }
 
 
     private void ensureCapacityInternal(int minCapacity) {
-        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+        if (longs == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA) {
             minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
         }
 
@@ -91,10 +97,8 @@ public class LongList {
     }
 
     private void ensureExplicitCapacity(int minCapacity) {
-        modCount++;
-
         // overflow-conscious code
-        if (minCapacity - elementData.length > 0)
+        if (minCapacity - longs.length > 0)
             grow(minCapacity);
     }
 
@@ -114,22 +118,21 @@ public class LongList {
      */
     private void grow(int minCapacity) {
         // overflow-conscious code
-        int oldCapacity = elementData.length;
+        int oldCapacity = longs.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
         if (newCapacity - MAX_ARRAY_SIZE > 0)
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
-        elementData = Arrays.copyOf(elementData, newCapacity);
+        longs = Arrays.copyOf(longs, newCapacity);
     }
 
     private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) // overflow
+        if (minCapacity < 0) {// overflow
             throw new OutOfMemoryError();
-        return (minCapacity > MAX_ARRAY_SIZE) ?
-                Integer.MAX_VALUE :
-                MAX_ARRAY_SIZE;
+        }
+        return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
     }
 
     /**
@@ -171,9 +174,8 @@ public class LongList {
      * or -1 if there is no such index.
      */
     public int indexOf(long o) {
-
         for (int i = 0; i < size; i++) {
-            if (o == elementData[i])
+            if (o == longs[i])
                 return i;
         }
         return -1;
@@ -187,9 +189,8 @@ public class LongList {
      * or -1 if there is no such index.
      */
     public int lastIndexOf(long o) {
-
         for (int i = size - 1; i >= 0; i--) {
-            if (o == elementData[i])
+            if (o == longs[i])
                 return i;
         }
         return -1;
@@ -203,7 +204,7 @@ public class LongList {
      */
     public LongList copy() {
         LongList v = new LongList(size);
-        v.elementData = Arrays.copyOf(elementData, size);
+        v.longs = Arrays.copyOf(longs, size);
         v.size = size;
         return v;
     }
@@ -223,12 +224,12 @@ public class LongList {
      * proper sequence
      */
     public long[] toArray() {
-        return Arrays.copyOf(elementData, size);
+        return Arrays.copyOf(longs, size);
     }
 
 
     private long elementData(int index) {
-        return elementData[index];
+        return longs[index];
     }
 
     /**
@@ -256,7 +257,7 @@ public class LongList {
         rangeCheck(index);
 
         long oldValue = elementData(index);
-        elementData[index] = element;
+        longs[index] = element;
         return oldValue;
     }
 
@@ -267,8 +268,8 @@ public class LongList {
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
     public boolean add(long e) {
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-        elementData[size++] = e;
+        ensureCapacityInternal(size + 1);
+        longs[size++] = e;
         return true;
     }
 
@@ -284,10 +285,9 @@ public class LongList {
     public void add(int index, long element) {
         rangeCheckForAdd(index);
 
-        ensureCapacityInternal(size + 1);  // Increments modCount!!
-        System.arraycopy(elementData, index, elementData, index + 1,
-                size - index);
-        elementData[index] = element;
+        ensureCapacityInternal(size + 1);
+        System.arraycopy(longs, index, longs, index + 1, size - index);
+        longs[index] = element;
         size++;
     }
 
@@ -303,14 +303,13 @@ public class LongList {
     public long remove(int index) {
         rangeCheck(index);
 
-        modCount++;
         long oldValue = elementData(index);
 
         int numMoved = size - index - 1;
         if (numMoved > 0)
-            System.arraycopy(elementData, index + 1, elementData, index,
-                    numMoved);
-        //elementData[--size] = null; // clear to let GC do its work
+            System.arraycopy(longs, index + 1, longs, index, numMoved);
+        --size;
+        //we do not override the value
 
         return oldValue;
     }
@@ -331,7 +330,7 @@ public class LongList {
     public boolean remove(long o) {
 
         for (int index = 0; index < size; index++) {
-            if (o == elementData[index]) {
+            if (o == longs[index]) {
                 fastRemove(index);
                 return true;
             }
@@ -340,17 +339,13 @@ public class LongList {
         return false;
     }
 
-    /*
-     * Private remove method that skips bounds checking and does not
-     * return the value removed.
-     */
     private void fastRemove(int index) {
-        modCount++;
         int numMoved = size - index - 1;
         if (numMoved > 0)
-            System.arraycopy(elementData, index + 1, elementData, index,
+            System.arraycopy(longs, index + 1, longs, index,
                     numMoved);
-        // elementData[--size] = null; // clear to let GC do its work
+        --size;
+        //we do not override the value.
     }
 
     /**
@@ -358,8 +353,7 @@ public class LongList {
      * be empty after this call returns.
      */
     public void clear() {
-        modCount++;
-        elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+        longs = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
         size = 0;
     }
 
@@ -379,8 +373,8 @@ public class LongList {
     public boolean addAll(LongList c) {
         long[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);  // Increments modCount
-        System.arraycopy(a, 0, elementData, size, numNew);
+        ensureCapacityInternal(size + numNew);
+        System.arraycopy(a, 0, longs, size, numNew);
         size += numNew;
         return numNew != 0;
     }
@@ -405,14 +399,14 @@ public class LongList {
 
         long[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);  // Increments modCount
+        ensureCapacityInternal(size + numNew);
 
         int numMoved = size - index;
         if (numMoved > 0)
-            System.arraycopy(elementData, index, elementData, index + numNew,
+            System.arraycopy(longs, index, longs, index + numNew,
                     numMoved);
 
-        System.arraycopy(a, 0, elementData, index, numNew);
+        System.arraycopy(a, 0, longs, index, numNew);
         size += numNew;
         return numNew != 0;
     }
@@ -432,17 +426,10 @@ public class LongList {
      *                                   toIndex < fromIndex})
      */
     protected void removeRange(int fromIndex, int toIndex) {
-        modCount++;
         int numMoved = size - toIndex;
-        System.arraycopy(elementData, toIndex, elementData, fromIndex,
+        System.arraycopy(longs, toIndex, longs, fromIndex,
                 numMoved);
-
-        // clear to let GC do its work
-        int newSize = size - (toIndex - fromIndex);
-        /*for (int i = newSize; i < size; i++) {
-            elementData[i] = null;
-        }*/
-        size = newSize;
+        size = size - (toIndex - fromIndex);
     }
 
     /**
@@ -471,5 +458,57 @@ public class LongList {
      */
     private String outOfBoundsMsg(int index) {
         return "Index: " + index + ", Size: " + size;
+    }
+
+
+    @Override
+    public String toString() {
+        return new ToStringBuilder(this)
+                .append("longs", longs)
+                .append("size", size)
+                .toString();
+    }
+
+    /**
+     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
+     * list's current size.  An application can use this operation to minimize
+     * the storage of an <tt>ArrayList</tt> instance.
+     */
+    private long[] trimToSize(int size, long[] elements) {
+        long[] copy = Arrays.copyOf(elements, elements.length);
+        if (size < elements.length) {
+            copy = (size == 0) ? EMPTY_ELEMENT_DATA : Arrays.copyOf(elements, size);
+        }
+        return copy;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj.getClass() != getClass()) {
+            return false;
+        }
+        LongList rhs = (LongList) obj;
+
+        long[] thisTrimmed = trimToSize(this.size, this.longs);
+        long[] otherTrimmed = trimToSize(rhs.size, rhs.longs);
+
+        return new EqualsBuilder()
+                .append(thisTrimmed, otherTrimmed)
+                .append(this.size, rhs.size)
+                .isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder()
+                .append(longs)
+                .append(size)
+                .toHashCode();
     }
 }

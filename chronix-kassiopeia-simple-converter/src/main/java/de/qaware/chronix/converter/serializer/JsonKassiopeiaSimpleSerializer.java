@@ -19,8 +19,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import de.qaware.chronix.timeseries.DoubleList;
-import de.qaware.chronix.timeseries.LongList;
+import de.qaware.chronix.timeseries.dt.DoubleList;
+import de.qaware.chronix.timeseries.dt.LongList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

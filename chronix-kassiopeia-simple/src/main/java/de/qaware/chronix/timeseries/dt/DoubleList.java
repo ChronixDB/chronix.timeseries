@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.timeseries;
+package de.qaware.chronix.timeseries.dt;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -22,42 +22,36 @@ import java.util.Arrays;
 import java.util.Collection;
 
 /**
- * Implementation of a list with primitive doubles
+ * Implementation of a list with primitive doubles.
+ * Parts are copied from ArrayList.
  *
  * @author f.lautenschlager
  */
 public class DoubleList {
 
-    /**
-     * Default initial capacity.
-     */
-    private static final int DEFAULT_CAPACITY = 10;
+    private static final int DEFAULT_CAPACITY = 100;
 
     /**
      * Shared empty array instance used for empty instances.
      */
-    private static final double[] EMPTY_ELEMENTDATA = {};
+    private static final double[] EMPTY_ELEMENT_DATA = {};
 
     /**
      * Shared empty array instance used for default sized empty instances. We
-     * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
+     * distinguish this from EMPTY_ELEMENT_DATA to know how much to inflate when
      * first element is added.
      */
-    private static final double[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
+    private static final double[] DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA = {};
 
     /**
-     * The array buffer into which the elements of the LongList are stored.
-     * The capacity of the LongList is the length of this array buffer. Any
-     * empty LongList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
-     * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     * The maximum size of array to allocate.
+     * Some VMs reserve some header words in an array.
+     * Attempts to allocate larger arrays may result in
+     * OutOfMemoryError: Requested array size exceeds VM limit
      */
-    private double[] elementData;
+    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
-    /**
-     * The size of the LongList (the number of elements it contains).
-     *
-     * @serial
-     */
+    private double[] doubles;
     private int size;
 
     /**
@@ -69,9 +63,9 @@ public class DoubleList {
      */
     public DoubleList(int initialCapacity) {
         if (initialCapacity > 0) {
-            this.elementData = new double[initialCapacity];
+            this.doubles = new double[initialCapacity];
         } else if (initialCapacity == 0) {
-            this.elementData = EMPTY_ELEMENTDATA;
+            this.doubles = EMPTY_ELEMENT_DATA;
         } else {
             throw new IllegalArgumentException("Illegal Capacity: " +
                     initialCapacity);
@@ -82,12 +76,12 @@ public class DoubleList {
      * Constructs an empty list with an initial capacity of ten.
      */
     public DoubleList() {
-        this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+        this.doubles = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
     }
 
 
     private void ensureCapacityInternal(int minCapacity) {
-        if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+        if (doubles == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA) {
             minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
         }
 
@@ -96,17 +90,9 @@ public class DoubleList {
 
     private void ensureExplicitCapacity(int minCapacity) {
         // overflow-conscious code
-        if (minCapacity - elementData.length > 0)
+        if (minCapacity - doubles.length > 0)
             grow(minCapacity);
     }
-
-    /**
-     * The maximum size of array to allocate.
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
-     */
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     /**
      * Increases the capacity to ensure that it can hold at least the
@@ -116,22 +102,22 @@ public class DoubleList {
      */
     private void grow(int minCapacity) {
         // overflow-conscious code
-        int oldCapacity = elementData.length;
+        int oldCapacity = doubles.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
         if (newCapacity - MAX_ARRAY_SIZE > 0)
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
-        elementData = Arrays.copyOf(elementData, newCapacity);
+        doubles = Arrays.copyOf(doubles, newCapacity);
     }
 
     private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) // overflow
+        if (minCapacity < 0) {
+            // overflow
             throw new OutOfMemoryError();
-        return (minCapacity > MAX_ARRAY_SIZE) ?
-                Integer.MAX_VALUE :
-                MAX_ARRAY_SIZE;
+        }
+        return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
     }
 
     /**
@@ -175,7 +161,7 @@ public class DoubleList {
     public int indexOf(double o) {
 
         for (int i = 0; i < size; i++) {
-            if (o == elementData[i])
+            if (o == doubles[i])
                 return i;
         }
         return -1;
@@ -191,7 +177,7 @@ public class DoubleList {
     public int lastIndexOf(double o) {
 
         for (int i = size - 1; i >= 0; i--) {
-            if (o == elementData[i])
+            if (o == doubles[i])
                 return i;
         }
         return -1;
@@ -205,7 +191,7 @@ public class DoubleList {
      */
     public DoubleList copy() {
         DoubleList v = new DoubleList(size);
-        v.elementData = Arrays.copyOf(elementData, size);
+        v.doubles = Arrays.copyOf(doubles, size);
         v.size = size;
         return v;
     }
@@ -218,7 +204,7 @@ public class DoubleList {
     private double[] trimToSize(int size, double[] elements) {
         double[] copy = Arrays.copyOf(elements, elements.length);
         if (size < elements.length) {
-            copy = (size == 0) ? EMPTY_ELEMENTDATA : Arrays.copyOf(elements, size);
+            copy = (size == 0) ? EMPTY_ELEMENT_DATA : Arrays.copyOf(elements, size);
         }
         return copy;
     }
@@ -238,12 +224,12 @@ public class DoubleList {
      * proper sequence
      */
     public double[] toArray() {
-        return Arrays.copyOf(elementData, size);
+        return Arrays.copyOf(doubles, size);
     }
 
 
     private double elementData(int index) {
-        return elementData[index];
+        return doubles[index];
     }
 
     /**
@@ -271,7 +257,7 @@ public class DoubleList {
         rangeCheck(index);
 
         double oldValue = elementData(index);
-        elementData[index] = element;
+        doubles[index] = element;
         return oldValue;
     }
 
@@ -283,7 +269,7 @@ public class DoubleList {
      */
     public boolean add(double e) {
         ensureCapacityInternal(size + 1);
-        elementData[size++] = e;
+        doubles[size++] = e;
         return true;
     }
 
@@ -300,9 +286,8 @@ public class DoubleList {
         rangeCheckForAdd(index);
 
         ensureCapacityInternal(size + 1);
-        System.arraycopy(elementData, index, elementData, index + 1,
-                size - index);
-        elementData[index] = element;
+        System.arraycopy(doubles, index, doubles, index + 1, size - index);
+        doubles[index] = element;
         size++;
     }
 
@@ -321,10 +306,10 @@ public class DoubleList {
         double oldValue = elementData(index);
 
         int numMoved = size - index - 1;
-        if (numMoved > 0)
-            System.arraycopy(elementData, index + 1, elementData, index,
-                    numMoved);
-        elementData[--size] = 0;
+        if (numMoved > 0) {
+            System.arraycopy(doubles, index + 1, doubles, index, numMoved);
+        }
+        --size;
 
         return oldValue;
     }
@@ -345,7 +330,7 @@ public class DoubleList {
     public boolean remove(double o) {
 
         for (int index = 0; index < size; index++) {
-            if (o == elementData[index]) {
+            if (o == doubles[index]) {
                 fastRemove(index);
                 return true;
             }
@@ -354,16 +339,12 @@ public class DoubleList {
         return false;
     }
 
-    /*
-     * Private remove method that skips bounds checking and does not
-     * return the value removed.
-     */
     private void fastRemove(int index) {
         int numMoved = size - index - 1;
-        if (numMoved > 0)
-            System.arraycopy(elementData, index + 1, elementData, index,
-                    numMoved);
-        elementData[--size] = 0;
+        if (numMoved > 0) {
+            System.arraycopy(doubles, index + 1, doubles, index, numMoved);
+        }
+        --size;
     }
 
     /**
@@ -371,7 +352,7 @@ public class DoubleList {
      * be empty after this call returns.
      */
     public void clear() {
-        elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
+        doubles = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
         size = 0;
     }
 
@@ -392,7 +373,7 @@ public class DoubleList {
         double[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);
-        System.arraycopy(a, 0, elementData, size, numNew);
+        System.arraycopy(a, 0, doubles, size, numNew);
         size += numNew;
         return numNew != 0;
     }
@@ -420,11 +401,11 @@ public class DoubleList {
         ensureCapacityInternal(size + numNew);
 
         int numMoved = size - index;
-        if (numMoved > 0)
-            System.arraycopy(elementData, index, elementData, index + numNew,
-                    numMoved);
+        if (numMoved > 0) {
+            System.arraycopy(doubles, index, doubles, index + numNew, numMoved);
+        }
 
-        System.arraycopy(a, 0, elementData, index, numNew);
+        System.arraycopy(a, 0, doubles, index, numNew);
         size += numNew;
         return numNew != 0;
     }
@@ -445,14 +426,10 @@ public class DoubleList {
      */
     protected void removeRange(int fromIndex, int toIndex) {
         int numMoved = size - toIndex;
-        System.arraycopy(elementData, toIndex, elementData, fromIndex,
+        System.arraycopy(doubles, toIndex, doubles, fromIndex,
                 numMoved);
 
-        int newSize = size - (toIndex - fromIndex);
-        for (int i = newSize; i < size; i++) {
-            elementData[i] = 0;
-        }
-        size = newSize;
+        size = size - (toIndex - fromIndex);
     }
 
     /**
@@ -498,8 +475,8 @@ public class DoubleList {
         }
         DoubleList rhs = (DoubleList) obj;
 
-        double[] thisTrimmed = trimToSize(this.size, this.elementData);
-        double[] otherTrimmed = trimToSize(rhs.size, rhs.elementData);
+        double[] thisTrimmed = trimToSize(this.size, this.doubles);
+        double[] otherTrimmed = trimToSize(rhs.size, rhs.doubles);
 
         return new EqualsBuilder()
                 .append(thisTrimmed, otherTrimmed)
@@ -510,7 +487,7 @@ public class DoubleList {
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(elementData)
+                .append(doubles)
                 .append(size)
                 .toHashCode();
     }
@@ -518,7 +495,7 @@ public class DoubleList {
     @Override
     public String toString() {
         return "DoubleList{" +
-                "elementData=" + Arrays.toString(trimToSize(size, elementData)) +
+                "doubles=" + Arrays.toString(trimToSize(size, doubles)) +
                 ", size=" + size +
                 '}';
     }

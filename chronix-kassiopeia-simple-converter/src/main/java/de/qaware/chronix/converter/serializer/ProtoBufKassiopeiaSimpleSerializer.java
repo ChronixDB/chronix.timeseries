@@ -17,7 +17,7 @@ package de.qaware.chronix.converter.serializer;
 
 
 import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
-import de.qaware.chronix.timeseries.Pair;
+import de.qaware.chronix.timeseries.dt.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

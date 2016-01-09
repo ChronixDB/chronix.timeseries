@@ -15,7 +15,7 @@
  */
 package de.qaware.chronix.converter.serializer
 
-import de.qaware.chronix.timeseries.Pair
+import de.qaware.chronix.timeseries.dt.Pair
 import spock.lang.Specification
 
 import java.time.Instant

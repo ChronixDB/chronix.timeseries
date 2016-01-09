@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.timeseries;
+package de.qaware.chronix.timeseries.dt;
 
 /**
  * A pair of time stamp an value

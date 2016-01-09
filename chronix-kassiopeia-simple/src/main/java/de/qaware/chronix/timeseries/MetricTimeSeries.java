@@ -17,6 +17,9 @@
 package de.qaware.chronix.timeseries;
 
 
+import de.qaware.chronix.timeseries.dt.DoubleList;
+import de.qaware.chronix.timeseries.dt.LongList;
+import de.qaware.chronix.timeseries.dt.Pair;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;

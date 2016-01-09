@@ -20,10 +20,10 @@ import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
-import de.qaware.chronix.timeseries.DoubleList;
-import de.qaware.chronix.timeseries.LongList;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
-import de.qaware.chronix.timeseries.Pair;
+import de.qaware.chronix.timeseries.dt.DoubleList;
+import de.qaware.chronix.timeseries.dt.LongList;
+import de.qaware.chronix.timeseries.dt.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
