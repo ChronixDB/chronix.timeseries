@@ -86,10 +86,11 @@ subprojects {
 
         //Logging
         compile 'org.slf4j:slf4j-api:1.7.12'
-        compile 'org.slf4j:jcl-over-slf4j:1.7.12'
-        compile 'org.apache.logging.log4j:log4j-api:2.4'
-        compile 'org.apache.logging.log4j:log4j-core:2.4'
-        compile 'org.apache.logging.log4j:log4j-slf4j-impl:2.4'
+
+        //Logging framework for tests
+        testCompile 'org.apache.logging.log4j:log4j-api:2.4'
+        testCompile 'org.apache.logging.log4j:log4j-core:2.4'
+        testCompile 'org.apache.logging.log4j:log4j-slf4j-impl:2.4'
 
         //Testing
         testCompile 'junit:junit:4.12'
