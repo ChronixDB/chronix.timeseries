@@ -19,7 +19,6 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * Implementation of a list with primitive doubles.
@@ -80,6 +79,7 @@ public class DoubleList {
     }
 
 
+    @SuppressWarnings("all")
     private void ensureCapacityInternal(int minCapacity) {
         if (doubles == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA) {
             minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
@@ -265,7 +265,7 @@ public class DoubleList {
      * Appends the specified element to the end of this list.
      *
      * @param e element to be appended to this list
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     * @return <tt>true</tt> (as specified by Collection#add)
      */
     public boolean add(double e) {
         ensureCapacityInternal(size + 1);

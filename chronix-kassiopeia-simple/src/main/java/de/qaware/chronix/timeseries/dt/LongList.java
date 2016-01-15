@@ -20,7 +20,6 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Arrays;
-import java.util.Collection;
 
 /**
  * The long list implementation contains primitive longs and acts like an array list.
@@ -87,7 +86,7 @@ public class LongList {
         this.longs = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
     }
 
-
+    @SuppressWarnings("all")
     private void ensureCapacityInternal(int minCapacity) {
         if (longs == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA) {
             minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
@@ -265,7 +264,7 @@ public class LongList {
      * Appends the specified element to the end of this list.
      *
      * @param e element to be appended to this list
-     * @return <tt>true</tt> (as specified by {@link Collection#add})
+     * @return <tt>true</tt> (as specified by Collection#add)
      */
     public boolean add(long e) {
         ensureCapacityInternal(size + 1);
