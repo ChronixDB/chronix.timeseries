@@ -13,6 +13,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
+ //Sonar plugin at the root
+apply plugin: "sonar-runner"
 
 buildscript {
     repositories {
@@ -67,6 +69,11 @@ subprojects {
     apply plugin: 'com.github.hierynomus.license'
 
 
+	sonarRunner {
+        sonarProperties {
+            property "sonar.sourceEncoding", "UTF-8"
+        }
+    }
 
     license {
         includes(["**/*.java", "**/*.groovy"])
@@ -169,6 +176,27 @@ tasks.coveralls {
 
     dependsOn jacocoRootReport
     onlyIf { isCI }
+}
+
+sonarRunner {
+    def sonarUser = project.hasProperty('sonarUser') ? project.sonarUser : 'unknown'
+    def sonarPw = project.hasProperty('sonarPw') ? project.sonarPw : 'unknown'
+
+    def jdbcUser = project.hasProperty('jdbcUser') ? project.jdbcUser : 'unknown'
+    def jdbcPw = project.hasProperty('jdbcPw') ? project.jdbcPw : 'unknown'
+
+    sonarProperties {
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.host.url", "https://www.qaware.de/sonar"
+        property "sonar.login", "$sonarUser"
+        property "sonar.password", "$sonarPw"
+        property "sonar.jdbc.url", "jdbc:mysql://nio-prj-2.intern.qaware.de:3306/sonardb?useUnicode=true&characterEncoding=utf8"
+        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+        property "sonar.jdbc.username", "$jdbcUser"
+        property "sonar.jdbc.password", "$jdbcPw"
+        property "sonar.projectName", "ChronixDB"
+        property "sonar.projectKey", "de.qaware.chronix:chronix-kassiopeia"
+    }
 }
 
 task wrapper(type: Wrapper) {
