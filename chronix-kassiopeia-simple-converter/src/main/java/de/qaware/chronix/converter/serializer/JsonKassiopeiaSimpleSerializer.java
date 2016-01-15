@@ -46,9 +46,7 @@ public class JsonKassiopeiaSimpleSerializer {
      * Constructs a new JsonKassiopeiaSimpleSerializer.
      */
     public JsonKassiopeiaSimpleSerializer() {
-
         GsonBuilder gsonBuilder = new GsonBuilder();
-
         gson = gsonBuilder.create();
     }
 

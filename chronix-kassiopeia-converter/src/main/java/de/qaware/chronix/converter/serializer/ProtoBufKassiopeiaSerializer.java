@@ -141,7 +141,7 @@ public final class ProtoBufKassiopeiaSerializer {
 
     private static boolean almostEquals(long previousOffset, long offset) {
         double diff = Math.abs(offset - previousOffset);
-        return (diff < 10);
+        return (diff < 1);
     }
 
 
