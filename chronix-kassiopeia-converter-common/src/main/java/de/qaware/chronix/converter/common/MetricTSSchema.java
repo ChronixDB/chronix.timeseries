@@ -30,6 +30,11 @@ public final class MetricTSSchema {
      */
     public static final String METRIC = "metric";
 
+
+    private MetricTSSchema(){
+        //Private constructor
+    }
+
     /**
      * Checks if the given field is a user defined.
      * This means that the field name is not one of the following
