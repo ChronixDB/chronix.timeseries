@@ -63,6 +63,7 @@ public final class ProtoBufKassiopeiaSerializer {
      * @param from            - including points from
      * @param to              - including points to
      * @param timeSeriesStart - the start of the time series  @return an iterator to the points
+     * @return an iterator with pairs of long (timestamp) and double (value)
      */
     public static Iterator<Pair<Long, Double>> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd, long from, long to) {
         if (from == -1 || to == -1) {
@@ -139,9 +140,8 @@ public final class ProtoBufKassiopeiaSerializer {
     }
 
     private static boolean almostEquals(long previousOffset, long offset) {
-        //TODO: Make the diff configurable
         double diff = Math.abs(offset - previousOffset);
-        return (diff < 1);
+        return (diff < 10);
     }
 
 
