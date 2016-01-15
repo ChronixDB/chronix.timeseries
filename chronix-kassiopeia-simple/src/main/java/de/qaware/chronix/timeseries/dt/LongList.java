@@ -97,8 +97,9 @@ public class LongList {
 
     private void ensureExplicitCapacity(int minCapacity) {
         // overflow-conscious code
-        if (minCapacity - longs.length > 0)
+        if (minCapacity - longs.length > 0) {
             grow(minCapacity);
+        }
     }
 
     /**
@@ -119,10 +120,12 @@ public class LongList {
         // overflow-conscious code
         int oldCapacity = longs.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
+        if (newCapacity - minCapacity < 0) {
             newCapacity = minCapacity;
-        if (newCapacity - MAX_ARRAY_SIZE > 0)
+        }
+        if (newCapacity - MAX_ARRAY_SIZE > 0) {
             newCapacity = hugeCapacity(minCapacity);
+        }
         // minCapacity is usually close to size, so this is a win:
         longs = Arrays.copyOf(longs, newCapacity);
     }
@@ -174,8 +177,9 @@ public class LongList {
      */
     public int indexOf(long o) {
         for (int i = 0; i < size; i++) {
-            if (o == longs[i])
+            if (o == longs[i]) {
                 return i;
+            }
         }
         return -1;
     }
@@ -189,8 +193,9 @@ public class LongList {
      */
     public int lastIndexOf(long o) {
         for (int i = size - 1; i >= 0; i--) {
-            if (o == longs[i])
+            if (o == longs[i]) {
                 return i;
+            }
         }
         return -1;
     }
@@ -305,8 +310,9 @@ public class LongList {
         long oldValue = elementData(index);
 
         int numMoved = size - index - 1;
-        if (numMoved > 0)
+        if (numMoved > 0) {
             System.arraycopy(longs, index + 1, longs, index, numMoved);
+        }
         --size;
         //we do not override the value
 
@@ -340,9 +346,9 @@ public class LongList {
 
     private void fastRemove(int index) {
         int numMoved = size - index - 1;
-        if (numMoved > 0)
-            System.arraycopy(longs, index + 1, longs, index,
-                    numMoved);
+        if (numMoved > 0) {
+            System.arraycopy(longs, index + 1, longs, index, numMoved);
+        }
         --size;
         //we do not override the value.
     }
@@ -401,9 +407,9 @@ public class LongList {
         ensureCapacityInternal(size + numNew);
 
         int numMoved = size - index;
-        if (numMoved > 0)
-            System.arraycopy(longs, index, longs, index + numNew,
-                    numMoved);
+        if (numMoved > 0) {
+            System.arraycopy(longs, index, longs, index + numNew, numMoved);
+        }
 
         System.arraycopy(a, 0, longs, index, numNew);
         size += numNew;
@@ -426,8 +432,7 @@ public class LongList {
      */
     protected void removeRange(int fromIndex, int toIndex) {
         int numMoved = size - toIndex;
-        System.arraycopy(longs, toIndex, longs, fromIndex,
-                numMoved);
+        System.arraycopy(longs, toIndex, longs, fromIndex, numMoved);
         size = size - (toIndex - fromIndex);
     }
 
@@ -438,16 +443,18 @@ public class LongList {
      * which throws an ArrayIndexOutOfBoundsException if index is negative.
      */
     private void rangeCheck(int index) {
-        if (index >= size)
+        if (index >= size) {
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+        }
     }
 
     /**
      * A version of rangeCheck used by add and addAll.
      */
     private void rangeCheckForAdd(int index) {
-        if (index > size || index < 0)
+        if (index > size || index < 0) {
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+        }
     }
 
     /**
