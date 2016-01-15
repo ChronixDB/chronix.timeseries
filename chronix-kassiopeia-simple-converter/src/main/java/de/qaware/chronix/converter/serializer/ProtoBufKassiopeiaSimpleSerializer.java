@@ -64,6 +64,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param from            - including points from
      * @param to              - including points to
      * @param timeSeriesStart - the start of the time series  @return an iterator to the points
+     * @return an iterator of pairs (timestamp, value)
      */
     public static Iterator<Pair> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd, long from, long to) {
         if (from == -1 || to == -1) {
@@ -243,7 +244,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             if (offset != 0) {
                 lastOffset = offset;
             }
-            return new Pair(current,timeSeriesStart + lastOffset, m.getV());
+            return new Pair(current, timeSeriesStart + lastOffset, m.getV());
         }
 
         @Override

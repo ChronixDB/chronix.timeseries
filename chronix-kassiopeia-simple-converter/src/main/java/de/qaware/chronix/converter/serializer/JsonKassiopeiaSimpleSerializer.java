@@ -81,8 +81,9 @@ public class JsonKassiopeiaSimpleSerializer {
      * Deserialize the given json to a collection of metric data points
      *
      * @param json       - the json representation of collection holding metric data points
-     * @param queryStart
+     * @param queryStart the start of the query
      * @param queryEnd   @return a collection holding the metric data points
+     * @return an object array. [0] are the timestamps, [1] are the values
      */
     public Object[] fromJson(byte[] json, final long queryStart, final long queryEnd) {
         if (queryStart <= 0 && queryEnd <= 0) {
