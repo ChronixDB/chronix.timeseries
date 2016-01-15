@@ -13,7 +13,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
- //Sonar plugin at the root
+ 
+//Sonar plugin at the root
 apply plugin: "sonar-runner"
 
 buildscript {
@@ -23,6 +24,7 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
+		
     }
     dependencies {
         classpath 'com.gradle.publish:plugin-publish-plugin:0.9.1'
@@ -69,12 +71,6 @@ subprojects {
     apply plugin: 'com.github.hierynomus.license'
 
 
-	sonarRunner {
-        sonarProperties {
-            property "sonar.sourceEncoding", "UTF-8"
-        }
-    }
-
     license {
         includes(["**/*.java", "**/*.groovy"])
         mapping {
@@ -83,6 +79,12 @@ subprojects {
         }
     }
 
+
+	sonarRunner {
+        sonarProperties {
+            property "sonar.sourceEncoding", "UTF-8"
+        }
+    }
 
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
@@ -178,6 +180,9 @@ tasks.coveralls {
     onlyIf { isCI }
 }
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.2'
+}
 sonarRunner {
     def sonarUser = project.hasProperty('sonarUser') ? project.sonarUser : 'unknown'
     def sonarPw = project.hasProperty('sonarPw') ? project.sonarPw : 'unknown'
@@ -199,6 +204,3 @@ sonarRunner {
     }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.2'
-}
