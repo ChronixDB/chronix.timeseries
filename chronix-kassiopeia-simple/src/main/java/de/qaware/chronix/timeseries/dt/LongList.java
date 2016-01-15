@@ -237,7 +237,7 @@ public class LongList {
      *
      * @param index index of the element to return
      * @return the element at the specified position in this list
-     * @throws IndexOutOfBoundsException {@inheritDoc}
+     * @throws IndexOutOfBoundsException
      */
     public long get(int index) {
         rangeCheck(index);
@@ -251,7 +251,7 @@ public class LongList {
      * @param index   index of the element to replace
      * @param element element to be stored at the specified position
      * @return the element previously at the specified position
-     * @throws IndexOutOfBoundsException {@inheritDoc}
+     * @throws IndexOutOfBoundsException
      */
     public long set(int index, long element) {
         rangeCheck(index);
@@ -280,7 +280,7 @@ public class LongList {
      *
      * @param index   index at which the specified element is to be inserted
      * @param element element to be inserted
-     * @throws IndexOutOfBoundsException {@inheritDoc}
+     * @throws IndexOutOfBoundsException
      */
     public void add(int index, long element) {
         rangeCheckForAdd(index);
@@ -298,7 +298,7 @@ public class LongList {
      *
      * @param index the index of the element to be removed
      * @return the element that was removed from the list
-     * @throws IndexOutOfBoundsException {@inheritDoc}
+     * @throws IndexOutOfBoundsException
      */
     public long remove(int index) {
         rangeCheck(index);
@@ -391,7 +391,7 @@ public class LongList {
      *              specified collection
      * @param c     collection containing elements to be added to this list
      * @return <tt>true</tt> if this list changed as a result of the call
-     * @throws IndexOutOfBoundsException {@inheritDoc}
+     * @throws IndexOutOfBoundsException
      * @throws NullPointerException      if the specified collection is null
      */
     public boolean addAll(int index, LongList c) {

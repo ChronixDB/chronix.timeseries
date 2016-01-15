@@ -24,7 +24,7 @@ import de.qaware.chronix.Schema;
  *
  * @author f.lautenschlager
  */
-public class MetricTSSchema {
+public final class MetricTSSchema {
     /**
      * The Metric field
      */

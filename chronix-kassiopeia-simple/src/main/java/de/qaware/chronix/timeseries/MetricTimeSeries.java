@@ -38,7 +38,7 @@ import java.util.stream.Stream;
  *
  * @author f.lautenschlager
  */
-public class MetricTimeSeries {
+public final class MetricTimeSeries {
 
     private String metric;
     private LongList timestamps;

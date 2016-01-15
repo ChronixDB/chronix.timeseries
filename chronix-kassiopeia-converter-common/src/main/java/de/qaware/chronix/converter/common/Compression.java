@@ -28,7 +28,7 @@ import java.util.zip.GZIPOutputStream;
  *
  * @author f.lautenschlager
  */
-public class Compression {
+public final class Compression {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Compression.class);
 
