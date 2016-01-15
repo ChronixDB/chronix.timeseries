@@ -200,7 +200,7 @@ sonarRunner {
         property "sonar.jdbc.username", "$jdbcUser"
         property "sonar.jdbc.password", "$jdbcPw"
         property "sonar.projectName", "ChronixDB"
-        property "sonar.projectKey", "de.qaware.chronix:chronix-api"
+        property "sonar.projectKey", "de.qaware.chronix:chronix-kassiopeia"
         property "sonar.exclusions","src/main/generated/de/qaware/chronix/converter/serializer/gen/*"
     }
 }
