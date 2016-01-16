@@ -66,8 +66,7 @@ public class DoubleList {
         } else if (initialCapacity == 0) {
             this.doubles = EMPTY_ELEMENT_DATA;
         } else {
-            throw new IllegalArgumentException("Illegal Capacity: " +
-                    initialCapacity);
+            throw new IllegalArgumentException("Illegal Capacity: " + initialCapacity);
         }
     }
 
@@ -90,8 +89,9 @@ public class DoubleList {
 
     private void ensureExplicitCapacity(int minCapacity) {
         // overflow-conscious code
-        if (minCapacity - doubles.length > 0)
+        if (minCapacity - doubles.length > 0) {
             grow(minCapacity);
+        }
     }
 
     /**
@@ -101,14 +101,14 @@ public class DoubleList {
      * @param minCapacity the desired minimum capacity
      */
     private void grow(int minCapacity) {
-        // overflow-conscious code
         int oldCapacity = doubles.length;
         int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0)
+        if (newCapacity - minCapacity < 0) {
             newCapacity = minCapacity;
-        if (newCapacity - MAX_ARRAY_SIZE > 0)
+        }
+        if (newCapacity - MAX_ARRAY_SIZE > 0) {
             newCapacity = hugeCapacity(minCapacity);
-        // minCapacity is usually close to size, so this is a win:
+        }
         doubles = Arrays.copyOf(doubles, newCapacity);
     }
 
@@ -157,12 +157,16 @@ public class DoubleList {
      * More formally, returns the lowest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+     *
+     * @param o the double value
+     * @return the index of the given double element
      */
     public int indexOf(double o) {
 
         for (int i = 0; i < size; i++) {
-            if (o == doubles[i])
+            if (o == doubles[i]) {
                 return i;
+            }
         }
         return -1;
     }
@@ -173,12 +177,16 @@ public class DoubleList {
      * More formally, returns the highest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+     *
+     * @param o the double value
+     * @return the last index of the given double element
      */
     public int lastIndexOf(double o) {
 
         for (int i = size - 1; i >= 0; i--) {
-            if (o == doubles[i])
+            if (o == doubles[i]) {
                 return i;
+            }
         }
         return -1;
     }
@@ -426,8 +434,7 @@ public class DoubleList {
      */
     protected void removeRange(int fromIndex, int toIndex) {
         int numMoved = size - toIndex;
-        System.arraycopy(doubles, toIndex, doubles, fromIndex,
-                numMoved);
+        System.arraycopy(doubles, toIndex, doubles, fromIndex, numMoved);
 
         size = size - (toIndex - fromIndex);
     }
