@@ -21,6 +21,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Arrays;
 
+import static de.qaware.chronix.timeseries.dt.ListUtil.*;
+
 /**
  * The long list implementation contains primitive longs and acts like an array list.
  * Parts are copied from array list.
@@ -28,11 +30,6 @@ import java.util.Arrays;
  * @author f.lautenschlager
  */
 public class LongList {
-
-    /**
-     * Default initial capacity.
-     */
-    private static final int DEFAULT_CAPACITY = 100;
 
     /**
      * Shared empty array instance used for empty instances.
@@ -46,19 +43,7 @@ public class LongList {
      */
     private static final long[] DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA = {};
 
-    /**
-     * The array buffer into which the elements of the LongList are stored.
-     * The capacity of the LongList is the length of this array buffer. Any
-     * empty LongList with longs == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA
-     * will be expanded to DEFAULT_CAPACITY when the first element is added.
-     */
     private long[] longs;
-
-    /**
-     * The size of the LongList (the number of elements it contains).
-     *
-     * @serial
-     */
     private int size;
 
     /**
@@ -84,57 +69,6 @@ public class LongList {
      */
     public LongList() {
         this.longs = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
-    }
-
-    @SuppressWarnings("all")
-    private void ensureCapacityInternal(int minCapacity) {
-        if (longs == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA) {
-            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-        }
-
-        ensureExplicitCapacity(minCapacity);
-    }
-
-    private void ensureExplicitCapacity(int minCapacity) {
-        // overflow-conscious code
-        if (minCapacity - longs.length > 0) {
-            grow(minCapacity);
-        }
-    }
-
-    /**
-     * The maximum size of array to allocate.
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
-     */
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
-
-    /**
-     * Increases the capacity to ensure that it can hold at least the
-     * number of elements specified by the minimum capacity argument.
-     *
-     * @param minCapacity the desired minimum capacity
-     */
-    private void grow(int minCapacity) {
-        // overflow-conscious code
-        int oldCapacity = longs.length;
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0) {
-            newCapacity = minCapacity;
-        }
-        if (newCapacity - MAX_ARRAY_SIZE > 0) {
-            newCapacity = hugeCapacity(minCapacity);
-        }
-        // minCapacity is usually close to size, so this is a win:
-        longs = Arrays.copyOf(longs, newCapacity);
-    }
-
-    private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) {// overflow
-            throw new OutOfMemoryError();
-        }
-        return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
     }
 
     /**
@@ -237,11 +171,6 @@ public class LongList {
         return Arrays.copyOf(longs, size);
     }
 
-
-    private long elementData(int index) {
-        return longs[index];
-    }
-
     /**
      * Returns the element at the specified position in this list.
      *
@@ -250,8 +179,8 @@ public class LongList {
      * @throws IndexOutOfBoundsException
      */
     public long get(int index) {
-        rangeCheck(index);
-        return elementData(index);
+        rangeCheck(index, size);
+        return longs[index];
     }
 
     /**
@@ -264,9 +193,9 @@ public class LongList {
      * @throws IndexOutOfBoundsException
      */
     public long set(int index, long element) {
-        rangeCheck(index);
+        rangeCheck(index, size);
 
-        long oldValue = elementData(index);
+        long oldValue = longs[index];
         longs[index] = element;
         return oldValue;
     }
@@ -278,9 +207,17 @@ public class LongList {
      * @return <tt>true</tt> (as specified by Collection#add)
      */
     public boolean add(long e) {
-        ensureCapacityInternal(size + 1);
+        int newCapacity = calculateNewCapacity(longs.length, size + 1);
+        growIfNeeded(newCapacity);
+
         longs[size++] = e;
         return true;
+    }
+
+    private void growIfNeeded(int newCapacity) {
+        if (newCapacity != -1) {
+            longs = Arrays.copyOf(longs, newCapacity);
+        }
     }
 
     /**
@@ -293,9 +230,11 @@ public class LongList {
      * @throws IndexOutOfBoundsException
      */
     public void add(int index, long element) {
-        rangeCheckForAdd(index);
+        rangeCheckForAdd(index, size);
 
-        ensureCapacityInternal(size + 1);
+        int newCapacity = calculateNewCapacity(longs.length, size + 1);
+        growIfNeeded(newCapacity);
+
         System.arraycopy(longs, index, longs, index + 1, size - index);
         longs[index] = element;
         size++;
@@ -311,9 +250,9 @@ public class LongList {
      * @throws IndexOutOfBoundsException
      */
     public long remove(int index) {
-        rangeCheck(index);
+        rangeCheck(index, size);
 
-        long oldValue = elementData(index);
+        long oldValue = longs[index];
 
         int numMoved = size - index - 1;
         if (numMoved > 0) {
@@ -384,7 +323,9 @@ public class LongList {
     public boolean addAll(LongList c) {
         long[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);
+        int newCapacity = calculateNewCapacity(longs.length, size + numNew);
+        growIfNeeded(newCapacity);
+
         System.arraycopy(a, 0, longs, size, numNew);
         size += numNew;
         return numNew != 0;
@@ -406,11 +347,13 @@ public class LongList {
      * @throws NullPointerException      if the specified collection is null
      */
     public boolean addAll(int index, LongList c) {
-        rangeCheckForAdd(index);
+        rangeCheckForAdd(index, size);
 
         long[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);
+
+        int newCapacity = calculateNewCapacity(longs.length, size + numNew);
+        growIfNeeded(newCapacity);
 
         int numMoved = size - index;
         if (numMoved > 0) {
@@ -441,37 +384,6 @@ public class LongList {
         System.arraycopy(longs, toIndex, longs, fromIndex, numMoved);
         size = size - (toIndex - fromIndex);
     }
-
-    /**
-     * Checks if the given index is in range.  If not, throws an appropriate
-     * runtime exception.  This method does *not* check if the index is
-     * negative: It is always used immediately prior to an array access,
-     * which throws an ArrayIndexOutOfBoundsException if index is negative.
-     */
-    private void rangeCheck(int index) {
-        if (index >= size) {
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-        }
-    }
-
-    /**
-     * A version of rangeCheck used by add and addAll.
-     */
-    private void rangeCheckForAdd(int index) {
-        if (index > size || index < 0) {
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-        }
-    }
-
-    /**
-     * Constructs an IndexOutOfBoundsException detail message.
-     * Of the many possible refactorings of the error handling code,
-     * this "outlining" performs best with both server and client VMs.
-     */
-    private String outOfBoundsMsg(int index) {
-        return "Index: " + index + ", Size: " + size;
-    }
-
 
     @Override
     public String toString() {

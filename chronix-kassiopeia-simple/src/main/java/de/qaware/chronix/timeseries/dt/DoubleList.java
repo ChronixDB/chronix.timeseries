@@ -20,15 +20,14 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.Arrays;
 
+import static de.qaware.chronix.timeseries.dt.ListUtil.*;
+
 /**
  * Implementation of a list with primitive doubles.
- * Parts are copied from ArrayList.
  *
  * @author f.lautenschlager
  */
 public class DoubleList {
-
-    private static final int DEFAULT_CAPACITY = 100;
 
     /**
      * Shared empty array instance used for empty instances.
@@ -42,13 +41,6 @@ public class DoubleList {
      */
     private static final double[] DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA = {};
 
-    /**
-     * The maximum size of array to allocate.
-     * Some VMs reserve some header words in an array.
-     * Attempts to allocate larger arrays may result in
-     * OutOfMemoryError: Requested array size exceeds VM limit
-     */
-    private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
     private double[] doubles;
     private int size;
@@ -77,48 +69,6 @@ public class DoubleList {
         this.doubles = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
     }
 
-
-    @SuppressWarnings("all")
-    private void ensureCapacityInternal(int minCapacity) {
-        if (doubles == DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA) {
-            minCapacity = Math.max(DEFAULT_CAPACITY, minCapacity);
-        }
-
-        ensureExplicitCapacity(minCapacity);
-    }
-
-    private void ensureExplicitCapacity(int minCapacity) {
-        // overflow-conscious code
-        if (minCapacity - doubles.length > 0) {
-            grow(minCapacity);
-        }
-    }
-
-    /**
-     * Increases the capacity to ensure that it can hold at least the
-     * number of elements specified by the minimum capacity argument.
-     *
-     * @param minCapacity the desired minimum capacity
-     */
-    private void grow(int minCapacity) {
-        int oldCapacity = doubles.length;
-        int newCapacity = oldCapacity + (oldCapacity >> 1);
-        if (newCapacity - minCapacity < 0) {
-            newCapacity = minCapacity;
-        }
-        if (newCapacity - MAX_ARRAY_SIZE > 0) {
-            newCapacity = hugeCapacity(minCapacity);
-        }
-        doubles = Arrays.copyOf(doubles, newCapacity);
-    }
-
-    private static int hugeCapacity(int minCapacity) {
-        if (minCapacity < 0) {
-            // overflow
-            throw new OutOfMemoryError();
-        }
-        return (minCapacity > MAX_ARRAY_SIZE) ? Integer.MAX_VALUE : MAX_ARRAY_SIZE;
-    }
 
     /**
      * Returns the number of elements in this list.
@@ -236,8 +186,10 @@ public class DoubleList {
     }
 
 
-    private double elementData(int index) {
-        return doubles[index];
+    private void growIfNeeded(int newCapacity) {
+        if (newCapacity != -1) {
+            doubles = Arrays.copyOf(doubles, newCapacity);
+        }
     }
 
     /**
@@ -248,8 +200,8 @@ public class DoubleList {
      * @throws IndexOutOfBoundsException
      */
     public double get(int index) {
-        rangeCheck(index);
-        return elementData(index);
+        rangeCheck(index, size);
+        return doubles[index];
     }
 
     /**
@@ -262,9 +214,9 @@ public class DoubleList {
      * @throws IndexOutOfBoundsException
      */
     public double set(int index, double element) {
-        rangeCheck(index);
+        rangeCheck(index, size);
 
-        double oldValue = elementData(index);
+        double oldValue = doubles[index];
         doubles[index] = element;
         return oldValue;
     }
@@ -276,7 +228,9 @@ public class DoubleList {
      * @return <tt>true</tt> (as specified by Collection#add)
      */
     public boolean add(double e) {
-        ensureCapacityInternal(size + 1);
+        int newCapacity = calculateNewCapacity(doubles.length, size + 1);
+        growIfNeeded(newCapacity);
+
         doubles[size++] = e;
         return true;
     }
@@ -291,9 +245,11 @@ public class DoubleList {
      * @throws IndexOutOfBoundsException
      */
     public void add(int index, double element) {
-        rangeCheckForAdd(index);
+        rangeCheckForAdd(index, size);
 
-        ensureCapacityInternal(size + 1);
+        int newCapacity = calculateNewCapacity(doubles.length, size + 1);
+        growIfNeeded(newCapacity);
+
         System.arraycopy(doubles, index, doubles, index + 1, size - index);
         doubles[index] = element;
         size++;
@@ -309,9 +265,9 @@ public class DoubleList {
      * @throws IndexOutOfBoundsException
      */
     public double remove(int index) {
-        rangeCheck(index);
+        rangeCheck(index, size);
 
-        double oldValue = elementData(index);
+        double oldValue = doubles[index];
 
         int numMoved = size - index - 1;
         if (numMoved > 0) {
@@ -380,7 +336,10 @@ public class DoubleList {
     public boolean addAll(DoubleList c) {
         double[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);
+
+        int newCapacity = calculateNewCapacity(doubles.length, size + numNew);
+        growIfNeeded(newCapacity);
+
         System.arraycopy(a, 0, doubles, size, numNew);
         size += numNew;
         return numNew != 0;
@@ -402,11 +361,13 @@ public class DoubleList {
      * @throws NullPointerException      if the specified collection is null
      */
     public boolean addAll(int index, DoubleList c) {
-        rangeCheckForAdd(index);
+        rangeCheckForAdd(index, size);
 
         double[] a = c.toArray();
         int numNew = a.length;
-        ensureCapacityInternal(size + numNew);
+
+        int newCapacity = calculateNewCapacity(doubles.length, size + numNew);
+        growIfNeeded(newCapacity);
 
         int numMoved = size - index;
         if (numMoved > 0) {
@@ -437,36 +398,6 @@ public class DoubleList {
         System.arraycopy(doubles, toIndex, doubles, fromIndex, numMoved);
 
         size = size - (toIndex - fromIndex);
-    }
-
-    /**
-     * Checks if the given index is in range.  If not, throws an appropriate
-     * runtime exception.  This method does *not* check if the index is
-     * negative: It is always used immediately prior to an array access,
-     * which throws an ArrayIndexOutOfBoundsException if index is negative.
-     */
-    private void rangeCheck(int index) {
-        if (index >= size) {
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-        }
-    }
-
-    /**
-     * A version of rangeCheck used by add and addAll.
-     */
-    private void rangeCheckForAdd(int index) {
-        if (index > size || index < 0) {
-            throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
-        }
-    }
-
-    /**
-     * Constructs an IndexOutOfBoundsException detail message.
-     * Of the many possible refactorings of the error handling code,
-     * this "outlining" performs best with both server and client VMs.
-     */
-    private String outOfBoundsMsg(int index) {
-        return "Index: " + index + ", Size: " + size;
     }
 
 

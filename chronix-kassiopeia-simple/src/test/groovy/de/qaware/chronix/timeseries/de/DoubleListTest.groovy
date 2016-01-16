@@ -434,5 +434,20 @@ class DoubleListTest extends Specification {
 
     }
 
+    def "test grow"() {
+        given:
+        def list = new DoubleList(2)
+
+
+        when:
+        list.add(1D)
+        list.add(2D)
+        list.add(3D)
+
+
+        then:
+        list.size() == 3
+    }
+
 
 }

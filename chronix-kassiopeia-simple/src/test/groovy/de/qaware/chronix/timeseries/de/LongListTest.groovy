@@ -433,4 +433,19 @@ class LongListTest extends Specification {
         c1 << [{ new LongList().get(0) } as Closure, { new LongList().add(-1, 0) } as Closure]
 
     }
+
+    def "test grow"() {
+        given:
+        def list = new LongList(2)
+
+
+        when:
+        list.add(1L)
+        list.add(2L)
+        list.add(3L)
+
+
+        then:
+        list.size() == 3
+    }
 }
