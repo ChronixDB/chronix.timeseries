@@ -36,12 +36,6 @@ public final class ListUtil {
 
 
     /**
-     * Its the initial size of our list.
-     */
-    public static final int DEFAULT_CAPACITY = 100;
-
-
-    /**
      * Checks if the given index is in range.  If not, throws an appropriate
      * runtime exception.  This method does *not* check if the index is
      * negative: It is always used immediately prior to an array access,
