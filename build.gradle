@@ -39,6 +39,7 @@ allprojects {
     apply plugin: 'jacoco'
     apply plugin: 'com.github.kt3k.coveralls'
 
+    version '0.1.2'
 
     group 'de.qaware.chronix'
 
@@ -58,8 +59,6 @@ allprojects {
 
 
 subprojects {
-
-    version '0.1.2'
 
     //Some plugins
     apply plugin: 'base'
