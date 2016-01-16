@@ -20,7 +20,7 @@ package de.qaware.chronix.timeseries.dt;
  *
  * @author f.lautenschlager
  */
-public class ListUtil {
+public final class ListUtil {
 
     private ListUtil() {
         //private constructor
