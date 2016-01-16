@@ -446,16 +446,18 @@ public class DoubleList {
      * which throws an ArrayIndexOutOfBoundsException if index is negative.
      */
     private void rangeCheck(int index) {
-        if (index >= size)
+        if (index >= size) {
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+        }
     }
 
     /**
      * A version of rangeCheck used by add and addAll.
      */
     private void rangeCheckForAdd(int index) {
-        if (index > size || index < 0)
+        if (index > size || index < 0) {
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
+        }
     }
 
     /**

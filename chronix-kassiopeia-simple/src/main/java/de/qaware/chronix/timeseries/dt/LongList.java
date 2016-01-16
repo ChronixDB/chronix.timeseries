@@ -174,6 +174,9 @@ public class LongList {
      * More formally, returns the lowest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+     *
+     * @param o the long value
+     * @return the index of the element or -1
      */
     public int indexOf(long o) {
         for (int i = 0; i < size; i++) {
@@ -190,6 +193,9 @@ public class LongList {
      * More formally, returns the highest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+     *
+     * @param o the long value
+     * @return the last index of the element or -1
      */
     public int lastIndexOf(long o) {
         for (int i = size - 1; i >= 0; i--) {
