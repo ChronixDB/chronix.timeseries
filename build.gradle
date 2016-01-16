@@ -181,7 +181,7 @@ tasks.coveralls {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2'
+    gradleVersion = '2.4'
 }
 sonarRunner {
     def sonarUser = project.hasProperty('sonarUser') ? project.sonarUser : 'unknown'
