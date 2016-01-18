@@ -43,7 +43,7 @@ public class JsonKassiopeiaSimpleSerializer {
     public static final String UTF_8 = "UTF-8";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonKassiopeiaSimpleSerializer.class);
-    private static byte[] EMPTY_JSON = "[[],[]]".getBytes(Charset.forName(UTF_8));
+    private static final byte[] EMPTY_JSON = "[[],[]]".getBytes(Charset.forName(UTF_8));
     private final Gson gson;
 
     /**
@@ -90,7 +90,7 @@ public class JsonKassiopeiaSimpleSerializer {
      * @param queryEnd   @return a collection holding the metric data points
      * @return an object array. [0] are the timestamps, [1] are the values
      */
-    public Object[] fromJson(byte[] json, final long queryStart, final long queryEnd) throws JsonSyntaxException, JsonIOException {
+    public Object[] fromJson(byte[] json, final long queryStart, final long queryEnd) {
         if (queryStart <= 0 && queryEnd <= 0) {
             return new List[]{new ArrayList<>(), new ArrayList<>()};
         }
@@ -121,10 +121,10 @@ public class JsonKassiopeiaSimpleSerializer {
 
             return new Object[]{filteredTimes, filteredValues};
 
-        } catch (IOException e) {
-            LOGGER.error("Could not deserialize json data", e);
+        } catch (IOException | JsonSyntaxException | JsonIOException e) {
+            LOGGER.error("Could not deserialize json data. Returning empty lists.", e);
         }
-        return new List[]{new ArrayList<>(), new ArrayList<>()};
+        return new Object[]{new LongList(), new DoubleList()};
 
     }
 

@@ -336,8 +336,8 @@ class LongListTest extends Specification {
 
     def "test addAll at index"() {
         given:
-        def list1 = new LongList()
-        def list2 = new LongList()
+        def list1 = new LongList(20)
+        def list2 = new LongList(20)
 
         when:
         list1.add(1l)
@@ -350,17 +350,33 @@ class LongListTest extends Specification {
         list2.add(4l)
         list2.add(5l)
 
+        list2.remove(1)
+
         def result = list1.addAll(3, list2)
         then:
         result
-        list1.size() == 7
+        list1.size() == 6
         list1.get(0) == 1l
         list1.get(1) == 2l
         list1.get(2) == 3l
         list1.get(3) == 3l
         list1.get(4) == 4l
-        list1.get(5) == 4l
-        list1.get(6) == 5l
+        list1.get(5) == 5l
+    }
+
+    def "test addAll of empty list at index"() {
+        given:
+        def list1 = new LongList(20)
+        def list2 = new LongList(20)
+        when:
+        list1.add(1l)
+        list1.add(2l)
+        list1.add(3l)
+
+        def result = list1.addAll(0, list2)
+        then:
+        !result
+        list1.size() == 3
 
     }
 

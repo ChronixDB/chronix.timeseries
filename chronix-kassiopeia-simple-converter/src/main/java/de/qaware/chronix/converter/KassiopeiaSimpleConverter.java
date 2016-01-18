@@ -15,7 +15,6 @@
  */
 package de.qaware.chronix.converter;
 
-import com.google.gson.JsonParseException;
 import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
@@ -46,7 +45,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
 
     @Override
     public MetricTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
-
+        LOGGER.debug("Converting {} to MetricTimeSeries starting at {} and ending at {}", binaryTimeSeries, queryStart, queryEnd);
         //get the metric
         String metric = binaryTimeSeries.get(MetricTSSchema.METRIC).toString();
 
@@ -92,14 +91,8 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
         //Second deserialize
         JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-
-        try {
-            Object[] timestampValues = serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd);
-            builder.data((LongList) timestampValues[0], (DoubleList) timestampValues[1]);
-
-        } catch (JsonParseException e) {
-            LOGGER.error("Could not parse json string {}", jsonString, e);
-        }
+        Object[] timestampValues = serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd);
+        builder.data((LongList) timestampValues[0], (DoubleList) timestampValues[1]);
     }
 
     private long meanDate(BinaryTimeSeries binaryTimeSeries) {
@@ -112,6 +105,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
 
     @Override
     public BinaryTimeSeries to(MetricTimeSeries timeSeries) {
+        LOGGER.debug("Converting {} to BinaryTimeSeries", timeSeries);
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         //serialize

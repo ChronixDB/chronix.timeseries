@@ -350,17 +350,35 @@ class DoubleListTest extends Specification {
         list2.add(4d)
         list2.add(5d)
 
+        list2.remove(1)
+
+
         def result = list1.addAll(3, list2)
         then:
         result
-        list1.size() == 7
+        list1.size() == 6
         list1.get(0) == 1d
         list1.get(1) == 2d
         list1.get(2) == 3d
         list1.get(3) == 3d
         list1.get(4) == 4d
-        list1.get(5) == 4d
-        list1.get(6) == 5d
+        list1.get(5) == 5d
+
+    }
+
+    def "test addAll of empty list at index"() {
+        given:
+        def list1 = new DoubleList(20)
+        def list2 = new DoubleList(20)
+        when:
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
+
+        def result = list1.addAll(0, list2)
+        then:
+        !result
+        list1.size() == 3
 
     }
 
