@@ -74,6 +74,9 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         100.times {
             points.add(new Pair(it, it, it * 100))
         }
+        //Points that are null are ignored
+        points.add(null)
+
         when:
         def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
 
@@ -97,5 +100,12 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         ProtoBufKassiopeiaSimpleSerializer.newInstance()
         then:
         noExceptionThrown()
+    }
+
+    def "test exception case for point iterator (inner class)"() {
+        when:
+        ProtoBufKassiopeiaSimpleSerializer.PointIterator.newInstance(new ByteArrayInputStream("some".bytes), 1, 2, 3, 4)
+        then:
+        thrown IllegalStateException
     }
 }
