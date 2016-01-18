@@ -26,7 +26,7 @@ import java.nio.charset.Charset
  * Unit test for the kassiopeia serializer
  * @author f.lautenschlager
  */
-class JsonKassiopeiaSerializerTest extends Specification {
+class JsonKassiopeiaSimpleSerializerTest extends Specification {
 
     def "test serialize to and deserialize from json"() {
         given:

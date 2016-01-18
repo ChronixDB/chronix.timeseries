@@ -16,6 +16,7 @@
 package de.qaware.chronix.converter.serializer
 
 import de.qaware.chronix.timeseries.dt.Pair
+import spock.lang.Shared
 import spock.lang.Specification
 
 import java.time.Instant
@@ -44,28 +45,36 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         }
     }
 
+    @Shared
+    def start = Instant.now()
+    @Shared
+    def end = start.plusSeconds(100 * 100)
+
     def "test from with range query"() {
         given:
         def points = []
-        def start = Instant.now()
-        def end = start.plusSeconds(100 * 100)
+
         100.times {
             points.add(new Pair(it, start.plusSeconds(it).toEpochMilli(), it * 100))
         }
         def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
 
-        def queryStart = start.plusSeconds(50).toEpochMilli()
-        def queryEnd = start.plusSeconds(70).toEpochMilli()
-
         when:
-        def pairs = ProtoBufKassiopeiaSimpleSerializer.from(protoPoints.toByteString().newInput(), start.toEpochMilli(), end.toEpochMilli(), queryStart, queryEnd)
+        def pairs = ProtoBufKassiopeiaSimpleSerializer.from(protoPoints.toByteString().newInput(), start.toEpochMilli(), end.toEpochMilli(), from, to)
         then:
         //should do nothing
         pairs.remove()
         def list = pairs.toList()
-        list.size() == 21
-        list.get(0).index == 50
-        list.get(20).index == 70
+        list.size() == size
+        if (size == 21) {
+            list.get(0).index == 50
+            list.get(20).index == 70
+        }
+
+        where:
+        from << [end.toEpochMilli() + 2, 0, start.toEpochMilli() + 4, start.plusSeconds(50).toEpochMilli()]
+        to << [end.toEpochMilli() + 3, 0, start.toEpochMilli() + 2, start.plusSeconds(70).toEpochMilli()]
+        size << [0, 0, 0, 21]
     }
 
     def "test convert to protocol buffers points"() {
@@ -92,6 +101,18 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         where:
         from << [-1, 0, -1]
         to << [0, -1, -1]
+
+    }
+
+    def "test iterator next throws NoSuchElementException"() {
+        given:
+        def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to([].iterator())
+
+        when:
+        def pairs = ProtoBufKassiopeiaSimpleSerializer.from(protoPoints.toByteString().newInput(), 1, 10, 1, 10)
+        pairs.next()
+        then:
+        thrown NoSuchElementException
 
     }
 
