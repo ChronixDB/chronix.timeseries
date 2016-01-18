@@ -29,7 +29,7 @@ dependencies {
 ## Chronix-Kassiopeia
 Chronix Kassiopeia is a library that provides classes and functions to work with time series.
 
-A detail describtion could be found here:
+A detail description could be found here:
 [Chronix-Kassiopeia](https://github.com/ChronixDB/chronix.kassiopeia/tree/master/chronix-kassiopeia)
 
 
