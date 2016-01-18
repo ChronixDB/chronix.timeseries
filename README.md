@@ -26,7 +26,11 @@ dependencies {
    compile 'de.qaware.chronix:chronix-kassiopeia-simple-converter:0.1.1'
 }
 ```
-## Chronix Kassiopeia
+## Chronix-Kassiopeia
+Chronix Kassiopeia is a library that provides classes and functions to work with time series.
+
+A detail describtion could be found here:
+[Chronix-Kassiopeia](https://github.com/ChronixDB/chronix.kassiopeia/tree/master/chronix-kassiopeia)
 
 
 
