@@ -61,6 +61,7 @@ class LongListTest extends Specification {
 
         list.remove(2)
         then:
+        !list.isEmpty()
         list.size() == 3
         list.get(0) == 1l
 
