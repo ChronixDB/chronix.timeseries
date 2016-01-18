@@ -1,5 +1,5 @@
 # Chronix Kassiopeia
-Chronix Kassiopeia is library that provides classes and functions to work with time series.
+Chronix Kassiopeia is a library that provides classes and functions to work with time series.
 
 ## Usage
 
