@@ -71,7 +71,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         tsReconverted.end == 5
     }
 
-    def "test to and from uncompressed data"() {
+    def "test to and from json data"() {
         given:
         def converter = new KassiopeiaSimpleConverter();
 
@@ -91,5 +91,26 @@ class KassiopeiaSimpleConverterTest extends Specification {
         tsReconverted.get(3) == 4714d
         tsReconverted.start == 0
         tsReconverted.end == 3
+    }
+
+    def "test to and from json data with encoding exception"() {
+        given:
+        def converter = new KassiopeiaSimpleConverter();
+
+        def binTs = new BinaryTimeSeries.Builder()
+                .field("value", 4711d)
+                .field("metric", "\\Load\\avg")
+                .field("dataAsJson", new String("[[0,1,2,3],[4711.0,4712.0,4713.0,4714.0]]".getBytes("IBM420")))
+                .start(0)
+                .end(10)
+
+        when:
+        def tsReconverted = converter.from(binTs.build(), 0, 100)
+
+        then:
+        tsReconverted.metric == "\\Load\\avg"
+        tsReconverted.size() == 0
+        tsReconverted.start == 0
+        tsReconverted.end == 0
     }
 }

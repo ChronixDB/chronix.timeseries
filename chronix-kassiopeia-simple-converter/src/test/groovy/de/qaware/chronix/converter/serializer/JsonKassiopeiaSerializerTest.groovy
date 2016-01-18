@@ -15,8 +15,12 @@
  */
 package de.qaware.chronix.converter.serializer
 
+import de.qaware.chronix.timeseries.dt.DoubleList
+import de.qaware.chronix.timeseries.dt.LongList
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import java.nio.charset.Charset
 
 /**
  * Unit test for the kassiopeia serializer
@@ -38,8 +42,8 @@ class JsonKassiopeiaSerializerTest extends Specification {
         then:
         def deserialize = serializer.fromJson(json, start, end)
 
-        def serTimes = deserialize[0]
-        def serValues = deserialize[1]
+        def serTimes = deserialize[0] as LongList
+        def serValues = deserialize[1] as DoubleList
 
         times.size() == 3
         serValues.size() == 3
@@ -64,13 +68,39 @@ class JsonKassiopeiaSerializerTest extends Specification {
         def json = serializer.toJson(times.stream(), values.stream())
         def deserialize = serializer.fromJson(json, start, end)
         then:
-        deserialize[0].size() == size
+        (deserialize[0] as LongList).size() == size
 
         where:
         start << [0, 1, 1, 0]
         end << [0, 1, 3, 6]
         size << [0, 1, 3, 6]
+    }
 
+    def "test serialize to json with empty timestamps / values"() {
+        given:
+        def serializer = new JsonKassiopeiaSimpleSerializer()
 
+        when:
+        def json = serializer.toJson(times, values)
+
+        then:
+        new String(json) == "[[],[]]"
+
+        where:
+        times << [null, [0l, 1l, 2l].stream()]
+        values << [[0l, 1l, 2l].stream(), null]
+    }
+
+    def "test deserialize from empty json "() {
+        given:
+        def serializer = new JsonKassiopeiaSimpleSerializer()
+
+        when:
+        def result = serializer.fromJson("[[],[]]".getBytes(Charset.forName("UTF-8")), 1, 2000)
+
+        then:
+        result.size() == 2
+        (result[0] as LongList).size() == 0
+        (result[1] as DoubleList).size() == 0
     }
 }

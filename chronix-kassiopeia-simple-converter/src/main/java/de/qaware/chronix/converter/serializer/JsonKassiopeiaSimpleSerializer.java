@@ -17,6 +17,8 @@ package de.qaware.chronix.converter.serializer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import de.qaware.chronix.timeseries.dt.DoubleList;
@@ -25,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,9 +40,10 @@ import java.util.stream.Stream;
  */
 public class JsonKassiopeiaSimpleSerializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonKassiopeiaSimpleSerializer.class);
     public static final String UTF_8 = "UTF-8";
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonKassiopeiaSimpleSerializer.class);
+    private static byte[] EMPTY_JSON = "[[],[]]".getBytes(Charset.forName(UTF_8));
     private final Gson gson;
 
     /**
@@ -59,20 +63,23 @@ public class JsonKassiopeiaSimpleSerializer {
      */
     public byte[] toJson(Stream<Long> timestamps, Stream<Double> values) {
 
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(baos, UTF_8));
-            List[] data = new List[]{timestamps.collect(Collectors.toList()), values.collect(Collectors.toList())};
-            gson.toJson(data, List[].class, writer);
+        if (timestamps != null && values != null) {
+            try {
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                JsonWriter writer = new JsonWriter(new OutputStreamWriter(baos, UTF_8));
+                List[] data = new List[]{timestamps.collect(Collectors.toList()), values.collect(Collectors.toList())};
+                gson.toJson(data, List[].class, writer);
 
-            writer.close();
-            baos.flush();
+                writer.close();
+                baos.flush();
 
-            return baos.toByteArray();
-        } catch (IOException e) {
-            LOGGER.error("Could not serialize data to json", e);
+                return baos.toByteArray();
+            } catch (IOException e) {
+                LOGGER.error("Could not serialize data to json", e);
+
+            }
         }
-        return new byte[]{};
+        return EMPTY_JSON;
     }
 
     /**
@@ -83,7 +90,7 @@ public class JsonKassiopeiaSimpleSerializer {
      * @param queryEnd   @return a collection holding the metric data points
      * @return an object array. [0] are the timestamps, [1] are the values
      */
-    public Object[] fromJson(byte[] json, final long queryStart, final long queryEnd) {
+    public Object[] fromJson(byte[] json, final long queryStart, final long queryEnd) throws JsonSyntaxException, JsonIOException {
         if (queryStart <= 0 && queryEnd <= 0) {
             return new List[]{new ArrayList<>(), new ArrayList<>()};
         }

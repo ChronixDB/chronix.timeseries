@@ -15,6 +15,7 @@
  */
 package de.qaware.chronix.converter;
 
+import com.google.gson.JsonParseException;
 import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
@@ -28,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.Iterator;
 
 /**
@@ -93,11 +94,11 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
 
         try {
-            Object[] timestampValues = serializer.fromJson(jsonString.getBytes(JsonKassiopeiaSimpleSerializer.UTF_8), queryStart, queryEnd);
+            Object[] timestampValues = serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd);
             builder.data((LongList) timestampValues[0], (DoubleList) timestampValues[1]);
 
-        } catch (UnsupportedEncodingException e) {
-            LOGGER.error("Could not encode string to UTF-8", e);
+        } catch (JsonParseException e) {
+            LOGGER.error("Could not parse json string {}", jsonString, e);
         }
     }
 

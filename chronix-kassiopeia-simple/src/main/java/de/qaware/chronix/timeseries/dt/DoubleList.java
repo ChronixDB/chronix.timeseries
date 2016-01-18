@@ -17,6 +17,7 @@ package de.qaware.chronix.timeseries.dt;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.Arrays;
 
@@ -152,19 +153,6 @@ public class DoubleList {
         v.doubles = Arrays.copyOf(doubles, size);
         v.size = size;
         return v;
-    }
-
-    /**
-     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
-     * list's current size.  An application can use this operation to minimize
-     * the storage of an <tt>ArrayList</tt> instance.
-     */
-    private double[] trimToSize(int size, double[] elements) {
-        double[] copy = Arrays.copyOf(elements, elements.length);
-        if (size < elements.length) {
-            copy = (size == 0) ? EMPTY_ELEMENT_DATA : Arrays.copyOf(elements, size);
-        }
-        return copy;
     }
 
     /**
@@ -393,11 +381,25 @@ public class DoubleList {
      *                                   toIndex > size() ||
      *                                   toIndex < fromIndex})
      */
-    protected void removeRange(int fromIndex, int toIndex) {
+    public void removeRange(int fromIndex, int toIndex) {
         int numMoved = size - toIndex;
         System.arraycopy(doubles, toIndex, doubles, fromIndex, numMoved);
 
         size = size - (toIndex - fromIndex);
+    }
+
+
+    /**
+     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
+     * list's current size.  An application can use this operation to minimize
+     * the storage of an <tt>ArrayList</tt> instance.
+     */
+    private double[] trimToSize(int size, double[] elements) {
+        double[] copy = Arrays.copyOf(elements, elements.length);
+        if (size < elements.length) {
+            copy = (size == 0) ? EMPTY_ELEMENT_DATA : Arrays.copyOf(elements, size);
+        }
+        return copy;
     }
 
 
@@ -434,9 +436,9 @@ public class DoubleList {
 
     @Override
     public String toString() {
-        return "DoubleList{" +
-                "doubles=" + Arrays.toString(trimToSize(size, doubles)) +
-                ", size=" + size +
-                '}';
+        return new ToStringBuilder(this)
+                .append("doubles", trimToSize(this.size, doubles))
+                .append("size", size)
+                .toString();
     }
 }

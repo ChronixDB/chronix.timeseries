@@ -81,6 +81,17 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         protoPoints.getPList().size() == 100
     }
 
+    def "test iterator with invalid arguments"() {
+        when:
+        ProtoBufKassiopeiaSimpleSerializer.from(null, 0, 0, from, to)
+        then:
+        thrown IllegalArgumentException
+        where:
+        from << [-1, 0, -1]
+        to << [0, -1, -1]
+
+    }
+
     def "test private constructor"() {
         when:
         ProtoBufKassiopeiaSimpleSerializer.newInstance()

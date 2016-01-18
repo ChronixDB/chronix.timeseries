@@ -49,6 +49,23 @@ class DoubleListTest extends Specification {
         expected << [true]
     }
 
+    def "test remove"() {
+        given:
+        def list = new DoubleList(20)
+
+        when:
+        list.add(1D)
+        list.add(2D)
+        list.add(3D)
+        list.add(4D)
+
+        list.remove(2)
+        then:
+        list.size() == 3
+        list.get(0) == 1l
+
+    }
+
     @Unroll
     def "test contains value: #values expected: #expected"() {
         given:
@@ -296,6 +313,26 @@ class DoubleListTest extends Specification {
 
     }
 
+    def "test addAll with empty list"() {
+        given:
+        def list1 = new DoubleList()
+        def list2 = new DoubleList()
+
+        when:
+        list1.add(1D)
+        list1.add(2D)
+        list1.add(3D)
+
+
+        def result = list1.addAll(list2)
+        then:
+        !result
+        list1.size() == 3
+        list1.contains(1D)
+        list1.contains(2D)
+        list1.contains(3D)
+    }
+
 
     def "test addAll at index"() {
         given:
@@ -388,6 +425,8 @@ class DoubleListTest extends Specification {
         list.add(2d)
         list.add(3d)
 
+        list.remove(1)
+
         when:
         def result = list.equals(other)
         def alwaysTrue = list.equals(list)
@@ -397,8 +436,19 @@ class DoubleListTest extends Specification {
         result == expected
 
         where:
-        other << [null, new Integer(1), new DoubleList()]
-        expected << [false, false, false]
+        other << [null, new Integer(1), new DoubleList(20), otherList()]
+        expected << [false, false, false, true]
+    }
+
+    def otherList() {
+        def list = new DoubleList(50)
+        list.add(1D)
+        list.add(2D)
+        list.add(3D)
+
+        list.remove(1)
+
+        return list
     }
 
     def "test constructor"() {
@@ -424,7 +474,6 @@ class DoubleListTest extends Specification {
 
         when:
         c1.call()
-
 
         then:
         thrown IndexOutOfBoundsException

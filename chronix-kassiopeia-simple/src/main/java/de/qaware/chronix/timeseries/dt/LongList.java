@@ -379,7 +379,7 @@ public class LongList {
      *                                   toIndex > size() ||
      *                                   toIndex < fromIndex})
      */
-    protected void removeRange(int fromIndex, int toIndex) {
+    public void removeRange(int fromIndex, int toIndex) {
         int numMoved = size - toIndex;
         System.arraycopy(longs, toIndex, longs, fromIndex, numMoved);
         size = size - (toIndex - fromIndex);
@@ -388,22 +388,9 @@ public class LongList {
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("longs", longs)
+                .append("longs", trimToSize(this.size, longs))
                 .append("size", size)
                 .toString();
-    }
-
-    /**
-     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
-     * list's current size.  An application can use this operation to minimize
-     * the storage of an <tt>ArrayList</tt> instance.
-     */
-    private long[] trimToSize(int size, long[] elements) {
-        long[] copy = Arrays.copyOf(elements, elements.length);
-        if (size < elements.length) {
-            copy = (size == 0) ? EMPTY_ELEMENT_DATA : Arrays.copyOf(elements, size);
-        }
-        return copy;
     }
 
     @Override
@@ -426,6 +413,19 @@ public class LongList {
                 .append(thisTrimmed, otherTrimmed)
                 .append(this.size, rhs.size)
                 .isEquals();
+    }
+
+    /**
+     * Trims the capacity of this <tt>ArrayList</tt> instance to be the
+     * list's current size.  An application can use this operation to minimize
+     * the storage of an <tt>ArrayList</tt> instance.
+     */
+    private long[] trimToSize(int size, long[] elements) {
+        long[] copy = Arrays.copyOf(elements, elements.length);
+        if (size < elements.length) {
+            copy = (size == 0) ? EMPTY_ELEMENT_DATA : Arrays.copyOf(elements, size);
+        }
+        return copy;
     }
 
     @Override

@@ -49,6 +49,23 @@ class LongListTest extends Specification {
         expected << [true]
     }
 
+    def "test remove"() {
+        given:
+        def list = new LongList(20)
+
+        when:
+        list.add(1l)
+        list.add(2l)
+        list.add(3l)
+        list.add(4l)
+
+        list.remove(2)
+        then:
+        list.size() == 3
+        list.get(0) == 1l
+
+    }
+
     @Unroll
     def "test contains value: #values expected: #expected"() {
         given:
@@ -296,6 +313,26 @@ class LongListTest extends Specification {
 
     }
 
+    def "test addAll with empty list"() {
+        given:
+        def list1 = new LongList()
+        def list2 = new LongList()
+
+        when:
+        list1.add(1l)
+        list1.add(2l)
+        list1.add(3l)
+
+
+        def result = list1.addAll(list2)
+        then:
+        !result
+        list1.size() == 3
+        list1.contains(1l)
+        list1.contains(2l)
+        list1.contains(3l)
+    }
+
 
     def "test addAll at index"() {
         given:
@@ -388,6 +425,8 @@ class LongListTest extends Specification {
         list.add(2l)
         list.add(3l)
 
+        list.remove(1)
+
         when:
         def result = list.equals(other)
         def alwaysTrue = list.equals(list)
@@ -397,8 +436,19 @@ class LongListTest extends Specification {
         result == expected
 
         where:
-        other << [null, new Integer(1), new LongList()]
-        expected << [false, false, false]
+        other << [null, new Integer(1), new LongList(20), otherList()]
+        expected << [false, false, false, true]
+    }
+
+    def otherList() {
+        def list = new LongList(50)
+        list.add(1l)
+        list.add(2l)
+        list.add(3l)
+
+        list.remove(1)
+
+        return list
     }
 
     def "test constructor"() {
@@ -425,7 +475,6 @@ class LongListTest extends Specification {
         when:
         c1.call()
 
-
         then:
         thrown IndexOutOfBoundsException
 
@@ -438,12 +487,10 @@ class LongListTest extends Specification {
         given:
         def list = new LongList(2)
 
-
         when:
         list.add(1L)
         list.add(2L)
         list.add(3L)
-
 
         then:
         list.size() == 3
