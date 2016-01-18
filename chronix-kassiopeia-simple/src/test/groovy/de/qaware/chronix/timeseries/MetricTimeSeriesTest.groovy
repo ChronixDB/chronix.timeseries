@@ -97,6 +97,17 @@ class MetricTimeSeriesTest extends Specification {
         ts.get(0) == 91
     }
 
+    def "test sort on empty time series"() {
+        given:
+        def ts = new MetricTimeSeries.Builder("//CPU//Load").build()
+
+        when:
+        ts.sort()
+
+        then:
+        0 * ts.points()
+    }
+
     def "test clear time series"() {
         given:
 
