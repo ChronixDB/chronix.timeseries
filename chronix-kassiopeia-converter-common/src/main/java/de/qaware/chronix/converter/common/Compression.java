@@ -46,23 +46,22 @@ public final class Compression {
         if (decompressed == null) {
             return new byte[]{};
         }
-
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        OutputStream gzos = null;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(decompressed.length);
+        OutputStream gzipOutputStream = null;
         try {
-            gzos = new GZIPOutputStream(baos);
-            gzos.write(decompressed);
-            gzos.flush();
-            baos.flush();
+            gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+            gzipOutputStream.write(decompressed);
+            gzipOutputStream.flush();
+            byteArrayOutputStream.flush();
         } catch (IOException e) {
             LOGGER.error("Exception occurred while compressing gzip stream.", e);
             return null;
         } finally {
-            IOUtils.closeQuietly(gzos);
-            IOUtils.closeQuietly(baos);
+            IOUtils.closeQuietly(gzipOutputStream);
+            IOUtils.closeQuietly(byteArrayOutputStream);
         }
 
-        return baos.toByteArray();
+        return byteArrayOutputStream.toByteArray();
     }
 
     /**
@@ -100,12 +99,50 @@ public final class Compression {
             LOGGER.debug("Compressed bytes[] are null. Returning null.");
             return null;
         }
-
         try {
             return new GZIPInputStream(new ByteArrayInputStream(compressed));
         } catch (IOException e) {
             LOGGER.error("Exception occurred while decompressing gzip stream. Returning null.", e);
         }
         return null;
+    }
+
+    /***
+     * Compressed the given stream using gzip.
+     *
+     * @param stream the input stream
+     * @return an byte[] with the compressed data from the stream
+     */
+    public static byte[] compressFromStream(InputStream stream) {
+
+        if (stream == null) {
+            LOGGER.debug("Stream is null. Returning null.");
+            return null;
+
+        }
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        OutputStream zippedStream = null;
+        try {
+
+            zippedStream = new GZIPOutputStream(byteArrayOutputStream);
+
+            int nRead;
+            byte[] data = new byte[16384];
+
+            while ((nRead = stream.read(data, 0, data.length)) != -1) {
+                zippedStream.write(data, 0, nRead);
+            }
+            zippedStream.flush();
+            byteArrayOutputStream.flush();
+
+        } catch (IOException e) {
+            LOGGER.error("Exception occurred while compressing gzip stream.", e);
+            return null;
+        } finally {
+            IOUtils.closeQuietly(zippedStream);
+            IOUtils.closeQuietly(byteArrayOutputStream);
+        }
+        return byteArrayOutputStream.toByteArray();
     }
 }
