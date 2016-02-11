@@ -34,8 +34,13 @@ import java.util.NoSuchElementException;
  */
 public final class ProtoBufKassiopeiaSimpleSerializer {
 
+    /**
+     * Name of the system property to set the equals offset between the dates.
+     */
+    public static final String DATE_EQUALS_OFFSET_MS = "DATE_EQUALS_OFFSET_MS";
+
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufKassiopeiaSimpleSerializer.class);
-    private static final long ALMOST_EQUALS_OFFSET_MS = 10;
+    private static final long ALMOST_EQUALS_OFFSET_MS = Long.parseLong(System.getProperty(DATE_EQUALS_OFFSET_MS, "10"));
 
     /**
      * Private constructor
