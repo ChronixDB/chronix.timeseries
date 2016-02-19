@@ -23,7 +23,7 @@ import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.dt.DoubleList;
 import de.qaware.chronix.timeseries.dt.LongList;
-import de.qaware.chronix.timeseries.dt.Pair;
+import de.qaware.chronix.timeseries.dt.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,9 +80,9 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
 
     private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
         InputStream decompressedBytes = Compression.decompressToStream(binaryTimeSeries.getPoints());
-        Iterator<Pair> points = ProtoBufKassiopeiaSimpleSerializer.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
+        Iterator<Point> points = ProtoBufKassiopeiaSimpleSerializer.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
         while (points.hasNext()) {
-            Pair p = points.next();
+            Point p = points.next();
             builder.point(p.getTimestamp(), p.getValue());
         }
     }

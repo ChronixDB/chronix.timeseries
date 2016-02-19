@@ -18,7 +18,7 @@ package de.qaware.chronix.timeseries;
 
 import de.qaware.chronix.timeseries.dt.DoubleList;
 import de.qaware.chronix.timeseries.dt.LongList;
-import de.qaware.chronix.timeseries.dt.Pair;
+import de.qaware.chronix.timeseries.dt.Point;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -103,7 +103,7 @@ public final class MetricTimeSeries {
      *
      * @return the points as points
      */
-    public Stream<Pair> points() {
+    public Stream<Point> points() {
         return Stream.iterate(of(0), pair -> of(pair.getIndex() + 1)).limit(timestamps.size());
     }
 
@@ -337,8 +337,8 @@ public final class MetricTimeSeries {
     }
 
 
-    private Pair of(int index) {
-        return new Pair(index, timestamps.get(index), values.get(index));
+    private Point of(int index) {
+        return new Point(index, timestamps.get(index), values.get(index));
     }
 
 

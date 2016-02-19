@@ -15,17 +15,17 @@
  */
 package de.qaware.chronix.timeseries.de
 
-import de.qaware.chronix.timeseries.dt.Pair
+import de.qaware.chronix.timeseries.dt.Point
 import spock.lang.Specification
 
 /**
  * Unit test for the pair class
  */
-class PairTest extends Specification {
+class PointTest extends Specification {
 
     def "test pair"() {
         when:
-        def pair = new Pair(0 as int, 1 as long, 2 as double)
+        def pair = new Point(0 as int, 1 as long, 2 as double)
 
         then:
         pair.index == 0

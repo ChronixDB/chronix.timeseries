@@ -15,7 +15,7 @@
  */
 package de.qaware.chronix.converter.serializer
 
-import de.qaware.chronix.timeseries.dt.Pair
+import de.qaware.chronix.timeseries.dt.Point
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -30,7 +30,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         given:
         def points = []
         100.times {
-            points.add(new Pair(it, it + 1, it * 100))
+            points.add(new Point(it, it + 1, it * 100))
         }
         def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
 
@@ -55,7 +55,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def points = []
 
         100.times {
-            points.add(new Pair(it, start.plusSeconds(it).toEpochMilli(), it * 100))
+            points.add(new Point(it, start.plusSeconds(it).toEpochMilli(), it * 100))
         }
         def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
 
@@ -81,7 +81,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         given:
         def points = []
         100.times {
-            points.add(new Pair(it, it, it * 100))
+            points.add(new Point(it, it, it * 100))
         }
         //Points that are null are ignored
         points.add(null)
@@ -128,5 +128,48 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         ProtoBufKassiopeiaSimpleSerializer.PointIterator.newInstance(new ByteArrayInputStream("some".bytes), 1, 2, 3, 4)
         then:
         thrown IllegalStateException
+    }
+
+    def "test date-delta-compaction"() {
+        given:
+        def points = []
+        points.add(new Point(0, 10, -10))
+        points.add(new Point(1, 20, -20))
+        points.add(new Point(2, 30, -30))
+        points.add(new Point(3, 39, -39))
+        points.add(new Point(4, 48, -48))
+        points.add(new Point(5, 57, -57))
+        points.add(new Point(6, 66, -66))
+        points.add(new Point(7, 75, -75))
+        points.add(new Point(8, 84, -84))
+        points.add(new Point(9, 93, -93))
+        points.add(new Point(10, 102, -102))
+        points.add(new Point(11, 111, -109))
+        points.add(new Point(12, 120, -118))
+        points.add(new Point(13, 129, -127))
+        points.add(new Point(14, 138, -136))
+
+        when:
+        def protoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator());
+        def rawPoints = ProtoBufKassiopeiaSimpleSerializer.from(protoPoints.toByteString().newInput(), 10l, 1036l);
+        def listPoints = rawPoints.toList()
+
+        then:                            //diff to origin
+        listPoints.get(0).timestamp == 10//0
+        listPoints.get(1).timestamp == 20//0
+        listPoints.get(2).timestamp == 30//0
+        listPoints.get(3).timestamp == 40//1
+        listPoints.get(4).timestamp == 50//2
+        listPoints.get(5).timestamp == 60//3
+        listPoints.get(6).timestamp == 70//4
+        listPoints.get(7).timestamp == 80//5
+        listPoints.get(8).timestamp == 89//5
+        listPoints.get(9).timestamp == 98//5
+        listPoints.get(10).timestamp == 107//5
+        listPoints.get(11).timestamp == 116//5
+        listPoints.get(12).timestamp == 125//5
+        listPoints.get(13).timestamp == 134//5
+        listPoints.get(14).timestamp == 143//5
+
     }
 }

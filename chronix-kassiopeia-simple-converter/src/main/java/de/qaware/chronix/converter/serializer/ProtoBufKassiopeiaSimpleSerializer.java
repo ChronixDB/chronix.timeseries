@@ -17,18 +17,16 @@ package de.qaware.chronix.converter.serializer;
 
 
 import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
-import de.qaware.chronix.timeseries.dt.Pair;
+import de.qaware.chronix.timeseries.dt.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 /**
- * Class to easily convert the protocol buffer into Pair<Long,Double>
+ * Class to easily convert the protocol buffer into Point<Long,Double>
  *
  * @author f.lautenschlager
  */
@@ -57,7 +55,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param timeSeriesEnd   - the end of the time series
      * @return an iterator to the points
      */
-    public static Iterator<Pair> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd) {
+    public static Iterator<Point> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd) {
         return new PointIterator(points, timeSeriesStart, timeSeriesEnd, -1, -1);
     }
 
@@ -71,7 +69,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param timeSeriesStart - the start of the time series  @return an iterator to the points
      * @return an iterator of pairs (timestamp, value)
      */
-    public static Iterator<Pair> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd, long from, long to) {
+    public static Iterator<Point> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd, long from, long to) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
@@ -79,31 +77,25 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     }
 
     /**
-     * Converts the given list of our point class to the protocol buffer format
+     * Converts the given iterator of our point class to the protocol buffer format
      *
      * @param metricDataPoints - the list with points
      * @return a protocol buffer points object
      */
-    public static SimpleProtocolBuffers.Points to(Iterator<Pair> metricDataPoints) {
-        return SimpleProtocolBuffers.Points.newBuilder().addAllP(convertToProtoPoints(metricDataPoints)).build();
-    }
-
-    /**
-     * Converts the given list with points to a list with protocol buffer points.
-     *
-     * @param metricDataPoints - the list with points
-     * @return a list with protocol buffer points
-     */
-    private static List<SimpleProtocolBuffers.Point> convertToProtoPoints(Iterator<Pair> metricDataPoints) {
-        List<SimpleProtocolBuffers.Point> protoPoints = new ArrayList<>();
-
+    public static SimpleProtocolBuffers.Points to(Iterator<Point> metricDataPoints) {
         long previousDate = 0;
         long previousOffset = 0;
 
+        int timesSinceLastOffset = 1;
+        long lastStoredDate = 0;
+
+        SimpleProtocolBuffers.Point.Builder builder = SimpleProtocolBuffers.Point.newBuilder();
+        SimpleProtocolBuffers.Points.Builder points = SimpleProtocolBuffers.Points.newBuilder();
+
+
         while (metricDataPoints.hasNext()) {
 
-
-            Pair p = metricDataPoints.next();
+            Point p = metricDataPoints.next();
 
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
@@ -117,38 +109,47 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                 offset = p.getTimestamp() - previousDate;
             }
 
-            if (almostEquals(previousOffset, offset)) {
-                SimpleProtocolBuffers.Point protoPoint = SimpleProtocolBuffers.Point.newBuilder()
-                        .setV(p.getValue())
-                        .build();
-                protoPoints.add(protoPoint);
+            if (almostEquals(previousOffset, offset) && noDrift(p.getTimestamp(), lastStoredDate, timesSinceLastOffset)) {
+                builder.clearT()
+                        .setV(p.getValue());
+                points.addP(builder.build());
+                timesSinceLastOffset += 1;
+
             } else {
-                SimpleProtocolBuffers.Point protoPoint = SimpleProtocolBuffers.Point.newBuilder()
-                        .setT(offset)
+                builder.setT(offset)
                         .setV(p.getValue())
                         .build();
-                protoPoints.add(protoPoint);
-
+                points.addP(builder.build());
+                //reset the offset counter
+                timesSinceLastOffset = 1;
+                lastStoredDate = p.getTimestamp();
             }
-
             //set current as former previous date
             previousOffset = offset;
             previousDate = p.getTimestamp();
         }
 
-        return protoPoints;
+        return points.build();
     }
+
+    private static boolean noDrift(long timestamp, long lastStoredDate, int timesSinceLastOffset) {
+        long calculatedMaxOffset = ALMOST_EQUALS_OFFSET_MS * timesSinceLastOffset;
+        long drift = lastStoredDate + calculatedMaxOffset - timestamp;
+
+        return (drift <= (ALMOST_EQUALS_OFFSET_MS / 2));
+    }
+
 
     private static boolean almostEquals(long previousOffset, long offset) {
         double diff = Math.abs(offset - previousOffset);
-        return (diff < ALMOST_EQUALS_OFFSET_MS);
+        return (diff <= ALMOST_EQUALS_OFFSET_MS);
     }
 
 
     /**
-     * Iterator that returns Pair<Long,Double> from the decompressed input stream
+     * Iterator that returns Point<Long,Double> from the decompressed input stream
      */
-    private static class PointIterator implements Iterator<Pair> {
+    private static class PointIterator implements Iterator<Point> {
 
         private int size;
         private int current = 0;
@@ -222,13 +223,13 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
          * @return the next point
          */
         @Override
-        public Pair next() {
+        public Point next() {
 
             if (!hasNext()) {
                 throw new NoSuchElementException("No more elements.");
             }
 
-            Pair currentPoint = nextPoint();
+            Point currentPoint = nextPoint();
 
             while (lastDate < from) {
                 currentPoint = nextPoint();
@@ -237,19 +238,24 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             return currentPoint;
         }
 
-        private Pair nextPoint() {
-            Pair p = convertToPoint(protocolBufferPoints.getP(current), lastDate);
+        private Point nextPoint() {
+            Point p = convertToPoint(protocolBufferPoints.getP(current), lastDate);
             lastDate = p.getTimestamp();
             current++;
             return p;
         }
 
-        private Pair convertToPoint(SimpleProtocolBuffers.Point m, long timeSeriesStart) {
+        private Point convertToPoint(SimpleProtocolBuffers.Point m, long lastDate) {
+            //set the default offset for following points
+            if (current == 1) {
+                lastOffset = ALMOST_EQUALS_OFFSET_MS;
+            }
+
             long offset = m.getT();
             if (offset != 0) {
                 lastOffset = offset;
             }
-            return new Pair(current, timeSeriesStart + lastOffset, m.getV());
+            return new Point(current, lastDate + lastOffset, m.getV());
         }
 
         @Override

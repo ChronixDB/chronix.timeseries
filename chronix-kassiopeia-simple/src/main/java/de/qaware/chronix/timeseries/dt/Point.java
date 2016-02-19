@@ -20,7 +20,7 @@ package de.qaware.chronix.timeseries.dt;
  *
  * @author f.lautenschlager
  */
-public class Pair {
+public class Point {
     private int index;
     private long timestamp;
     private double value;
@@ -32,7 +32,7 @@ public class Pair {
      * @param timestamp - the timestamp
      * @param value     - the value
      */
-    public Pair(int index, long timestamp, double value) {
+    public Point(int index, long timestamp, double value) {
         this.index = index;
         this.timestamp = timestamp;
         this.value = value;
