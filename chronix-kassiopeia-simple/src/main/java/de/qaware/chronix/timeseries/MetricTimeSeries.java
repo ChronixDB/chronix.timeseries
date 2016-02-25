@@ -75,8 +75,12 @@ public final class MetricTimeSeries {
      * @param i - the index position of the metric value
      * @return the metric value
      */
-    public double get(int i) {
+    public double getValue(int i) {
         return values.get(i);
+    }
+
+    public long getTime(int i) {
+        return timestamps.get(i);
     }
 
     /**
@@ -108,6 +112,10 @@ public final class MetricTimeSeries {
             return Stream.empty();
         }
         return Stream.iterate(of(0), pair -> of(pair.getIndex() + 1)).limit(timestamps.size());
+    }
+
+    private Point of(int index) {
+        return new Point(index, timestamps.get(index), values.get(index));
     }
 
 
@@ -187,15 +195,6 @@ public final class MetricTimeSeries {
         values.clear();
     }
 
-
-    /**
-     * @return true if empty, otherwise false
-     */
-    public boolean empty() {
-        return timestamps.isEmpty();
-    }
-
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -251,7 +250,6 @@ public final class MetricTimeSeries {
         }
     }
 
-
     /**
      * @return the size
      */
@@ -259,6 +257,12 @@ public final class MetricTimeSeries {
         return timestamps.size();
     }
 
+    /**
+     * @return empty if the time series contains no points
+     */
+    public boolean isEmpty() {
+        return timestamps.size() == 0;
+    }
 
     /**
      * The Builder class
@@ -273,7 +277,7 @@ public final class MetricTimeSeries {
         /**
          * Constructs a new Builder
          *
-         * @param metric - the metric name
+         * @param metric the metric name
          */
         public Builder(String metric) {
             metricTimeSeries = new MetricTimeSeries();
@@ -290,22 +294,24 @@ public final class MetricTimeSeries {
 
 
         /**
-         * Adds the time series data
+         * Sets the time series data
          *
-         * @param timestamps - the time stamps
-         * @param values     - the values
+         * @param timestamps the time stamps
+         * @param values     the values
          * @return the builder
          */
-        public Builder data(LongList timestamps, DoubleList values) {
-            metricTimeSeries.setAll(timestamps, values);
+        public Builder points(LongList timestamps, DoubleList values) {
+            if (timestamps != null && values != null) {
+                metricTimeSeries.setAll(timestamps, values);
+            }
             return this;
         }
 
         /**
          * Adds the given single data point to the time series
          *
-         * @param timestamp - the timestamp of the value
-         * @param value     - the value
+         * @param timestamp the timestamp of the value
+         * @param value     the belonging value
          * @return the builder
          */
         public Builder point(long timestamp, double value) {
@@ -317,8 +323,8 @@ public final class MetricTimeSeries {
         /**
          * Adds an attribute to the class
          *
-         * @param key   - the name of the attribute
-         * @param value - the value of the attribute
+         * @param key   the name of the attribute
+         * @param value the value of the attribute
          * @return the builder
          */
         public Builder attribute(String key, Object value) {
@@ -329,7 +335,7 @@ public final class MetricTimeSeries {
         /**
          * Sets the attributes for this time series
          *
-         * @param attributes - the attributes
+         * @param attributes the time series attributes
          * @return the builder
          */
         public Builder attributes(Map<String, Object> attributes) {
@@ -338,11 +344,5 @@ public final class MetricTimeSeries {
         }
 
     }
-
-
-    private Point of(int index) {
-        return new Point(index, timestamps.get(index), values.get(index));
-    }
-
 
 }

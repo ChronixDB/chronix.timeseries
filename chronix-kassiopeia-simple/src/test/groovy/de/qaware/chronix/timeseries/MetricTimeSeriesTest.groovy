@@ -19,8 +19,6 @@ import de.qaware.chronix.timeseries.dt.DoubleList
 import de.qaware.chronix.timeseries.dt.LongList
 import spock.lang.Specification
 
-import java.util.stream.Stream
-
 /**
  * Unit test for the metric time series
  * @author f.lautenschlager
@@ -43,7 +41,7 @@ class MetricTimeSeriesTest extends Specification {
                 .attributes(attributes)
                 .attribute("host", "laptop")
                 .attribute("avg", 2.23)
-                .data(times, values)
+                .points(times, values)
                 .point(10 as long, 100)
                 .build()
 
@@ -57,8 +55,10 @@ class MetricTimeSeriesTest extends Specification {
         ts.attribute("thread") == 2 as long
         ts.size() == 11
         ts.getTimestamps().size() == 11
+        ts.getTime(0) == 0
         ts.getValues().size() == 11
-        ts.get(0) == 0
+        ts.getValue(0) == 0
+        !ts.isEmpty()
     }
 
 
@@ -70,7 +70,7 @@ class MetricTimeSeriesTest extends Specification {
             times.add(100 - it as long)
             values.add(it * 10 as double)
         }
-        def ts = new MetricTimeSeries.Builder("//CPU//Load").data(times, values).build()
+        def ts = new MetricTimeSeries.Builder("//CPU//Load").points(times, values).build()
 
         when:
 
@@ -95,7 +95,7 @@ class MetricTimeSeriesTest extends Specification {
         ts.sort()
 
         then:
-        ts.get(0) == 91
+        ts.getValue(0) == 91
     }
 
     def "test sort on empty time series"() {
@@ -121,7 +121,7 @@ class MetricTimeSeriesTest extends Specification {
         }
 
         def ts = new MetricTimeSeries.Builder("//CPU//Load")
-                .data(times, values)
+                .points(times, values)
                 .build()
 
         when:
@@ -129,7 +129,7 @@ class MetricTimeSeriesTest extends Specification {
 
         then:
         ts.size() == 0
-        ts.empty()
+        ts.isEmpty()
         ts.getEnd() == 0
         ts.getStart() == 0
     }
@@ -181,7 +181,9 @@ class MetricTimeSeriesTest extends Specification {
 
     def "test emtpy points"() {
         expect:
-        new MetricTimeSeries.Builder("").build().points().count() == 0l
+        def ts = new MetricTimeSeries.Builder("").build()
+        ts.points().count() == 0l
+        ts.isEmpty()
     }
 
 }

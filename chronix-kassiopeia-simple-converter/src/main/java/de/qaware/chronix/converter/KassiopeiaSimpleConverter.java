@@ -19,8 +19,6 @@ import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSimpleSerializer;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
-import de.qaware.chronix.timeseries.dt.DoubleList;
-import de.qaware.chronix.timeseries.dt.LongList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,8 +79,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
         //Second deserialize
         JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-        Object[] timestampValues = serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd);
-        builder.data((LongList) timestampValues[0], (DoubleList) timestampValues[1]);
+        serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd, builder);
     }
 
     private long meanDate(BinaryTimeSeries binaryTimeSeries) {

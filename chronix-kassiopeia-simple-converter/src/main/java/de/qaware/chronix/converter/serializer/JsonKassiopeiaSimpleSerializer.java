@@ -21,8 +21,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-import de.qaware.chronix.timeseries.dt.DoubleList;
-import de.qaware.chronix.timeseries.dt.LongList;
+import de.qaware.chronix.timeseries.MetricTimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +29,6 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * The json serializer for the kassiopeia simple time series
@@ -57,19 +54,23 @@ public class JsonKassiopeiaSimpleSerializer {
     /**
      * Serializes the collection of metric data points to json
      *
-     * @param timestamps -  the timestamps
-     * @param values     -  the values
+     * @param timeSeries -  the time series whose points should be serialized.
      * @return a json serialized collection of metric data points
      */
-    public byte[] toJson(Stream<Long> timestamps, Stream<Double> values) {
+    public byte[] toJson(MetricTimeSeries timeSeries) {
 
-        if (timestamps != null && values != null) {
+        if (!timeSeries.isEmpty()) {
             try {
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 JsonWriter writer = new JsonWriter(new OutputStreamWriter(baos, UTF_8));
-                List[] data = new List[]{timestamps.collect(Collectors.toList()), values.collect(Collectors.toList())};
-                gson.toJson(data, List[].class, writer);
 
+                List[] data = new List[]{new ArrayList<>(timeSeries.size()), new ArrayList<>(timeSeries.size())};
+
+                for (int i = 0; i < timeSeries.size(); i++) {
+                    data[0].add(timeSeries.getTime(i));
+                    data[1].add(timeSeries.getValue(i));
+                }
+                gson.toJson(data, List[].class, writer);
                 writer.close();
                 baos.flush();
 
@@ -85,14 +86,14 @@ public class JsonKassiopeiaSimpleSerializer {
     /**
      * Deserialize the given json to a collection of metric data points
      *
-     * @param json       - the json representation of collection holding metric data points
+     * @param json       the json representation of collection holding metric data points
      * @param queryStart the start of the query
-     * @param queryEnd   @return a collection holding the metric data points
-     * @return an object array. [0] are the timestamps, [1] are the values
+     * @param queryEnd   the end of the query
+     * @param builder    the builder for the time series
      */
-    public Object[] fromJson(byte[] json, final long queryStart, final long queryEnd) {
+    public void fromJson(byte[] json, final long queryStart, final long queryEnd, MetricTimeSeries.Builder builder) {
         if (queryStart <= 0 && queryEnd <= 0) {
-            return new List[]{new ArrayList<>(), new ArrayList<>()};
+            return;
         }
 
         try {
@@ -104,9 +105,6 @@ public class JsonKassiopeiaSimpleSerializer {
             List<Double> times = (List<Double>) timestampsValues[0];
             List<Double> values = (List<Double>) timestampsValues[1];
 
-            LongList filteredTimes = new LongList(times.size());
-            DoubleList filteredValues = new DoubleList(values.size());
-
 
             for (int i = 0; i < times.size(); i++) {
                 if (times.get(i) > queryEnd) {
@@ -114,17 +112,13 @@ public class JsonKassiopeiaSimpleSerializer {
                 }
 
                 if (times.get(i) >= queryStart && times.get(i) <= queryEnd) {
-                    filteredTimes.add(times.get(i).longValue());
-                    filteredValues.add(values.get(i));
+                    builder.point(times.get(i).longValue(), values.get(i));
                 }
             }
-
-            return new Object[]{filteredTimes, filteredValues};
 
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
             LOGGER.error("Could not deserialize json data. Returning empty lists.", e);
         }
-        return new Object[]{new LongList(), new DoubleList()};
 
     }
 

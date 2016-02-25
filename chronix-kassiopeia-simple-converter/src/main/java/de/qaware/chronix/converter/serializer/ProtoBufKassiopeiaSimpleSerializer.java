@@ -25,11 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.Iterator;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Stream;
 
 /**
  * Class to easily convert the protocol buffer into Point<Long,Double>
@@ -128,7 +125,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     }
 
     /**
-     * Converts the given iterator of our point class to the protocol buffer format
+     * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
      * @param metricDataPoints - the list with points
      * @return a protocol buffer points object

@@ -45,7 +45,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         then:
         tsReconverted.metric == "\\Load\\avg"
         tsReconverted.size() == 21
-        tsReconverted.get(1) == 2
+        tsReconverted.getValue(1) == 2
         tsReconverted.attribute("MyField") == 4711
 
     }
@@ -66,7 +66,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         then:
         tsReconverted.metric == "\\Load\\avg"
         tsReconverted.size() == 1
-        tsReconverted.get(0) == 4711d
+        tsReconverted.getValue(0) == 4711d
         tsReconverted.start == 5
         tsReconverted.end == 5
     }
@@ -88,7 +88,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         then:
         tsReconverted.metric == "\\Load\\avg"
         tsReconverted.size() == 4
-        tsReconverted.get(3) == 4714d
+        tsReconverted.getValue(3) == 4714d
         tsReconverted.start == 0
         tsReconverted.end == 3
     }

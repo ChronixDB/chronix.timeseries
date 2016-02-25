@@ -15,7 +15,6 @@
  */
 package de.qaware.chronix.converter.serializer
 
-import de.qaware.chronix.converter.common.Compression
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import de.qaware.chronix.timeseries.dt.Point
 import spock.lang.Shared
@@ -44,8 +43,8 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def ts = builder.build();
         then:
         100.times {
-            ts.get(it) == it * 100
-            ts.getTimestamps().get(it) == it
+            ts.getValue(it) == it * 100
+            ts.getTime(it) == it
         }
     }
 
