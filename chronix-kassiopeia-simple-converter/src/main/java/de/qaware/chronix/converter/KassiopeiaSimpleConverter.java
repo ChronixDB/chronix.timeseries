@@ -15,21 +15,16 @@
  */
 package de.qaware.chronix.converter;
 
-import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSimpleSerializer;
-import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.dt.DoubleList;
 import de.qaware.chronix.timeseries.dt.LongList;
-import de.qaware.chronix.timeseries.dt.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.Iterator;
 
 /**
  * The kassiopeia time series converter for the simple time series class
@@ -79,12 +74,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
     }
 
     private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
-        InputStream decompressedBytes = Compression.decompressToStream(binaryTimeSeries.getPoints());
-        Iterator<Point> points = ProtoBufKassiopeiaSimpleSerializer.from(decompressedBytes, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd);
-        while (points.hasNext()) {
-            Point p = points.next();
-            builder.point(p.getTimestamp(), p.getValue());
-        }
+        ProtoBufKassiopeiaSimpleSerializer.from(binaryTimeSeries.getPoints(), binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd, builder);
     }
 
     private void fromJson(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
@@ -109,13 +99,12 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         //serialize
-        SimpleProtocolBuffers.Points serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(timeSeries.points().iterator());
-        byte[] compressedJson = Compression.compress(serializedPoints.toByteArray());
+        byte[] compressedPoints = ProtoBufKassiopeiaSimpleSerializer.to(timeSeries.points().iterator());
 
         //Add the minimum required fields
         builder.start(timeSeries.getStart())
                 .end(timeSeries.getEnd())
-                .data(compressedJson);
+                .data(compressedPoints);
 
         //Currently we only have a metric
         builder.field(MetricTSSchema.METRIC, timeSeries.getMetric());

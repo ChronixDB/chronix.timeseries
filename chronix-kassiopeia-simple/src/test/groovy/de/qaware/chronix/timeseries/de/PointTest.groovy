@@ -19,11 +19,11 @@ import de.qaware.chronix.timeseries.dt.Point
 import spock.lang.Specification
 
 /**
- * Unit test for the pair class
+ * Unit test for the point class
  */
 class PointTest extends Specification {
 
-    def "test pair"() {
+    def "test point"() {
         when:
         def pair = new Point(0 as int, 1 as long, 2 as double)
 

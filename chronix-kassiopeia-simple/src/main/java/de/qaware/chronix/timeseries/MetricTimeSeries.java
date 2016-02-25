@@ -104,6 +104,9 @@ public final class MetricTimeSeries {
      * @return the points as points
      */
     public Stream<Point> points() {
+        if (timestamps.isEmpty()) {
+            return Stream.empty();
+        }
         return Stream.iterate(of(0), pair -> of(pair.getIndex() + 1)).limit(timestamps.size());
     }
 

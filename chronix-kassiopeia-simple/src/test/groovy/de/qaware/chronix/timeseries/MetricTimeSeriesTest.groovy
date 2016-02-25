@@ -19,6 +19,8 @@ import de.qaware.chronix.timeseries.dt.DoubleList
 import de.qaware.chronix.timeseries.dt.LongList
 import spock.lang.Specification
 
+import java.util.stream.Stream
+
 /**
  * Unit test for the metric time series
  * @author f.lautenschlager
@@ -26,7 +28,6 @@ import spock.lang.Specification
 class MetricTimeSeriesTest extends Specification {
 
     def "test create a metric time series and access its values"() {
-
         given:
         def times = new LongList()
         def values = new DoubleList()
@@ -61,7 +62,7 @@ class MetricTimeSeriesTest extends Specification {
     }
 
 
-    def "test pairs"() {
+    def "test points"() {
         given:
         def times = new LongList()
         def values = new DoubleList()
@@ -176,6 +177,11 @@ class MetricTimeSeriesTest extends Specification {
         expect:
         ts.hashCode() == ts2.hashCode()
         ts.hashCode() != ts3.hashCode()
+    }
+
+    def "test emtpy points"() {
+        expect:
+        new MetricTimeSeries.Builder("").build().points().count() == 0l
     }
 
 }

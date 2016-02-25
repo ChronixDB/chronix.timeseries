@@ -16,14 +16,20 @@
 package de.qaware.chronix.converter.serializer;
 
 
+import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
+import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.dt.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Stream;
 
 /**
  * Class to easily convert the protocol buffer into Point<Long,Double>
@@ -48,32 +54,77 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     }
 
     /**
-     * Returns an iterator to the points from the given byte array encoded data string
+     * Adds the points (compressed byte array) to the given builder
      *
-     * @param points          - the input stream of points
-     * @param timeSeriesStart - the start of the time series
-     * @param timeSeriesEnd   - the end of the time series
-     * @return an iterator to the points
+     * @param compressedBytes the compressed bytes holding the data points
+     * @param timeSeriesStart the start of the time series
+     * @param timeSeriesEnd   the end of the time series
+     * @param builder         the time series builder
      */
-    public static Iterator<Point> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd) {
-        return new PointIterator(points, timeSeriesStart, timeSeriesEnd, -1, -1);
+    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, MetricTimeSeries.Builder builder) {
+        from(compressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, builder);
     }
 
 
     /**
-     * Returns an iterator to the points from the given byte array encoded data string
+     * Adds the points (compressed byte array) to the given builder
      *
-     * @param points          - the input stream of points
-     * @param from            - including points from
-     * @param to              - including points to
-     * @param timeSeriesStart - the start of the time series  @return an iterator to the points
-     * @return an iterator of pairs (timestamp, value)
+     * @param compressedBytes the compressed bytes holding the data points
+     * @param timeSeriesStart the start of the time series
+     * @param timeSeriesEnd   the end of the time series
+     * @param from            including points from
+     * @param to              including points to
+     * @param builder         the time series builder
      */
-    public static Iterator<Point> from(final InputStream points, long timeSeriesStart, long timeSeriesEnd, long from, long to) {
+    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, MetricTimeSeries.Builder builder) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
-        return new PointIterator(points, timeSeriesStart, timeSeriesEnd, from, to);
+
+        //if to is left of the time series, we have no points to return
+        if (to < timeSeriesStart) {
+            return;
+        }
+        //if from is greater  to, we have nothing to return
+        if (from > to) {
+            return;
+        }
+
+        //if from is right of the time series we have nothing to return
+        if (from > timeSeriesEnd) {
+            return;
+        }
+
+        try {
+            InputStream points = Compression.decompressToStream(compressedBytes);
+            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(points);
+
+            long lastOffset = ALMOST_EQUALS_OFFSET_MS;
+            long calculatedPointDate = timeSeriesStart;
+
+            List<SimpleProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
+
+            for (int i = 0; i < pList.size(); i++) {
+                SimpleProtocolBuffers.Point p = pList.get(i);
+
+                if (i > 0) {
+                    long offset = p.getT();
+                    if (offset != 0) {
+                        lastOffset = offset;
+                    }
+                    calculatedPointDate += lastOffset;
+                }
+
+                //only add the point if it is within the date
+                if (calculatedPointDate >= from && calculatedPointDate <= to) {
+                    builder.point(calculatedPointDate, p.getV());
+                }
+            }
+
+        } catch (IOException e) {
+            LOGGER.info("Could not decode protocol buffers points");
+        }
+
     }
 
     /**
@@ -82,7 +133,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param metricDataPoints - the list with points
      * @return a protocol buffer points object
      */
-    public static SimpleProtocolBuffers.Points to(Iterator<Point> metricDataPoints) {
+    public static byte[] to(Iterator<Point> metricDataPoints) {
         long previousDate = 0;
         long previousOffset = 0;
 
@@ -129,7 +180,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             previousDate = p.getTimestamp();
         }
 
-        return points.build();
+        return Compression.compress(points.build().toByteArray());
     }
 
     private static boolean noDrift(long timestamp, long lastStoredDate, int timesSinceLastOffset) {
@@ -139,128 +190,8 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
         return (drift <= (ALMOST_EQUALS_OFFSET_MS / 2));
     }
 
-
     private static boolean almostEquals(long previousOffset, long offset) {
         double diff = Math.abs(offset - previousOffset);
         return (diff <= ALMOST_EQUALS_OFFSET_MS);
-    }
-
-
-    /**
-     * Iterator that returns Point<Long,Double> from the decompressed input stream
-     */
-    private static class PointIterator implements Iterator<Point> {
-
-        private int size;
-        private int current = 0;
-        private SimpleProtocolBuffers.Points protocolBufferPoints;
-        private long lastOffset = 0;
-        private long lastDate;
-        private long timeSeriesEnd;
-        private long timeSeriesStart;
-
-        private long from;
-        private long to;
-
-        /**
-         * Constructs a point iterator
-         *
-         * @param pointStream     - the points
-         * @param from            - including points from
-         * @param to              - including points to
-         * @param timeSeriesStart - start of the time series
-         */
-        public PointIterator(final InputStream pointStream, long timeSeriesStart, long timeSeriesEnd, long from, long to) {
-            try {
-                protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(pointStream);
-                size = protocolBufferPoints.getPCount();
-
-                this.timeSeriesStart = timeSeriesStart;
-                this.timeSeriesEnd = timeSeriesEnd;
-                this.from = from;
-                this.to = to;
-
-                this.lastDate = timeSeriesStart;
-
-            } catch (Exception e) {
-                throw new IllegalStateException("Could not decode data to protocol buffer points.", e);
-            }
-        }
-
-        /**
-         * return true if the iterator points to more points
-         */
-        @Override
-        public boolean hasNext() {
-
-            //check if the given time range is valid
-            if (from != -1 & to != -1) {
-                //if to is left of the time series, we have no points to return
-                if (to < timeSeriesStart) {
-                    return false;
-                }
-                //if from is greater  to, we have nothing to return
-                if (from > to) {
-                    return false;
-                }
-                //if from is right of the time series we have nothing to return
-                if (from > timeSeriesEnd) {
-                    return false;
-                }
-
-                //check if the last date is greater than to
-                if (lastDate >= to) {
-                    return false;
-                }
-
-            }
-
-            //otherwise we check the current index position
-            return size > current;
-        }
-
-        /**
-         * @return the next point
-         */
-        @Override
-        public Point next() {
-
-            if (!hasNext()) {
-                throw new NoSuchElementException("No more elements.");
-            }
-
-            Point currentPoint = nextPoint();
-
-            while (lastDate < from) {
-                currentPoint = nextPoint();
-            }
-
-            return currentPoint;
-        }
-
-        private Point nextPoint() {
-            Point p = convertToPoint(protocolBufferPoints.getP(current), lastDate);
-            lastDate = p.getTimestamp();
-            current++;
-            return p;
-        }
-
-        private Point convertToPoint(SimpleProtocolBuffers.Point m, long lastDate) {
-            //set the default offset for following points
-            if (current == 1) {
-                lastOffset = ALMOST_EQUALS_OFFSET_MS;
-            }
-
-            long offset = m.getT();
-            if (offset != 0) {
-                lastOffset = offset;
-            }
-            return new Point(current, lastDate + lastOffset, m.getV());
-        }
-
-        @Override
-        public void remove() {
-            //does not make sense
-        }
     }
 }
