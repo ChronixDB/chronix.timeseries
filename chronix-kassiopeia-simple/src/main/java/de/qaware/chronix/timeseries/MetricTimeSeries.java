@@ -72,13 +72,19 @@ public final class MetricTimeSeries {
     /**
      * Gets the metric data point at the index i
      *
-     * @param i - the index position of the metric value
+     * @param i the index position of the metric value
      * @return the metric value
      */
     public double getValue(int i) {
         return values.get(i);
     }
 
+    /**
+     * Gets the timestamp at the given index
+     *
+     * @param i the index position of the time stamp
+     * @return the timestamp as long
+     */
     public long getTime(int i) {
         return timestamps.get(i);
     }
