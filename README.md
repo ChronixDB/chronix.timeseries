@@ -2,6 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/ChronixDB/chronix.kassiopeia/badge.svg?branch=master&service=github)](https://coveralls.io/github/ChronixDB/chronix.kassiopeia?branch=master)
 [![Stories in Ready](https://badge.waffle.io/ChronixDB/chronix.kassiopeia.png?label=ready&title=Ready)](https://waffle.io/ChronixDB/chronix.kassiopeia)
 [![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.kassiopeia/blob/master/LICENSE)
+[ ![Download](https://api.bintray.com/packages/chronix/maven/chronix-kassiopeia/images/download.svg) ](https://bintray.com/chronix/maven/chronix-kassiopeia/_latestVersion)
 
 # Chronix Kassiopeia
 Chronix Kassiopeia is a library that provides classes and functions to work with time series.
