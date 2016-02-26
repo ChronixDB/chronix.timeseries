@@ -146,11 +146,11 @@ repositories {
     }
 }
 dependencies {
-   compile 'de.qaware.chronix:chronix-kassiopeia:0.1.1'
-   compile 'de.qaware.chronix:chronix-kassiopeia-converter:0.1.1'
+   compile 'de.qaware.chronix:chronix-kassiopeia:0.1.4'
+   compile 'de.qaware.chronix:chronix-kassiopeia-converter:0.1.4'
    //or use the simple time series class
-   compile 'de.qaware.chronix:chronix-kassiopeia-simple:0.1.1'
-   compile 'de.qaware.chronix:chronix-kassiopeia-simple-converter:0.1.1'
+   compile 'de.qaware.chronix:chronix-kassiopeia-simple:0.1.4'
+   compile 'de.qaware.chronix:chronix-kassiopeia-simple-converter:0.1.4'
 }
  
 ```
