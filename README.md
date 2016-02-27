@@ -133,7 +133,14 @@ query.addFilterQuery("ag=max");
 //The result is a Java Stream. We simply collect the result into a list.
 List<MetricTimeSeries> maxTS = chronix.stream(solr, query).collect(Collectors.toList());
 ```
-
+#### Serialization and Date-Delta-Compaction
+The Kassiopeia-Simple-Converter uses Protocol Buffers to serialize the points of a time series and GZIP for compression.
+Part of the serialization is a so called Date-Delta-Compaction algorithm.
+The algorithms calculates the deltas between the timestamps and writes them out.
+This reduces the storage demand due to the fact that the deltas are smaller values than raw timestamps.
+Furthermore a user can define a threshold that is applied to the delta of the deltas.
+If the delta of two deltas is below the threshold, we assum that the deltas are equal and we only write the first delta.
+[See](https://github.com/ChronixDB/chronix.kassiopeia/tree/master/chronix-kassiopeia-simple-converter#date-delta-compaction) for more details about the time series serialization.
 
 
 ## Usage
