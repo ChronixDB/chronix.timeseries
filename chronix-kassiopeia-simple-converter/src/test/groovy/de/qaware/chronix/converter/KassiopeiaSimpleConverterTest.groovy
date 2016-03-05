@@ -55,7 +55,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         def converter = new KassiopeiaSimpleConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
-                .field("value", 4711d)
+                .field("function_value", 4711d)
                 .field("metric", "\\Load\\avg")
                 .start(0)
                 .end(10)
@@ -76,7 +76,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         def converter = new KassiopeiaSimpleConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
-                .field("value", 4711d)
+                .field("function_value", 4711d)
                 .field("metric", "\\Load\\avg")
                 .field("dataAsJson", "[[0,1,2,3],[4711.0,4712.0,4713.0,4714.0]]")
                 .start(0)
@@ -98,7 +98,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         def converter = new KassiopeiaSimpleConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
-                .field("value", 4711d)
+                .field("function_value", 4711d)
                 .field("metric", "\\Load\\avg")
                 .field("dataAsJson", new String("[[0,1,2,3],[4711.0,4712.0,4713.0,4714.0]]".getBytes("IBM420")))
                 .start(0)

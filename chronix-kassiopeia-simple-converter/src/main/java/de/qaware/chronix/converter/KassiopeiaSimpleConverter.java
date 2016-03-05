@@ -32,7 +32,7 @@ import java.nio.charset.Charset;
 public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTimeSeries> {
 
     public static final String DATA_AS_JSON_FIELD = "dataAsJson";
-    public static final String DATA_AGGREGATED_FIELD = "value";
+    public static final String DATA_FUNCTION_VALUE = "function_value";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KassiopeiaSimpleConverter.class);
 
@@ -53,9 +53,9 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
             //do it from json
             fromJson(binaryTimeSeries, queryStart, queryEnd, builder);
 
-        } else {
-            //we have a aggregation result
-            double value = Double.valueOf(binaryTimeSeries.get(DATA_AGGREGATED_FIELD).toString());
+        } else if (binaryTimeSeries.get(DATA_FUNCTION_VALUE) != null) {
+            //we have a function (aggregation) result
+            double value = Double.valueOf(binaryTimeSeries.get(DATA_FUNCTION_VALUE).toString());
             long meanDate = meanDate(binaryTimeSeries);
             builder.point(meanDate, value);
         }
