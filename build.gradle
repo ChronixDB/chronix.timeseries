@@ -28,7 +28,7 @@ allprojects {
     apply plugin: 'jacoco'
     apply plugin: 'com.github.kt3k.coveralls'
 
-    version '0.1.7-alpha-01'
+    version '0.1.7-alpha-02'
 
     group 'de.qaware.chronix'
 
