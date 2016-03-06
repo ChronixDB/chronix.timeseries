@@ -334,6 +334,29 @@ class LongListTest extends Specification {
         list1.contains(3l)
     }
 
+    def "test addAll with array"() {
+        given:
+        def list1 = new LongList()
+        def list2 = [4l, 5l, 6l] as long[]
+
+        when:
+        list1.add(1l)
+        list1.add(2l)
+        list1.add(3l)
+
+
+        def result = list1.addAll(list2)
+        then:
+        result
+        list1.size() == 6
+        list1.contains(1l)
+        list1.contains(2l)
+        list1.contains(3l)
+        list1.contains(4l)
+        list1.contains(5l)
+        list1.contains(6l)
+    }
+
 
     def "test addAll at index"() {
         given:
@@ -505,9 +528,9 @@ class LongListTest extends Specification {
         def list = new LongList(2)
 
         when:
-        list.add(1L)
-        list.add(2L)
-        list.add(3L)
+        list.add(1l)
+        list.add(2l)
+        list.add(3l)
 
         then:
         list.size() == 3
@@ -518,7 +541,7 @@ class LongListTest extends Specification {
         def list = new LongList(initialArray, lastValidValue)
 
         when:
-        list.add(765L)
+        list.add(765l)
 
         then:
         list.size() == size

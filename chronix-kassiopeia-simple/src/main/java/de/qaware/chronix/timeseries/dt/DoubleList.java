@@ -353,6 +353,24 @@ public class DoubleList {
     }
 
     /**
+     * Appends the long[] at the end of this long list.
+     *
+     * @param otherDoubles the other double[] that is appended
+     * @return <tt>true</tt> if this list changed as a result of the call
+     * @throws NullPointerException if the specified array is null
+     */
+    public boolean addAll(double[] otherDoubles) {
+        int numNew = otherDoubles.length;
+
+        int newCapacity = calculateNewCapacity(doubles.length, size + numNew);
+        growIfNeeded(newCapacity);
+
+        System.arraycopy(otherDoubles, 0, doubles, size, numNew);
+        size += numNew;
+        return numNew != 0;
+    }
+
+    /**
      * Inserts all of the elements in the specified collection into this
      * list, starting at the specified position.  Shifts the element
      * currently at that position (if any) and any subsequent elements to

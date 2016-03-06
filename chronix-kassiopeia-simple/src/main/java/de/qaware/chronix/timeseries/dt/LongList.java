@@ -350,6 +350,24 @@ public class LongList {
     }
 
     /**
+     * Appends the long[] at the end of this long list.
+     *
+     * @param otherLongs the other long[] that is appended
+     * @return <tt>true</tt> if this list changed as a result of the call
+     * @throws NullPointerException if the specified array is null
+     */
+    public boolean addAll(long[] otherLongs) {
+        int numNew = otherLongs.length;
+
+        int newCapacity = calculateNewCapacity(longs.length, size + numNew);
+        growIfNeeded(newCapacity);
+
+        System.arraycopy(otherLongs, 0, longs, size, numNew);
+        size += numNew;
+        return numNew != 0;
+    }
+
+    /**
      * Inserts all of the elements in the specified collection into this
      * list, starting at the specified position.  Shifts the element
      * currently at that position (if any) and any subsequent elements to
@@ -382,6 +400,7 @@ public class LongList {
         size += numNew;
         return numNew != 0;
     }
+
 
     /**
      * Removes from this list all of the elements whose index is between
@@ -453,4 +472,6 @@ public class LongList {
                 .append(size)
                 .toHashCode();
     }
+
+
 }

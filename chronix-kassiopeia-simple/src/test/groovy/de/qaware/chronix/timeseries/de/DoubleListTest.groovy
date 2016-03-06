@@ -54,10 +54,10 @@ class DoubleListTest extends Specification {
         def list = new DoubleList(20)
 
         when:
-        list.add(1D)
-        list.add(2D)
-        list.add(3D)
-        list.add(4D)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
+        list.add(4d)
 
         list.remove(2)
         then:
@@ -320,18 +320,41 @@ class DoubleListTest extends Specification {
         def list2 = new DoubleList()
 
         when:
-        list1.add(1D)
-        list1.add(2D)
-        list1.add(3D)
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
 
 
         def result = list1.addAll(list2)
         then:
         !result
         list1.size() == 3
-        list1.contains(1D)
-        list1.contains(2D)
-        list1.contains(3D)
+        list1.contains(1d)
+        list1.contains(2d)
+        list1.contains(3d)
+    }
+
+    def "test addAll with array"() {
+        given:
+        def list1 = new DoubleList()
+        def list2 = [4d, 5d, 6d] as double[]
+
+        when:
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
+
+
+        def result = list1.addAll(list2)
+        then:
+        result
+        list1.size() == 6
+        list1.contains(1d)
+        list1.contains(2d)
+        list1.contains(3d)
+        list1.contains(4d)
+        list1.contains(5d)
+        list1.contains(6d)
     }
 
 
@@ -461,9 +484,9 @@ class DoubleListTest extends Specification {
 
     def otherList() {
         def list = new DoubleList(50)
-        list.add(1D)
-        list.add(2D)
-        list.add(3D)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
 
         list.remove(1)
 
@@ -508,9 +531,9 @@ class DoubleListTest extends Specification {
 
 
         when:
-        list.add(1D)
-        list.add(2D)
-        list.add(3D)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
 
 
         then:
@@ -522,7 +545,7 @@ class DoubleListTest extends Specification {
         def list = new DoubleList(initialArray, lastValidValue)
 
         when:
-        list.add(765D)
+        list.add(765d)
 
         then:
         list.size() == size

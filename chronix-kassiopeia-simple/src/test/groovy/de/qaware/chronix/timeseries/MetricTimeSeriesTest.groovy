@@ -58,6 +58,9 @@ class MetricTimeSeriesTest extends Specification {
         ts.getTime(0) == 0
         ts.getValues().size() == 11
         ts.getValue(0) == 0
+        //check array copy
+        ts.getTimestampsAsArray().length == 11
+        ts.getValuesAsArray().length == 11
         !ts.isEmpty()
     }
 

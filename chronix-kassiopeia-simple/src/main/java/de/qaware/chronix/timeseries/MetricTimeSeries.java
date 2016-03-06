@@ -62,10 +62,31 @@ public final class MetricTimeSeries {
     }
 
     /**
+     * In some cases if one just want to access all values,
+     * that method is faster than {@see getTimestamps} due to no {@see LongList} initialization.
+     *
+     * @return a copy of the timestamps as array
+     */
+    public long[] getTimestampsAsArray() {
+        return timestamps.toArray();
+    }
+
+    /**
      * @return a copy of the metric data points
      */
     public DoubleList getValues() {
         return values.copy();
+    }
+
+
+    /**
+     * In some cases if one just want to access all values,
+     * that method is faster than {@see getValues} due to no {@see DoubleList} initialization.
+     *
+     * @return a copy of the values as array
+     */
+    public double[] getValuesAsArray() {
+        return values.toArray();
     }
 
 
@@ -139,8 +160,8 @@ public final class MetricTimeSeries {
     /**
      * Adds all the given points to the time series
      *
-     * @param timestamps - the timestamps
-     * @param values     - the values
+     * @param timestamps the timestamps
+     * @param values     the values
      */
     public final void addAll(List<Long> timestamps, List<Double> values) {
         for (int i = 0; i < timestamps.size(); i++) {
@@ -149,10 +170,19 @@ public final class MetricTimeSeries {
     }
 
     /**
+     * @param timestamps the timestamps as long[]
+     * @param values     the values as double[]
+     */
+    public final void addAll(long[] timestamps, double[] values) {
+        this.timestamps.addAll(timestamps);
+        this.values.addAll(values);
+    }
+
+    /**
      * Adds a single timestamp and value
      *
-     * @param timestamp - the timestamp
-     * @param value     - the value
+     * @param timestamp the timestamp
+     * @param value     the value
      */
     public final void add(long timestamp, double value) {
         this.timestamps.add(timestamp);
