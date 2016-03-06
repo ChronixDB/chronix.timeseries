@@ -78,7 +78,6 @@ public final class MetricTimeSeries {
         return values.copy();
     }
 
-
     /**
      * In some cases if one just want to access all values,
      * that method is faster than {@see getValues} due to no {@see DoubleList} initialization.
@@ -88,7 +87,6 @@ public final class MetricTimeSeries {
     public double[] getValuesAsArray() {
         return values.toArray();
     }
-
 
     /**
      * Gets the metric data point at the index i
@@ -217,10 +215,20 @@ public final class MetricTimeSeries {
     }
 
     /**
-     * @return a copy of the attribute of this time series
+     * @return a copy of the attributes of this time series
      */
     public Map<String, Object> attributes() {
         return new HashMap<>(attributes);
+    }
+
+    /**
+     * This method should be used with care as it delivers the reference.
+     *
+     * @return the attributes of this time series
+     */
+    @SuppressWarnings("all")
+    public Map<String, Object> getAttributesReference() {
+        return attributes;
     }
 
     /**

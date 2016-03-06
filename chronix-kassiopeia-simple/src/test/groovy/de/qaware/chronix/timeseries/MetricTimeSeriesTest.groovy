@@ -50,6 +50,7 @@ class MetricTimeSeriesTest extends Specification {
         ts.end == 10
         ts.metric == "//CPU//Load"
         ts.attributes().size() == 3
+        ts.attributesReference.size() == 3
         ts.attribute("host") == "laptop"
         ts.attribute("avg") == 2.23
         ts.attribute("thread") == 2 as long
@@ -182,11 +183,40 @@ class MetricTimeSeriesTest extends Specification {
         ts.hashCode() != ts3.hashCode()
     }
 
-    def "test emtpy points"() {
+    def "test empty points"() {
         expect:
         def ts = new MetricTimeSeries.Builder("").build()
         ts.points().count() == 0l
         ts.isEmpty()
     }
 
+    def "test add all as array"() {
+        given:
+        def times = []
+        def values = []
+        10.times {
+            times.add(100 - it as long)
+            values.add(100 - it as double)
+        }
+        def ts = new MetricTimeSeries.Builder("//CPU//Load").build()
+        ts.addAll(times as long[], values as double[])
+
+        when:
+        ts.sort()
+
+        then:
+        ts.getValue(0) == 91
+    }
+
+    def "test attribute reference"() {
+        given:
+        def ts = new MetricTimeSeries.Builder("//CPU//Load")
+                .attribute("added via builder", "oh dear")
+                .build()
+        when:
+        ts.getAttributesReference().clear()
+
+        then:
+        ts.attributes().size() == 0
+    }
 }
