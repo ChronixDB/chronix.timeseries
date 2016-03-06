@@ -70,6 +70,25 @@ public class DoubleList {
         this.doubles = DEFAULT_CAPACITY_EMPTY_ELEMENT_DATA;
     }
 
+    /**
+     * Constructs a double list from the given values by simple assigning them.
+     *
+     * @param longs the values of the double list.
+     * @param size  the index of the last value in the array.
+     */
+    @SuppressWarnings("all")
+    public DoubleList(double[] longs, int size) {
+        if (longs == null) {
+            throw new IllegalArgumentException("Illegal initial array 'null'");
+        }
+        if (size < 0) {
+            throw new IllegalArgumentException("Size if negative.");
+        }
+
+        this.doubles = longs;
+        this.size = size;
+    }
+
 
     /**
      * Returns the number of elements in this list.

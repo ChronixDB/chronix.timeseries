@@ -28,8 +28,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
 
     def "test to and from compressed data"() {
         given:
-        def ts = new MetricTimeSeries.Builder("\\Load\\avg")
-                .attribute("MyField", 4711)
+        def ts = new MetricTimeSeries.Builder("\\Load\\avg").attribute("MyField", 4711)
         def start = Instant.now()
 
         100.times {

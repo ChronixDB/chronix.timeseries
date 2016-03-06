@@ -60,7 +60,6 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
             builder.point(meanDate, value);
         }
 
-
         //add all user defined attributes
         binaryTimeSeries.getFields().forEach((field, value) -> {
             if (MetricTSSchema.isUserDefined(field)) {

@@ -19,6 +19,8 @@ package de.qaware.chronix.converter.serializer;
 import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
+import de.qaware.chronix.timeseries.dt.DoubleList;
+import de.qaware.chronix.timeseries.dt.LongList;
 import de.qaware.chronix.timeseries.dt.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,16 +95,24 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
         }
 
         try {
-            InputStream points = Compression.decompressToStream(compressedBytes);
-            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(points);
+            InputStream decompressedPointStream = Compression.decompressToStream(compressedBytes);
+            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(decompressedPointStream);
 
             long lastOffset = ALMOST_EQUALS_OFFSET_MS;
             long calculatedPointDate = timeSeriesStart;
 
             List<SimpleProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
 
-            for (int i = 0; i < pList.size(); i++) {
-                SimpleProtocolBuffers.Point p = pList.get(i);
+            int size = pList.size();
+            SimpleProtocolBuffers.Point[] points = pList.toArray(new SimpleProtocolBuffers.Point[0]);
+
+            long[] timestamps = new long[pList.size()];
+            double[] values = new double[pList.size()];
+
+            int lastPointIndex = 0;
+
+            for (int i = 0; i < size; i++) {
+                SimpleProtocolBuffers.Point p = points[i];
 
                 if (i > 0) {
                     long offset = p.getT();
@@ -114,9 +124,12 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
                 //only add the point if it is within the date
                 if (calculatedPointDate >= from && calculatedPointDate <= to) {
-                    builder.point(calculatedPointDate, p.getV());
+                    timestamps[i] = calculatedPointDate;
+                    values[i] = p.getV();
+                    lastPointIndex++;
                 }
             }
+            builder.points(new LongList(timestamps, lastPointIndex), new DoubleList(values, lastPointIndex));
 
         } catch (IOException e) {
             LOGGER.info("Could not decode protocol buffers points");

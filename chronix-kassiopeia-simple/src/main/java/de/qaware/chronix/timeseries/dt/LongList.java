@@ -72,6 +72,24 @@ public class LongList {
     }
 
     /**
+     * Constructs a long list from the given longs by simple assigning them.
+     *
+     * @param longs the values of the double list.
+     * @param size  the index of the last value in the array.
+     */
+    @SuppressWarnings("all")
+    public LongList(long[] longs, int size) {
+        if (longs == null) {
+            throw new IllegalArgumentException("Illegal initial array 'null'");
+        }
+        if (size < 0) {
+            throw new IllegalArgumentException("Size if negative.");
+        }
+        this.longs = longs;
+        this.size = size;
+    }
+
+    /**
      * Returns the number of elements in this list.
      *
      * @return the number of elements in this list

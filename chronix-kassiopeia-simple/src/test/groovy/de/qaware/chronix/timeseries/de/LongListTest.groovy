@@ -512,4 +512,34 @@ class LongListTest extends Specification {
         then:
         list.size() == 3
     }
+
+    def "test array constructor"() {
+        given:
+        def list = new LongList(initialArray, lastValidValue)
+
+        when:
+        list.add(765L)
+
+        then:
+        list.size() == size
+
+        where:
+        initialArray << [[1, 2, 3] as long[], [] as long[]]
+        lastValidValue << [3, 0]
+        size << [4, 1]
+    }
+
+    def "test array constructor null array"() {
+        when:
+        new LongList(null, 0)
+        then:
+        thrown IllegalArgumentException
+    }
+
+    def "test array constructor negative size"() {
+        when:
+        new LongList([] as long[], -1)
+        then:
+        thrown IllegalArgumentException
+    }
 }

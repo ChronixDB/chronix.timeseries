@@ -517,5 +517,36 @@ class DoubleListTest extends Specification {
         list.size() == 3
     }
 
+    def "test array constructor"() {
+        given:
+        def list = new DoubleList(initialArray, lastValidValue)
+
+        when:
+        list.add(765D)
+
+        then:
+        list.size() == size
+
+        where:
+        initialArray << [[1, 2, 3] as double[], [] as double[]]
+        lastValidValue << [3, 0]
+        size << [4, 1]
+
+    }
+
+    def "test array constructor null array"() {
+        when:
+        new DoubleList(null, 0)
+        then:
+        thrown IllegalArgumentException
+    }
+
+    def "test array constructor negative size"() {
+        when:
+        new DoubleList([] as double[], -1)
+        then:
+        thrown IllegalArgumentException
+    }
+
 
 }
