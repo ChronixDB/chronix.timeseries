@@ -50,8 +50,8 @@ public final class MetricTimeSeries {
      * To instantiate a metric time series use the builder class.
      */
     private MetricTimeSeries() {
-        timestamps = new LongList(5000);
-        values = new DoubleList(5000);
+        timestamps = new LongList(500);
+        values = new DoubleList(500);
     }
 
     /**
