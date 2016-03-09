@@ -107,14 +107,14 @@ public class GenericTimeSeries<T> {
      * @param key the attribute key
      * @return the value as object
      */
-    public Object attribute(String key) {
+    public Object getAttribute(String key) {
         return attributes.get(key);
     }
 
     /**
      * @return a copy of the attributes of this time series
      */
-    public Map<String, Object> attributes() {
+    public Map<String, Object> getAttributes() {
         return new HashMap<>(attributes);
     }
 
