@@ -51,6 +51,28 @@ public class GenericTimeSeries<T> {
     }
 
     /**
+     * @return the start of the time series
+     */
+    public long getStart() {
+        if (timestamps.isEmpty()) {
+            return 0;
+        } else {
+            return timestamps.get(0);
+        }
+    }
+
+    /**
+     * @return the end of the time series
+     */
+    public long getEnd() {
+        if (timestamps.isEmpty()) {
+            return 0;
+        } else {
+            return timestamps.get(timestamps.size() - 1);
+        }
+    }
+
+    /**
      * Sorts the timestamps of the time series in ascending order.
      */
     public void sort() {
