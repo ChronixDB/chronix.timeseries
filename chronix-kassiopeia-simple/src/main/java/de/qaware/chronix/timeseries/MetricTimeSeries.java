@@ -197,8 +197,8 @@ public final class MetricTimeSeries {
     /**
      * Adds an attribute to the time series
      *
-     * @param key   - the key
-     * @param value - the value
+     * @param key   the key
+     * @param value the value
      */
     private void addAttribute(String key, Object value) {
         attributes.put(key, value);
@@ -207,7 +207,7 @@ public final class MetricTimeSeries {
     /**
      * Get the attribute for the given key
      *
-     * @param key - the attribute key
+     * @param key the attribute key
      * @return the value as object
      */
     public Object attribute(String key) {
