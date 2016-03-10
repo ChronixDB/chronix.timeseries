@@ -44,6 +44,7 @@ public final class KassiopeiaSimpleDefaults {
 
     /**
      * Default reduce function.
+     * Attributes in both collected and reduced are merged using set holding both values.
      */
     public static final BinaryOperator<MetricTimeSeries> REDUCE = (collected, reduced) -> {
         collected.addAll(reduced.getTimestampsAsArray(), reduced.getValuesAsArray());
