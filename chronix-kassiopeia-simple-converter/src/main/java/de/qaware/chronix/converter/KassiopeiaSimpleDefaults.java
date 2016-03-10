@@ -15,8 +15,67 @@
  */
 package de.qaware.chronix.converter;
 
+import de.qaware.chronix.timeseries.MetricTimeSeries;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+
 /**
+ * Holds default group by and reduce functions for the kassiopeia-simple time series
+ *
  * @author f.lautenschlager
  */
-public class KassiopeiaSimpleDefaults {
+public final class KassiopeiaSimpleDefaults {
+
+    private KassiopeiaSimpleDefaults() {
+        //avoid instances
+    }
+
+
+    /**
+     * Default group by function for the metric time series class.
+     * Groups time series on its metric name.
+     */
+    public static final Function<MetricTimeSeries, String> GROUP_BY = MetricTimeSeries::getMetric;
+
+    /**
+     * Default reduce function.
+     */
+    public static final BinaryOperator<MetricTimeSeries> REDUCE = (collected, reduced) -> {
+        collected.addAll(reduced.getTimestampsAsArray(), reduced.getValuesAsArray());
+
+        //The collected attributes
+        Map<String, Object> attributesReference = collected.getAttributesReference();
+
+        //merge the attributes
+        //we iterate over the copy
+        for (HashMap.Entry<String, Object> entry : reduced.attributes().entrySet()) {
+            //Attribute to add
+            String attributeToAdd = entry.getKey();
+            if (attributesReference.containsKey(attributeToAdd)) {
+                Object value = attributesReference.get(attributeToAdd);
+
+                //the value is already a set with values for the given attribute name
+                if (value instanceof Set) {
+                    ((Set) value).add(entry.getValue());
+                } else {
+                    //otherwise we create a new set
+                    Set<Object> set = new HashSet<>();
+                    set.add(value);
+                    set.add(entry.getValue());
+                    attributesReference.put(attributeToAdd, set);
+                }
+            } else {
+                Set<Object> set = new HashSet<>();
+                set.add(entry.getValue());
+                attributesReference.put(attributeToAdd, set);
+            }
+
+        }
+        return collected;
+    };
 }
