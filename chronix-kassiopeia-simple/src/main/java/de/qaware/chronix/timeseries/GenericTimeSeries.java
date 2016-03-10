@@ -31,7 +31,7 @@ import java.util.stream.Stream;
  * @param <T> the type of the value
  * @author f.lautenschlager
  */
-public class GenericTimeSeries<T> {
+public final class GenericTimeSeries<T> {
 
     //Metric or name, however we should have a identifier
     private String metric;
@@ -51,12 +51,20 @@ public class GenericTimeSeries<T> {
     }
 
     /**
+     * @return the metric of the time series
+     */
+    public String getMetric() {
+        return metric;
+    }
+
+    /**
      * @return the start of the time series
      */
     public long getStart() {
         if (timestamps.isEmpty()) {
             return 0;
         } else {
+            //return the first
             return timestamps.get(0);
         }
     }
@@ -68,6 +76,7 @@ public class GenericTimeSeries<T> {
         if (timestamps.isEmpty()) {
             return 0;
         } else {
+            //return the last element
             return timestamps.get(timestamps.size() - 1);
         }
     }
@@ -148,7 +157,9 @@ public class GenericTimeSeries<T> {
 
 
     /**
-     * The Builder class
+     * The Builder class.
+     *
+     * @param <T> the value type of the time series
      */
     public static final class Builder<T> {
 

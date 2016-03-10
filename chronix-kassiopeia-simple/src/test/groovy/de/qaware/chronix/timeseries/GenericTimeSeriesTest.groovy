@@ -44,6 +44,16 @@ class GenericTimeSeriesTest extends Specification {
         sortedPoints.get(2).value == "six"
     }
 
+    def "test metric"() {
+        given:
+        def genericTimeSeries = new GenericTimeSeries.Builder<String>("test-generic-time-series").build()
+        when:
+        def metric = genericTimeSeries.getMetric();
+
+        then:
+        metric == "test-generic-time-series"
+    }
+
     def "test sort with empty time series"() {
         given:
         def genericTimeSeries = new GenericTimeSeries.Builder<String>("test-generic-time-series").build()
