@@ -56,25 +56,14 @@ public final class KassiopeiaSimpleDefaults {
         for (HashMap.Entry<String, Object> entry : reduced.attributes().entrySet()) {
             //Attribute to add
             String attributeToAdd = entry.getKey();
+            Set<Object> set = new HashSet<>();
+
             if (attributesReference.containsKey(attributeToAdd)) {
                 Object value = attributesReference.get(attributeToAdd);
-
-                //the value is already a set with values for the given attribute name
-                if (value instanceof Set) {
-                    ((Set) value).add(entry.getValue());
-                } else {
-                    //otherwise we create a new set
-                    Set<Object> set = new HashSet<>();
-                    set.add(value);
-                    set.add(entry.getValue());
-                    attributesReference.put(attributeToAdd, set);
-                }
-            } else {
-                Set<Object> set = new HashSet<>();
-                set.add(entry.getValue());
-                attributesReference.put(attributeToAdd, set);
+                set.add(value);
             }
-
+            set.add(entry.getValue());
+            attributesReference.put(attributeToAdd, set);
         }
         return collected;
     };
