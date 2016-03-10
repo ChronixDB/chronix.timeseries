@@ -16,6 +16,7 @@
 package de.qaware.chronix.timeseries
 
 import de.qaware.chronix.timeseries.dt.GenericPoint
+import de.qaware.chronix.timeseries.dt.LongList
 import spock.lang.Specification
 
 import java.util.stream.Collectors
@@ -42,33 +43,108 @@ class GenericTimeSeriesTest extends Specification {
         sortedPoints.get(1).value == "five"
         sortedPoints.get(2).value == "six"
     }
-    /*
+
+    def "test sort with empty time series"() {
+        given:
+        def genericTimeSeries = new GenericTimeSeries.Builder<String>("test-generic-time-series").build()
+        when:
+        genericTimeSeries.sort();
+
+        then:
+        noExceptionThrown()
+    }
+
 
     def "test attribute"() {
-        given:
-
         when:
-        // TODO implement stimulus
+        def testSeries = genericTimeSeries;
+
         then:
-        // TODO implement assertions
+        testSeries.getAttribute(contains) == result
+
+        where:
+        genericTimeSeries << [new GenericTimeSeries.Builder<String>("test-generic-time-series").build(),
+                              new GenericTimeSeries.Builder<String>("test-generic-time-series")
+                                      .attribute("something", "strange")
+                                      .build()]
+        contains << ["", "something"]
+        result << [null, "strange"]
     }
 
     def "test attributes"() {
-        given:
-
         when:
-        // TODO implement stimulus
+        def testSeries = genericTimeSeries
+
         then:
-        // TODO implement assertions
+        //Check if we have a attributes copy
+        testSeries.getAttributes().clear()
+        testSeries.getAttributes().size() == size
+
+        where:
+        genericTimeSeries << [new GenericTimeSeries.Builder<String>("test-generic-time-series").build(),
+                              new GenericTimeSeries.Builder<String>("test-generic-time-series")
+                                      .attributes(["key": "value"])
+                                      .build()]
+        size << [0, 1]
     }
 
-    def "test points"() {
-        given:
-
+    def "test points with start and end"() {
         when:
-        // TODO implement stimulus
+        def testSeries = genericTimeSeries
+
         then:
-        // TODO implement assertions
+        def result = testSeries.points().collect(Collectors.toList())
+        result.size() == size
+        result.containsAll(contains)
+
+        testSeries.getStart() == start
+        testSeries.getEnd() == end
+
+        where:
+        genericTimeSeries << [new GenericTimeSeries.Builder<String>("test-generic-time-series").build(),
+                              new GenericTimeSeries.Builder<String>("test-generic-time-series")
+                                      .point(0l, "Some fancy Value")
+                                      .point(1l, "A even more fancy Value")
+                                      .build(),
+                              new GenericTimeSeries.Builder<String>("test-generic-time-series")
+                                      .points(generateLongList(10), generateValues(10))
+                                      .build()]
+        size << [0, 2, 10]
+        contains << [[], [new GenericPoint<String>(0i, 0l, "Some fancy Value",),
+                          new GenericPoint<String>(1i, 1l, "A even more fancy Value")],
+                     generatePoints(10)]
+        start << [0, 0, 0]
+        end << [0, 1, 9]
     }
-    */
+
+    def List<GenericPoint<String>> generatePoints(int i) {
+        def result = []
+        i.times {
+            result.add(new GenericPoint<>(it, it, "value-" + it))
+        }
+        return result
+    }
+
+    List<String> generateValues(int i) {
+        def list = []
+        i.times {
+            list.add("value-" + it)
+        }
+        return list
+    }
+
+    LongList generateLongList(int i) {
+        def list = new LongList(i)
+        i.times {
+            list.add(it)
+        }
+        return list
+
+    }
+
+    def "test to string"() {
+        expect:
+        new GenericTimeSeries.Builder<String>("something").toString()
+    }
+
 }

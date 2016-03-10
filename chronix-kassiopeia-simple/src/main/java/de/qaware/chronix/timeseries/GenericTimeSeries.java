@@ -179,7 +179,7 @@ public class GenericTimeSeries<T> {
         /**
          * Sets the time series data
          *
-         * @param timestamps the time stamps
+         * @param timestamps the timestamps
          * @param values     the values
          * @return the builder
          */

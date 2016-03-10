@@ -13,9 +13,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.timeseries.de
+package de.qaware.chronix.timeseries.dt
 
-import de.qaware.chronix.timeseries.dt.Point
 import spock.lang.Specification
 
 /**
@@ -31,6 +30,37 @@ class PointTest extends Specification {
         pair.index == 0
         pair.timestamp == 1l
         pair.value == 2d
+    }
+
+    def "test equals"() {
+        when:
+        def pair = new Point(0i, 1l, 2d)
+
+        then:
+        pair.equals(pair)
+        pair.equals(other) == result
+
+        where:
+        other << [null, new Object(), new Point(1i, 1l, 2d), new Point(0i, 2l, 2d), new Point(0i, 1l, 3d), new Point(0i, 1l, 2d)]
+        result << [false, false, false, false, false, true]
+    }
+
+    def "test hashCode"() {
+        when:
+        def pair = new Point(0i, 1l, 2d)
+
+        then:
+        (pair.hashCode() == other.hashCode()) == result
+
+
+        where:
+        other << [new Object(), new Point(1i, 1l, 2d), new Point(0i, 2l, 2d), new Point(0i, 1l, 3d), new Point(0i, 1l, 2d)]
+        result << [false, false, false, false, true]
+    }
+
+    def "test to string"() {
+        expect:
+        new Point(0i, 1l, 2d).toString()
     }
 
 }

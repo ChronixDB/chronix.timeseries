@@ -31,4 +31,35 @@ class GenericPointTest extends Specification {
         genericPoint.timestamp == 1076723468l
         genericPoint.value == "JobScheduler FJ pool 6/8 #80 daemon java.lang.Thread.State: RUNNABLE"
     }
+
+    def "test equals"() {
+        when:
+        def pair = new GenericPoint<>(0i, 1l, "2d")
+
+        then:
+        pair.equals(pair)
+        pair.equals(other) == result
+
+        where:
+        other << [null, new Object(), new GenericPoint<>(1i, 1l, "2d"), new GenericPoint<>(0i, 2l, "2d"), new GenericPoint<>(0i, 1l, "3d"), new GenericPoint<>(0i, 1l, "2d")]
+        result << [false, false, false, false, false, true]
+    }
+
+    def "test hashCode"() {
+        when:
+        def pair = new GenericPoint<>(0i, 1l, "2d")
+
+        then:
+        (pair.hashCode() == other.hashCode()) == result
+
+
+        where:
+        other << [new Object(), new GenericPoint<>(1i, 1l, "2d"), new GenericPoint<>(0i, 2l, "2d"), new GenericPoint<>(0i, 1l, "3d"), new GenericPoint<>(0i, 1l, "2d")]
+        result << [false, false, false, false, true]
+    }
+
+    def "test to string"() {
+        expect:
+        new GenericPoint<>(0i, 1l, "2d").toString()
+    }
 }
