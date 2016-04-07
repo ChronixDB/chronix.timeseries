@@ -473,5 +473,16 @@ public class LongList {
                 .toHashCode();
     }
 
+    /**
+     * @param delta the whole list is shifted
+     * @return a new instance with shifted values
+     */
+    public LongList shift(long delta) {
+        LongList scaled = new LongList(longs.length);
+        for (int i = 0; i < longs.length; i++) {
+            scaled.add(longs[i] + delta);
+        }
+        return scaled;
+    }
 
 }

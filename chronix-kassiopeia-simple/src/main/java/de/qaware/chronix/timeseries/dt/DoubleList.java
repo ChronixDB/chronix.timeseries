@@ -478,4 +478,61 @@ public class DoubleList {
                 .append("size", size)
                 .toString();
     }
+
+    /**
+     * @return maximum of the values of the list
+     */
+    public double max() {
+        if (doubles.length <= 0) {
+            return Double.NaN;
+        }
+        double max = Double.MIN_VALUE;
+        for (int i = 0; i < doubles.length; i++) {
+            max = doubles[i] > max ? doubles[i] : max;
+        }
+        return max;
+    }
+
+    /**
+     * @return minimum of the values of the list
+     */
+    public double min() {
+        if (doubles.length <= 0) {
+            return Double.NaN;
+        }
+        double min = Double.MAX_VALUE;
+        for (int i = 0; i < doubles.length; i++) {
+            min = doubles[i] < min ? doubles[i] : min;
+        }
+        return min;
+    }
+
+    /**
+     * @return average of the values of the list
+     */
+    public double avg() {
+        if (doubles.length <= 0) {
+            return Double.NaN;
+        }
+
+        double current = 0;
+        for (int i = 0; i < doubles.length; i++) {
+            current += doubles[i];
+        }
+
+        return current / doubles.length;
+
+    }
+
+    /**
+     * @param scale to be applied to the values of this list
+     * @return a new instance scaled with the given parameter
+     */
+    public DoubleList scale(double scale) {
+        DoubleList scaled = new DoubleList(doubles.length);
+        for (int i = 0; i < doubles.length; i++) {
+            scaled.add(doubles[i] * scale);
+        }
+        return scaled;
+    }
 }

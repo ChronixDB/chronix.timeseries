@@ -387,6 +387,44 @@ public final class MetricTimeSeries {
             return this;
         }
 
+
     }
 
+    /**
+     * @return maximum of the values of the list
+     */
+    public double max() {
+        return values.max();
+    }
+
+    /**
+     *
+     * @return minimum of the values of the list
+     */
+    public double min() {
+        return values.min();
+    }
+
+    /**
+     * @param scale to be applied to the values of this list
+     * @return a new instance scaled with the given parameter
+     */
+    public MetricTimeSeries scale(double scale) {
+        return new MetricTimeSeries.Builder(metric + " scaled by " + scale).points(timestamps, values.scale(scale)).build();
+    }
+
+    /**
+     * @return average of the values of the list
+     */
+    public double avg() {
+        return values.avg();
+    }
+
+    /**
+     * @param delta the whole list is shifted
+     * @return a new instance with shifted values
+     */
+    public MetricTimeSeries shift(long delta) {
+        return new MetricTimeSeries.Builder(metric + " shifted by " + delta).points(timestamps.shift(delta), values).build();
+    }
 }

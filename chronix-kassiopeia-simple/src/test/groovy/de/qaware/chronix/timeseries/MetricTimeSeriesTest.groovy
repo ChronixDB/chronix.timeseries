@@ -65,7 +65,137 @@ class MetricTimeSeriesTest extends Specification {
         !ts.isEmpty()
     }
 
+    def "test avg"() {
+        given:
+        def times = new LongList()
+        def values = new DoubleList()
+        times.add(1 as long)
+        values.add(2)
+        times.add(8 as long)
+        values.add(3)
+        times.add(3 as long)
+        values.add(7)
+        times.add(2 as long)
+        values.add(8)
 
+        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
+
+        when:
+
+        def avg = ts.avg()
+        then:
+        avg == 5
+
+    }
+
+    def "test scale"() {
+        given:
+        def times = new LongList()
+        def values = new DoubleList()
+        times.add(1 as long)
+        values.add(2)
+        times.add(8 as long)
+        values.add(3)
+        times.add(3 as long)
+        values.add(7)
+        times.add(2 as long)
+        values.add(8)
+
+        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
+
+        when:
+
+        def avg = ts.scale(5)
+        then:
+        avg.getValues().get(0) == 10
+        avg.getValues().get(1) == 15
+        avg.getValues().get(2) == 35
+        avg.getValues().get(3) == 40
+
+    }
+
+    def "test shift"() {
+        given:
+        def times = new LongList()
+        def values = new DoubleList()
+        times.add(1 as long)
+        values.add(2)
+        times.add(8 as long)
+        values.add(3)
+        times.add(3 as long)
+        values.add(7)
+        times.add(2 as long)
+        values.add(8)
+
+        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
+
+        when:
+
+        def avg = ts.shift(5)
+        then:
+        avg.getTimestamps().get(0) == 6
+        avg.getTimestamps().get(1) == 13
+        avg.getTimestamps().get(2) == 8
+        avg.getTimestamps().get(3) == 7
+
+    }
+
+    def "test min"() {
+        given:
+        def times = new LongList()
+        def values = new DoubleList()
+        11.times {
+            times.add(100 - it as long)
+            values.add(it * 10 as double)
+        }
+        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
+
+        when:
+
+        def min = ts.min()
+        then:
+        min == 0
+
+    }
+
+    def "test max"() {
+        given:
+        def times = new LongList()
+        def values = new DoubleList()
+        11.times {
+            times.add(100 - it as long)
+            values.add(it * 10 as double)
+        }
+        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
+
+        when:
+
+        def max = ts.max()
+        then:
+        max == 100
+
+    }
+
+    def "test max with only NaN"() {
+        given:
+        def times = new LongList()
+        def values = new DoubleList()
+        11.times {
+            times.add(100 - it as long)
+            values.add(Double.NaN);
+        }
+        times.add(12 as long);
+        values.add(Double.NaN);
+        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
+
+        when:
+
+        def max = ts.max()
+
+        then:
+        max == Double.MIN_VALUE;
+
+    }
     def "test points"() {
         given:
         def times = new LongList()
