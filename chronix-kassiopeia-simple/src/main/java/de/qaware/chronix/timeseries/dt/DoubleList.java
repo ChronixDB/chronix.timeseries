@@ -19,6 +19,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static de.qaware.chronix.timeseries.dt.ListUtil.*;
@@ -28,7 +29,9 @@ import static de.qaware.chronix.timeseries.dt.ListUtil.*;
  *
  * @author f.lautenschlager
  */
-public class DoubleList {
+public class DoubleList implements Serializable {
+
+    private static final long serialVersionUID = -1275724597860546074L;
 
     /**
      * Shared empty array instance used for empty instances.

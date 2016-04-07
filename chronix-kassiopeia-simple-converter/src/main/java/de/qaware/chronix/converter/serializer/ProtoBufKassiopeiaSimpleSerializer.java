@@ -170,24 +170,31 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                 offset = p.getTimestamp() - previousDate;
             }
 
-            if (almostEquals(previousOffset, offset) && noDrift(p.getTimestamp(), lastStoredDate, timesSinceLastOffset)) {
+            //Semantic Compression
+            if (ALMOST_EQUALS_OFFSET_MS == -1) {
                 builder.clearT()
                         .setV(p.getValue());
                 points.addP(builder.build());
-                timesSinceLastOffset += 1;
-
             } else {
-                builder.setT(offset)
-                        .setV(p.getValue())
-                        .build();
-                points.addP(builder.build());
-                //reset the offset counter
-                timesSinceLastOffset = 1;
-                lastStoredDate = p.getTimestamp();
+                if (almostEquals(previousOffset, offset) && noDrift(p.getTimestamp(), lastStoredDate, timesSinceLastOffset)) {
+                    builder.clearT()
+                            .setV(p.getValue());
+                    points.addP(builder.build());
+                    timesSinceLastOffset += 1;
+
+                } else {
+                    builder.setT(offset)
+                            .setV(p.getValue())
+                            .build();
+                    points.addP(builder.build());
+                    //reset the offset counter
+                    timesSinceLastOffset = 1;
+                    lastStoredDate = p.getTimestamp();
+                }
+                //set current as former previous date
+                previousOffset = offset;
+                previousDate = p.getTimestamp();
             }
-            //set current as former previous date
-            previousOffset = offset;
-            previousDate = p.getTimestamp();
         }
 
         return Compression.compress(points.build().toByteArray());

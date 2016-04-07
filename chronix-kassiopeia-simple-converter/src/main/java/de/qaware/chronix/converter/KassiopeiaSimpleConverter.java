@@ -45,6 +45,13 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         //Third build a minimal time series
         MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(metric);
 
+        //add all user defined attributes
+        binaryTimeSeries.getFields().forEach((field, value) -> {
+            if (MetricTSSchema.isUserDefined(field)) {
+                builder.attribute(field, value);
+            }
+        });
+
         //Default serialization is protocol buffers.
         if (binaryTimeSeries.getPoints().length > 0) {
             fromProtocolBuffers(binaryTimeSeries, queryStart, queryEnd, builder);
@@ -59,13 +66,6 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
             long meanDate = meanDate(binaryTimeSeries);
             builder.point(meanDate, value);
         }
-
-        //add all user defined attributes
-        binaryTimeSeries.getFields().forEach((field, value) -> {
-            if (MetricTSSchema.isUserDefined(field)) {
-                builder.attribute(field, value);
-            }
-        });
 
         return builder.build();
     }

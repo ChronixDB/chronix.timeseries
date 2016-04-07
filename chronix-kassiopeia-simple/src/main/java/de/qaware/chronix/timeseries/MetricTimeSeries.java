@@ -23,6 +23,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +38,9 @@ import java.util.stream.Stream;
  *
  * @author f.lautenschlager
  */
-public final class MetricTimeSeries {
+public final class MetricTimeSeries implements Serializable {
+
+    private static final long serialVersionUID = 5497398456431471102L;
 
     private String metric;
     private LongList timestamps;

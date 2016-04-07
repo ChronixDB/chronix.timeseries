@@ -19,6 +19,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import static de.qaware.chronix.timeseries.dt.ListUtil.*;
@@ -29,7 +30,9 @@ import static de.qaware.chronix.timeseries.dt.ListUtil.*;
  *
  * @author f.lautenschlager
  */
-public class LongList {
+public class LongList implements Serializable {
+
+    private static final long serialVersionUID = -8791366160708918410L;
 
     /**
      * Shared empty array instance used for empty instances.
