@@ -65,28 +65,6 @@ class MetricTimeSeriesTest extends Specification {
         !ts.isEmpty()
     }
 
-    def "test avg"() {
-        given:
-        def times = new LongList()
-        def values = new DoubleList()
-        times.add(1 as long)
-        values.add(2)
-        times.add(8 as long)
-        values.add(3)
-        times.add(3 as long)
-        values.add(7)
-        times.add(2 as long)
-        values.add(8)
-
-        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
-
-        when:
-
-        def avg = ts.avg()
-        then:
-        avg == 5
-
-    }
 
     def "test scale"() {
         given:
@@ -140,62 +118,7 @@ class MetricTimeSeriesTest extends Specification {
 
     }
 
-    def "test min"() {
-        given:
-        def times = new LongList()
-        def values = new DoubleList()
-        11.times {
-            times.add(100 - it as long)
-            values.add(it * 10 as double)
-        }
-        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
 
-        when:
-
-        def min = ts.min()
-        then:
-        min == 0
-
-    }
-
-    def "test max"() {
-        given:
-        def times = new LongList()
-        def values = new DoubleList()
-        11.times {
-            times.add(100 - it as long)
-            values.add(it * 10 as double)
-        }
-        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
-
-        when:
-
-        def max = ts.max()
-        then:
-        max == 100
-
-    }
-
-    def "test max with only NaN"() {
-        given:
-        def times = new LongList()
-        def values = new DoubleList()
-        11.times {
-            times.add(100 - it as long)
-            values.add(Double.NaN);
-        }
-        times.add(12 as long);
-        values.add(Double.NaN);
-        def ts = new MetricTimeSeries.Builder("SimpleMax").points(times, values).build()
-
-        when:
-
-        def max = ts.max()
-
-        then:
-        max == Double.MIN_VALUE;
-
-    }
     def "test points"() {
         given:
         def times = new LongList()
@@ -349,4 +272,5 @@ class MetricTimeSeriesTest extends Specification {
         then:
         ts.attributes().size() == 0
     }
+
 }
