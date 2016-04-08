@@ -481,4 +481,145 @@ public class DoubleList implements Serializable {
                 .append("size", size)
                 .toString();
     }
+
+    /**
+     * @return maximum of the values of the list
+     */
+    public double max() {
+        if (size <= 0) {
+            return Double.NaN;
+        }
+        double max = Double.MIN_VALUE;
+        for (int i = 0; i < size; i++) {
+            max = doubles[i] > max ? doubles[i] : max;
+        }
+        return max;
+    }
+
+    /**
+     * @return minimum of the values of the list
+     */
+    public double min() {
+        if (size <= 0) {
+            return Double.NaN;
+        }
+        double min = Double.MAX_VALUE;
+        for (int i = 0; i < size; i++) {
+            min = doubles[i] < min ? doubles[i] : min;
+        }
+        return min;
+    }
+
+    /**
+     * @return average of the values of the list
+     */
+    public double avg() {
+        if (size <= 0) {
+            return Double.NaN;
+        }
+
+        double current = 0;
+        for (int i = 0; i < size; i++) {
+            current += doubles[i];
+        }
+
+        return current / size;
+
+    }
+
+    /**
+     * @param scale to be applied to the values of this list
+     * @return a new instance scaled with the given parameter
+     */
+    public DoubleList scale(double scale) {
+        DoubleList scaled = new DoubleList(size);
+        for (int i = 0; i < size; i++) {
+            scaled.add(doubles[i] * scale);
+        }
+        return scaled;
+    }
+
+    /**
+     * Calculates the standard deviation
+     *
+     * @return the standard deviation
+     */
+    public double stdDeviation() {
+        if (isEmpty()) {
+            return Double.NaN;
+        }
+
+        return Math.sqrt(variance());
+    }
+
+    private double mean() {
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            sum = sum + get(i);
+        }
+
+        return sum / size();
+    }
+
+    private double variance() {
+        double avg = mean();
+        double sum = 0.0;
+        for (int i = 0; i < size(); i++) {
+            double value = get(i);
+            sum += (value - avg) * (value - avg);
+        }
+        return sum / (size() - 1);
+    }
+
+    /**
+     * Implemented the quantile type 7 referred to
+     * http://tolstoy.newcastle.edu.au/R/e17/help/att-1067/Quartiles_in_R.pdf
+     * and
+     * http://stat.ethz.ch/R-manual/R-patched/library/stats/html/quantile.html
+     * as its the default quantile implementation
+     * <p>
+     * <code>
+     * QuantileType7 = function (v, p) {
+     * v = sort(v)
+     * h = ((length(v)-1)*p)+1
+     * v[floor(h)]+((h-floor(h))*(v[floor(h)+1]- v[floor(h)]))
+     * }
+     * </code>
+     *
+     * @param percentile - the percentile (0 - 1), e.g. 0.25
+     * @return the value of the n-th percentile
+     */
+    public double percentile(double percentile) {
+        double[] doubles = toArray();
+        Arrays.sort(doubles);// Attention: this is only necessary because metrictimeseries is not restricted to non-descending values
+        return evaluateForDoubles(doubles, percentile);
+    }
+
+    private static double evaluateForDoubles(double[] points, double percentile) {
+        //For example:
+        //values    = [1,2,2,3,3,3,4,5,6], size = 9, percentile (e.g. 0.25)
+        // size - 1 = 8 * 0.25 = 2 (~ 25% from 9) + 1 = 3 => values[3] => 2
+        double percentileIndex = ((points.length - 1) * percentile) + 1;
+
+        double rawMedian = points[floor(percentileIndex - 1)];
+        double weight = percentileIndex - floor(percentileIndex);
+
+        if (weight > 0) {
+            double pointDistance = points[floor(percentileIndex - 1) + 1] - points[floor(percentileIndex - 1)];
+            return rawMedian + weight * pointDistance;
+        } else {
+            return rawMedian;
+        }
+    }
+
+    /**
+     * Wraps the Math.floor function and casts it to an integer
+     *
+     * @param value - the evaluatedValue
+     * @return the floored evaluatedValue
+     */
+    private static int floor(double value) {
+        return (int) Math.floor(value);
+    }
+
 }
