@@ -590,9 +590,9 @@ public class DoubleList implements Serializable {
      * @return the value of the n-th percentile
      */
     public double percentile(double percentile) {
-        double[] doubles = toArray();
-        Arrays.sort(doubles);// Attention: this is only necessary because metrictimeseries is not restricted to non-descending values
-        return evaluateForDoubles(doubles, percentile);
+        double[] copy = toArray();
+        Arrays.sort(copy);// Attention: this is only necessary because this list is not restricted to non-descending values
+        return evaluateForDoubles(copy, percentile);
     }
 
     private static double evaluateForDoubles(double[] points, double percentile) {
