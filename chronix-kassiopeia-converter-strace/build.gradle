@@ -1,0 +1,6 @@
+
+dependencies {
+    compile project(':chronix-kassiopeia-strace')
+    compile project(':chronix-kassiopeia-converter-common')
+
+}
