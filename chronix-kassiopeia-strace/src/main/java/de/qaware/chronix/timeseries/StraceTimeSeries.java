@@ -37,7 +37,7 @@ import java.util.stream.Stream;
  *
  * @author Max Jalowski
  */
-public class StraceTimeSeries implements Serializable {
+public final class StraceTimeSeries implements Serializable {
 
     private String metric;
     private LongList timestamps;
@@ -83,7 +83,7 @@ public class StraceTimeSeries implements Serializable {
      * @return a copy of the values as array
      */
     public String[] getValuesAsArray() {
-        return (String[]) values.toArray();
+        return values.toArray(new String[values.size()]);
     }
 
     /**

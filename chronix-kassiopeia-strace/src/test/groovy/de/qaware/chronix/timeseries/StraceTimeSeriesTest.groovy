@@ -15,6 +15,7 @@
  */
 package de.qaware.chronix.timeseries
 
+import de.qaware.chronix.timeseries.dt.LongList
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -24,16 +25,42 @@ import spock.lang.Unroll
 class StraceTimeSeriesTest extends Specification {
 
     @Unroll
-    def "test strace time series with args #useless"() {
+    def "test create a strace time series and access its values"() {
+
+        given:
+        def times = new LongList()
+        def values = new ArrayList<String>()
+        10.times {
+            times.add(it as long)
+            values.add("line " + it * 10 as String)
+        }
+        def attributes = new HashMap<String, Object>()
+        attributes.put("cmd", "strace ls")
 
         when:
-        def ts = new StraceTimeSeries(useless)
+        def ts = new StraceTimeSeries.Builder("ls")
+                .attributes(attributes)
+                .attribute("prog", "ls")
+                .points(times, values)
+                .point(10 as long, "")
+                .build()
 
         then:
-        ts.getUseless() == useless
-
-        where:
-        useless << [1,2,3,4]
-
+        ts.start == 0
+        ts.end == 10
+        ts.metric == "ls"
+        ts.attributes().size() == 2
+        ts.attributesReference.size() == 2
+        ts.attribute("prog") == "ls"
+        ts.attribute("cmd") == "strace ls"
+        ts.size() == 11
+        ts.getTimestamps().size() == 11
+        ts.getTime(0) == 0
+        ts.getValues().size() == 11
+        ts.getValue(0) == "line 0"
+        //check array copy
+        ts.getTimestampsAsArray().length == 11
+        ts.getValuesAsArray().length == 11
+        !ts.isEmpty()
     }
 }
