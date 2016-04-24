@@ -35,7 +35,7 @@ import java.util.stream.Stream;
  *
  *  This class is somehow equivalent to chronix-kassiopeia-simple -> MetricTimeSeries
  *
- * @author Max Jalowski
+ * @author f.lautenschlager & m.jalowski
  */
 public final class StraceTimeSeries implements Serializable {
 
