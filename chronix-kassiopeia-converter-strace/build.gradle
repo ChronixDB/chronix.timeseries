@@ -3,4 +3,100 @@ dependencies {
     compile project(':chronix-kassiopeia-strace')
     compile project(':chronix-kassiopeia-converter-common')
 
+    compile 'de.qaware.chronix:chronix-api:0.1'
+    compile 'com.google.code.gson:gson:2.5'
+    compile 'com.google.protobuf:protobuf-java:2.6.1'
+
+}
+
+//add the generated classes to the sources
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/java'
+            srcDir 'src/main/generated'
+        }
+    }
+}
+
+task copyTestResources(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/classes/test"
+}
+processTestResources.dependsOn copyTestResources
+
+task javadocJar(type: Jar, dependsOn: groovydoc) {
+    classifier = 'javadoc'
+    from groovydoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+def pomConfig = {
+
+    inceptionYear '2016'
+
+    scm {
+        connection "scm:git:${project.scmUrl}"
+        developerConnection "scm:git:${project.scmUrl}"
+        url project.websiteUrl
+    }
+
+    issueManagement {
+        system 'GitHub'
+        url project.issueTrackerUrl
+    }
+
+    licenses {
+        license([:]) {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+            distribution 'repo'
+        }
+    }
+
+    organisation {
+        name 'QAware GmbH'
+        url 'https://www.qaware.de'
+    }
+
+    developers {
+        developer {
+            id 'florianlautenschlager'
+            name 'Florian Lautenschlager'
+            email 'florian.lautenschlager@qaware.de'
+            organization 'QAware GmbH'
+            organizationUrl 'https://www.qaware.de'
+            roles { role 'Developer' }
+        }
+        developer {
+            id '0xhansdampf'
+            name 'Max Jalowski'
+            email 'max.jalowski@fau.de'
+            organization 'FAU'
+            organizationUrl 'https://www.fau.de'
+            roles { role 'Developer' }
+        }
+    }
+}
+
+publishing {
+    publications {
+        chronixKassiopeiaSimpleConverter(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+
+            pom.withXml {
+                asNode().appendNode('name', project.displayName)
+                asNode().appendNode('description', project.description)
+                asNode().appendNode('url', project.websiteUrl)
+
+                asNode().children().last() + pomConfig
+            }
+        }
+    }
 }
