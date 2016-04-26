@@ -50,28 +50,37 @@ public final class StraceProtocolBuffers {
    *Our point
    * </pre>
    */
-  public  static final class Point extends
+  public static final class Point extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:Point)
       PointOrBuilder {
     // Use Point.newBuilder() to construct.
     private Point(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Point() {
-      t_ = 0L;
-      v_ = "";
+    private Point(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Point defaultInstance;
+    public static Point getDefaultInstance() {
+      return defaultInstance;
     }
 
+    public Point getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
+        getUnknownFields() {
       return this.unknownFields;
     }
     private Point(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
-      this();
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -104,11 +113,10 @@ public final class StraceProtocolBuffers {
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
       } finally {
         this.unknownFields = unknownFields.build();
         makeExtensionsImmutable();
@@ -124,6 +132,21 @@ public final class StraceProtocolBuffers {
       return de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.internal_static_Point_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point.class, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Point> PARSER =
+        new com.google.protobuf.AbstractParser<Point>() {
+      public Point parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Point(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Point> getParserForType() {
+      return PARSER;
     }
 
     private int bitField0_;
@@ -151,7 +174,7 @@ public final class StraceProtocolBuffers {
     }
 
     public static final int V_FIELD_NUMBER = 2;
-    private volatile java.lang.Object v_;
+    private java.lang.Object v_;
     /**
      * <code>required string v = 2;</code>
      */
@@ -192,6 +215,10 @@ public final class StraceProtocolBuffers {
       }
     }
 
+    private void initFields() {
+      t_ = 0L;
+      v_ = "";
+    }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -208,17 +235,19 @@ public final class StraceProtocolBuffers {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         output.writeInt64(1, t_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        com.google.protobuf.GeneratedMessage.writeString(output, 2, v_);
+        output.writeBytes(2, getVBytes());
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
+    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
-      int size = memoizedSize;
+      int size = memoizedSerializedSize;
       if (size != -1) return size;
 
       size = 0;
@@ -227,14 +256,21 @@ public final class StraceProtocolBuffers {
           .computeInt64Size(1, t_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        size += com.google.protobuf.GeneratedMessage.computeStringSize(2, v_);
+        size += com.google.protobuf.CodedOutputStream
+          .computeBytesSize(2, getVBytes());
       }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
     public static de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -288,17 +324,12 @@ public final class StraceProtocolBuffers {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
+    public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
     public static Builder newBuilder(de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
+    public Builder toBuilder() { return newBuilder(this); }
 
     @java.lang.Override
     protected Builder newBuilderForType(
@@ -343,6 +374,10 @@ public final class StraceProtocolBuffers {
         if (com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders) {
         }
       }
+      private static Builder create() {
+        return new Builder();
+      }
+
       public Builder clear() {
         super.clear();
         t_ = 0L;
@@ -350,6 +385,10 @@ public final class StraceProtocolBuffers {
         v_ = "";
         bitField0_ = (bitField0_ & ~0x00000002);
         return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
       }
 
       public com.google.protobuf.Descriptors.Descriptor
@@ -405,13 +444,13 @@ public final class StraceProtocolBuffers {
           v_ = other.v_;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
+        this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
         if (!hasV()) {
+          
           return false;
         }
         return true;
@@ -563,48 +602,12 @@ public final class StraceProtocolBuffers {
       // @@protoc_insertion_point(builder_scope:Point)
     }
 
-    // @@protoc_insertion_point(class_scope:Point)
-    private static final de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point();
+      defaultInstance = new Point(true);
+      defaultInstance.initFields();
     }
 
-    public static de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<Point>
-        PARSER = new com.google.protobuf.AbstractParser<Point>() {
-      public Point parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Point(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
-      }
-    };
-
-    public static com.google.protobuf.Parser<Point> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<Point> getParserForType() {
-      return PARSER;
-    }
-
-    public de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
+    // @@protoc_insertion_point(class_scope:Point)
   }
 
   public interface PointsOrBuilder extends
@@ -662,27 +665,37 @@ public final class StraceProtocolBuffers {
    *The data of a time series is a list of points
    * </pre>
    */
-  public  static final class Points extends
+  public static final class Points extends
       com.google.protobuf.GeneratedMessage implements
       // @@protoc_insertion_point(message_implements:Points)
       PointsOrBuilder {
     // Use Points.newBuilder() to construct.
     private Points(com.google.protobuf.GeneratedMessage.Builder<?> builder) {
       super(builder);
+      this.unknownFields = builder.getUnknownFields();
     }
-    private Points() {
-      p_ = java.util.Collections.emptyList();
+    private Points(boolean noInit) { this.unknownFields = com.google.protobuf.UnknownFieldSet.getDefaultInstance(); }
+
+    private static final Points defaultInstance;
+    public static Points getDefaultInstance() {
+      return defaultInstance;
     }
 
+    public Points getDefaultInstanceForType() {
+      return defaultInstance;
+    }
+
+    private final com.google.protobuf.UnknownFieldSet unknownFields;
     @java.lang.Override
     public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
+        getUnknownFields() {
       return this.unknownFields;
     }
     private Points(
         com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry) {
-      this();
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      initFields();
       int mutable_bitField0_ = 0;
       com.google.protobuf.UnknownFieldSet.Builder unknownFields =
           com.google.protobuf.UnknownFieldSet.newBuilder();
@@ -706,17 +719,16 @@ public final class StraceProtocolBuffers {
                 p_ = new java.util.ArrayList<de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point>();
                 mutable_bitField0_ |= 0x00000001;
               }
-              p_.add(input.readMessage(de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point.parser(), extensionRegistry));
+              p_.add(input.readMessage(de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Point.PARSER, extensionRegistry));
               break;
             }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw new RuntimeException(e.setUnfinishedMessage(this));
+        throw e.setUnfinishedMessage(this);
       } catch (java.io.IOException e) {
-        throw new RuntimeException(
-            new com.google.protobuf.InvalidProtocolBufferException(
-                e.getMessage()).setUnfinishedMessage(this));
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e.getMessage()).setUnfinishedMessage(this);
       } finally {
         if (((mutable_bitField0_ & 0x00000001) == 0x00000001)) {
           p_ = java.util.Collections.unmodifiableList(p_);
@@ -735,6 +747,21 @@ public final class StraceProtocolBuffers {
       return de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.internal_static_Points_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points.class, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points.Builder.class);
+    }
+
+    public static com.google.protobuf.Parser<Points> PARSER =
+        new com.google.protobuf.AbstractParser<Points>() {
+      public Points parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new Points(input, extensionRegistry);
+      }
+    };
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<Points> getParserForType() {
+      return PARSER;
     }
 
     public static final int P_FIELD_NUMBER = 1;
@@ -792,6 +819,9 @@ public final class StraceProtocolBuffers {
       return p_.get(index);
     }
 
+    private void initFields() {
+      p_ = java.util.Collections.emptyList();
+    }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -810,14 +840,16 @@ public final class StraceProtocolBuffers {
 
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
+      getSerializedSize();
       for (int i = 0; i < p_.size(); i++) {
         output.writeMessage(1, p_.get(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
+    private int memoizedSerializedSize = -1;
     public int getSerializedSize() {
-      int size = memoizedSize;
+      int size = memoizedSerializedSize;
       if (size != -1) return size;
 
       size = 0;
@@ -825,12 +857,18 @@ public final class StraceProtocolBuffers {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, p_.get(i));
       }
-      size += unknownFields.getSerializedSize();
-      memoizedSize = size;
+      size += getUnknownFields().getSerializedSize();
+      memoizedSerializedSize = size;
       return size;
     }
 
     private static final long serialVersionUID = 0L;
+    @java.lang.Override
+    protected java.lang.Object writeReplace()
+        throws java.io.ObjectStreamException {
+      return super.writeReplace();
+    }
+
     public static de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -884,17 +922,12 @@ public final class StraceProtocolBuffers {
       return PARSER.parseFrom(input, extensionRegistry);
     }
 
+    public static Builder newBuilder() { return Builder.create(); }
     public Builder newBuilderForType() { return newBuilder(); }
-    public static Builder newBuilder() {
-      return DEFAULT_INSTANCE.toBuilder();
-    }
     public static Builder newBuilder(de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points prototype) {
-      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+      return newBuilder().mergeFrom(prototype);
     }
-    public Builder toBuilder() {
-      return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
-    }
+    public Builder toBuilder() { return newBuilder(this); }
 
     @java.lang.Override
     protected Builder newBuilderForType(
@@ -940,6 +973,10 @@ public final class StraceProtocolBuffers {
           getPFieldBuilder();
         }
       }
+      private static Builder create() {
+        return new Builder();
+      }
+
       public Builder clear() {
         super.clear();
         if (pBuilder_ == null) {
@@ -949,6 +986,10 @@ public final class StraceProtocolBuffers {
           pBuilder_.clear();
         }
         return this;
+      }
+
+      public Builder clone() {
+        return create().mergeFrom(buildPartial());
       }
 
       public com.google.protobuf.Descriptors.Descriptor
@@ -1021,14 +1062,14 @@ public final class StraceProtocolBuffers {
             }
           }
         }
-        this.mergeUnknownFields(other.unknownFields);
-        onChanged();
+        this.mergeUnknownFields(other.getUnknownFields());
         return this;
       }
 
       public final boolean isInitialized() {
         for (int i = 0; i < getPCount(); i++) {
           if (!getP(i).isInitialized()) {
+            
             return false;
           }
         }
@@ -1369,56 +1410,20 @@ public final class StraceProtocolBuffers {
       // @@protoc_insertion_point(builder_scope:Points)
     }
 
-    // @@protoc_insertion_point(class_scope:Points)
-    private static final de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points();
+      defaultInstance = new Points(true);
+      defaultInstance.initFields();
     }
 
-    public static de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points getDefaultInstance() {
-      return DEFAULT_INSTANCE;
-    }
-
-    @java.lang.Deprecated public static final com.google.protobuf.Parser<Points>
-        PARSER = new com.google.protobuf.AbstractParser<Points>() {
-      public Points parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
-        try {
-          return new Points(input, extensionRegistry);
-        } catch (RuntimeException e) {
-          if (e.getCause() instanceof
-              com.google.protobuf.InvalidProtocolBufferException) {
-            throw (com.google.protobuf.InvalidProtocolBufferException)
-                e.getCause();
-          }
-          throw e;
-        }
-      }
-    };
-
-    public static com.google.protobuf.Parser<Points> parser() {
-      return PARSER;
-    }
-
-    @java.lang.Override
-    public com.google.protobuf.Parser<Points> getParserForType() {
-      return PARSER;
-    }
-
-    public de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Points getDefaultInstanceForType() {
-      return DEFAULT_INSTANCE;
-    }
-
+    // @@protoc_insertion_point(class_scope:Points)
   }
 
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Point_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Point_fieldAccessorTable;
-  private static com.google.protobuf.Descriptors.Descriptor
+  private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Points_descriptor;
   private static
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
