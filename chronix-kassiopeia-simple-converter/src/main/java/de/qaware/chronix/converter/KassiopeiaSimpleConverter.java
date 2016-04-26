@@ -32,7 +32,6 @@ import java.nio.charset.Charset;
 public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTimeSeries> {
 
     public static final String DATA_AS_JSON_FIELD = "dataAsJson";
-    public static final String DATA_FUNCTION_VALUE = "function_value";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KassiopeiaSimpleConverter.class);
 
@@ -52,6 +51,7 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
             }
         });
 
+
         //Default serialization is protocol buffers.
         if (binaryTimeSeries.getPoints().length > 0) {
             fromProtocolBuffers(binaryTimeSeries, queryStart, queryEnd, builder);
@@ -59,12 +59,11 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         } else if (binaryTimeSeries.getFields().containsKey(DATA_AS_JSON_FIELD)) {
             //do it from json
             fromJson(binaryTimeSeries, queryStart, queryEnd, builder);
-
-        } else if (binaryTimeSeries.get(DATA_FUNCTION_VALUE) != null) {
-            //we have a function (aggregation) result
-            double value = Double.valueOf(binaryTimeSeries.get(DATA_FUNCTION_VALUE).toString());
-            long meanDate = meanDate(binaryTimeSeries);
-            builder.point(meanDate, value);
+        } else {
+            //we have no data
+            //set the start and end
+            builder.start(binaryTimeSeries.getStart());
+            builder.end(binaryTimeSeries.getEnd());
         }
 
         return builder.build();
@@ -80,14 +79,6 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
         serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd, builder);
     }
-
-    private long meanDate(BinaryTimeSeries binaryTimeSeries) {
-        long start = binaryTimeSeries.getStart();
-        long end = binaryTimeSeries.getEnd();
-
-        return start + ((end - start) / 2);
-    }
-
 
     @Override
     public BinaryTimeSeries to(MetricTimeSeries timeSeries) {

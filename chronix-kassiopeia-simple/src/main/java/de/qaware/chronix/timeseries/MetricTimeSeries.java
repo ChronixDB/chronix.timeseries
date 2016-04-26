@@ -47,6 +47,8 @@ public final class MetricTimeSeries implements Serializable {
     private DoubleList values;
 
     private Map<String, Object> attributes = new HashMap<>();
+    private long end;
+    private long start;
 
     /**
      * Private constructor.
@@ -55,6 +57,18 @@ public final class MetricTimeSeries implements Serializable {
     private MetricTimeSeries() {
         timestamps = new LongList(500);
         values = new DoubleList(500);
+    }
+
+    /**
+     * Sets the start and end end based on the
+     */
+    private void setStartAndEnd() {
+        if (timestamps.isEmpty()) {
+            start = end = 0;
+        } else {
+            start = timestamps.get(0);
+            end = timestamps.get(size() - 1);
+        }
     }
 
     /**
@@ -279,22 +293,16 @@ public final class MetricTimeSeries implements Serializable {
      * @return the start of the time series
      */
     public long getStart() {
-        if (timestamps.isEmpty()) {
-            return 0;
-        } else {
-            return timestamps.get(0);
-        }
+        setStartAndEnd();
+        return start;
     }
 
     /**
      * @return the end of the time series
      */
     public long getEnd() {
-        if (timestamps.isEmpty()) {
-            return 0;
-        } else {
-            return timestamps.get(timestamps.size() - 1);
-        }
+        setStartAndEnd();
+        return end;
     }
 
     /**
@@ -390,7 +398,27 @@ public final class MetricTimeSeries implements Serializable {
             return this;
         }
 
+        /**
+         * Sets the end of the time series
+         *
+         * @param end the end of the time series
+         * @return the builder
+         */
+        public Builder end(long end) {
+            metricTimeSeries.end = end;
+            return this;
+        }
 
+        /**
+         * Sets the start of the time series
+         *
+         * @param start the start of the time series
+         * @return the builder
+         */
+        public Builder start(long start) {
+            metricTimeSeries.start = start;
+            return this;
+        }
     }
 
     /**
@@ -401,7 +429,6 @@ public final class MetricTimeSeries implements Serializable {
     }
 
     /**
-     *
      * @return minimum of the values of the list
      */
     public double min() {
