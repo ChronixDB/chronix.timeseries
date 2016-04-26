@@ -54,7 +54,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         def converter = new KassiopeiaSimpleConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
-                .field("function_value", 4711d)
+                .field("0_function_avg", 4711d)
                 .field("metric", "\\Load\\avg")
                 .start(0)
                 .end(10)
@@ -64,10 +64,10 @@ class KassiopeiaSimpleConverterTest extends Specification {
 
         then:
         tsReconverted.metric == "\\Load\\avg"
-        tsReconverted.size() == 1
-        tsReconverted.getValue(0) == 4711d
-        tsReconverted.start == 5
-        tsReconverted.end == 5
+        tsReconverted.size() == 0
+        tsReconverted.attribute("0_function_avg") == 4711d
+        tsReconverted.start == 0
+        tsReconverted.end == 10
     }
 
     def "test to and from json data"() {
@@ -75,7 +75,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         def converter = new KassiopeiaSimpleConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
-                .field("function_value", 4711d)
+                .field("0_function_avg", 4711d)
                 .field("metric", "\\Load\\avg")
                 .field("dataAsJson", "[[0,1,2,3],[4711.0,4712.0,4713.0,4714.0]]")
                 .start(0)
@@ -97,7 +97,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
         def converter = new KassiopeiaSimpleConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
-                .field("function_value", 4711d)
+                .field("0_function_avg", 4711d)
                 .field("metric", "\\Load\\avg")
                 .field("dataAsJson", new String("[[0,1,2,3],[4711.0,4712.0,4713.0,4714.0]]".getBytes("IBM420")))
                 .start(0)

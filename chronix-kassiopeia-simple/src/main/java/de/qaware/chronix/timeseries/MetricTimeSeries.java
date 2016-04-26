@@ -63,9 +63,9 @@ public final class MetricTimeSeries implements Serializable {
      * Sets the start and end end based on the
      */
     private void setStartAndEnd() {
-        if (timestamps.isEmpty()) {
-            start = end = 0;
-        } else {
+        //When the time stamps are empty we do not set the start and end
+        //An aggregation or analysis response does not have a data field per default.
+        if (!timestamps.isEmpty()) {
             start = timestamps.get(0);
             end = timestamps.get(size() - 1);
         }

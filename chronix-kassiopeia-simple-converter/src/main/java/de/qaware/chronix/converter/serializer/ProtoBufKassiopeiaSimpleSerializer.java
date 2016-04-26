@@ -124,8 +124,8 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
                 //only add the point if it is within the date
                 if (calculatedPointDate >= from && calculatedPointDate <= to) {
-                    timestamps[i] = calculatedPointDate;
-                    values[i] = p.getV();
+                    timestamps[lastPointIndex] = calculatedPointDate;
+                    values[lastPointIndex] = p.getV();
                     lastPointIndex++;
                 }
             }
