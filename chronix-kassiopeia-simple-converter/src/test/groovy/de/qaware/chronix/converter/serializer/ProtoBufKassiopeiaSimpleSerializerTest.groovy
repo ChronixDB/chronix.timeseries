@@ -166,4 +166,49 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         listPoints.get(14).timestamp == 143//5
     }
 
+
+    def "test date-delta-compaction with different values"() {
+        given:
+        def points = []
+        points.add(new Point(0, 1462892410, -10))
+        points.add(new Point(1, 1462892420, -20))
+        points.add(new Point(2, 1462892430, -30))
+        points.add(new Point(3, 1462892439, -39))
+        points.add(new Point(4, 1462892448, -48))
+        points.add(new Point(5, 1462892457, -57))
+        points.add(new Point(6, 1462892466, -66))
+        points.add(new Point(7, 1462892475, -75))
+        points.add(new Point(8, 1462892484, -84))
+        points.add(new Point(9, 1462892493, -93))
+        points.add(new Point(10, 1462892502, -102))
+        points.add(new Point(11, 1462892511, -109))
+        points.add(new Point(12, 1462892520, -118))
+        points.add(new Point(13, 1462892529, -127))
+        points.add(new Point(14, 1462892538, -136))
+
+        def builder = new MetricTimeSeries.Builder("metric1");
+
+        when:
+        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
+        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1462892410l, 1462892543l, builder)
+        def ts = builder.build()
+        def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
+
+        then:                            //diff to origin
+        listPoints.get(0).timestamp == 1462892410//0
+        listPoints.get(1).timestamp == 1462892420//0
+        listPoints.get(2).timestamp == 1462892430//0
+        listPoints.get(3).timestamp == 1462892440//1
+        listPoints.get(4).timestamp == 1462892450//2
+        listPoints.get(5).timestamp == 1462892460//3
+        listPoints.get(6).timestamp == 1462892470//4
+        listPoints.get(7).timestamp == 1462892480//5
+        listPoints.get(8).timestamp == 1462892489//5
+        listPoints.get(9).timestamp == 1462892498//5
+        listPoints.get(10).timestamp == 1462892507//5
+        listPoints.get(11).timestamp == 1462892516//5
+        listPoints.get(12).timestamp == 1462892525//5
+        listPoints.get(13).timestamp == 1462892534//5
+        listPoints.get(14).timestamp == 1462892543//5
+    }
 }

@@ -147,7 +147,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
         long previousDate = 0;
         long previousOffset = 0;
 
-        int timesSinceLastOffset = 1;
+        int timesSinceLastOffset = 0;
         long lastStoredDate = 0;
 
         SimpleProtocolBuffers.Point.Builder builder = SimpleProtocolBuffers.Point.newBuilder();
@@ -166,6 +166,8 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             long offset;
             if (previousDate == 0) {
                 offset = 0;
+                // set lastStoredDate to the value of the first timestamp
+                lastStoredDate = p.getTimestamp();
             } else {
                 offset = p.getTimestamp() - previousDate;
             }
@@ -181,7 +183,6 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                             .setV(p.getValue());
                     points.addP(builder.build());
                     timesSinceLastOffset += 1;
-
                 } else {
                     builder.setT(offset)
                             .setV(p.getValue())
@@ -191,7 +192,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                     timesSinceLastOffset = 1;
                     lastStoredDate = p.getTimestamp();
                 }
-                //set current as former previous date
+
                 previousOffset = offset;
                 previousDate = p.getTimestamp();
             }
@@ -203,7 +204,6 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     private static boolean noDrift(long timestamp, long lastStoredDate, int timesSinceLastOffset) {
         long calculatedMaxOffset = ALMOST_EQUALS_OFFSET_MS * timesSinceLastOffset;
         long drift = lastStoredDate + calculatedMaxOffset - timestamp;
-
         return (drift <= (ALMOST_EQUALS_OFFSET_MS / 2));
     }
 
