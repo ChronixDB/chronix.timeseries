@@ -183,6 +183,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                             .setV(p.getValue());
                     points.addP(builder.build());
                     timesSinceLastOffset += 1;
+
                 } else {
                     builder.setT(offset)
                             .setV(p.getValue())
@@ -193,6 +194,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                     lastStoredDate = p.getTimestamp();
                 }
 
+                //set current as former previous date
                 previousOffset = offset;
                 previousDate = p.getTimestamp();
             }
@@ -204,6 +206,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     private static boolean noDrift(long timestamp, long lastStoredDate, int timesSinceLastOffset) {
         long calculatedMaxOffset = ALMOST_EQUALS_OFFSET_MS * timesSinceLastOffset;
         long drift = lastStoredDate + calculatedMaxOffset - timestamp;
+
         return (drift <= (ALMOST_EQUALS_OFFSET_MS / 2));
     }
 
