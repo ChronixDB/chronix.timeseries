@@ -1,4 +1,7 @@
 dependencies {
+    compile project(':chronix-kassiopeia-simple')
+
+    compile 'org.apache.commons:commons-lang3:3.0'
 }
 
 
@@ -53,6 +56,14 @@ def pomConfig = {
             email 'florian.lautenschlager@qaware.de'
             organization 'QAware GmbH'
             organizationUrl 'https://www.qaware.de'
+            roles { role 'Developer' }
+        }
+        developer {
+            id '0xhansdampf'
+            name 'Max Jalowski'
+            email 'max.jalowski@fau.de'
+            organization 'FAU'
+            organizationUrl 'https://www.fau.de'
             roles { role 'Developer' }
         }
     }
