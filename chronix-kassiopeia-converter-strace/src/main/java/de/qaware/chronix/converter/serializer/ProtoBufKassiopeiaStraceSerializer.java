@@ -149,7 +149,7 @@ public class ProtoBufKassiopeiaStraceSerializer {
         long previousDate = 0;
         long previousOffset = 0;
 
-        int timesSinceLastOffset = 1;
+        int timesSinceLastOffset = 0;
         long lastStoredDate = 0;
 
         StraceProtocolBuffers.Point.Builder builder = StraceProtocolBuffers.Point.newBuilder();
@@ -168,6 +168,8 @@ public class ProtoBufKassiopeiaStraceSerializer {
             long offset;
             if (previousDate == 0) {
                 offset = 0;
+                // set lastStoredDate to the value of the first timestamp
+                lastStoredDate = p.getTimestamp();
             } else {
                 offset = p.getTimestamp() - previousDate;
             }

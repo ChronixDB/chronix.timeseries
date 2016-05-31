@@ -40,7 +40,7 @@ public class StraceTimeSeriesConverter implements TimeSeriesConverter<StraceTime
     @Override
     public StraceTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
         LOGGER.debug("Converting {} to MetricTimeSeries starting at {} and ending at {}", binaryTimeSeries, queryStart, queryEnd);
-        //get the metric TODO?
+        //get the metric
         String metric = binaryTimeSeries.get(MetricTSSchema.METRIC).toString();
 
         //Third build a minimal time series
@@ -91,7 +91,24 @@ public class StraceTimeSeriesConverter implements TimeSeriesConverter<StraceTime
     }
 
     @Override
-    public BinaryTimeSeries to(StraceTimeSeries document) {
-        return null;
+    public BinaryTimeSeries to(StraceTimeSeries timeSeries) {
+        LOGGER.debug("Converting {} to BinaryTimeSeries", timeSeries);
+        BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
+
+        //serialize
+        byte[] compressedPoints = ProtoBufKassiopeiaStraceSerializer.to(timeSeries.points().iterator());
+
+        //Add the minimum required fields
+        builder.start(timeSeries.getStart())
+                .end(timeSeries.getEnd())
+                .data(compressedPoints);
+
+        //Currently we only have a metric
+        builder.field(MetricTSSchema.METRIC, timeSeries.getMetric());
+
+        //Add a list of user defined attributes
+        timeSeries.attributes().forEach(builder::field);
+
+        return builder.build();
     }
 }
