@@ -16,9 +16,10 @@
 package de.qaware.chronix.converter.serializer;
 
 import de.qaware.chronix.converter.common.Compression;
-import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
+import de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers;
 import de.qaware.chronix.timeseries.StraceTimeSeries;
 import de.qaware.chronix.timeseries.dt.LongList;
+import de.qaware.chronix.timeseries.dt.StracePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -95,15 +96,15 @@ public class ProtoBufKassiopeiaStraceSerializer {
 
         try {
             InputStream decompressedPointStream = Compression.decompressToStream(compressedBytes);
-            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(decompressedPointStream);
+            StraceProtocolBuffers.Points protocolBufferPoints = StraceProtocolBuffers.Points.parseFrom(decompressedPointStream);
 
             long lastOffset = ALMOST_EQUALS_OFFSET_MS;
             long calculatedPointDate = timeSeriesStart;
 
-            List<SimpleProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
+            List<StraceProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
 
             int size = pList.size();
-            SimpleProtocolBuffers.Point[] points = pList.toArray(new SimpleProtocolBuffers.Point[0]);
+            StraceProtocolBuffers.Point[] points = pList.toArray(new StraceProtocolBuffers.Point[0]);
 
             long[] timestamps = new long[pList.size()];
             String[] values = new String[pList.size()];
@@ -111,7 +112,7 @@ public class ProtoBufKassiopeiaStraceSerializer {
             int lastPointIndex = 0;
 
             for (int i = 0; i < size; i++) {
-                SimpleProtocolBuffers.Point p = points[i];
+                StraceProtocolBuffers.Point p = points[i];
 
                 if (i > 0) {
                     long offset = p.getT();
@@ -144,20 +145,20 @@ public class ProtoBufKassiopeiaStraceSerializer {
      * @param metricDataPoints - the list with points
      * @return a protocol buffer points object
      */
-    public static byte[] to(Iterator<Point> metricDataPoints) {
+    public static byte[] to(Iterator<StracePoint> metricDataPoints) {
         long previousDate = 0;
         long previousOffset = 0;
 
         int timesSinceLastOffset = 1;
         long lastStoredDate = 0;
 
-        SimpleProtocolBuffers.Point.Builder builder = SimpleProtocolBuffers.Point.newBuilder();
-        SimpleProtocolBuffers.Points.Builder points = SimpleProtocolBuffers.Points.newBuilder();
+        StraceProtocolBuffers.Point.Builder builder = StraceProtocolBuffers.Point.newBuilder();
+        StraceProtocolBuffers.Points.Builder points = StraceProtocolBuffers.Points.newBuilder();
 
 
         while (metricDataPoints.hasNext()) {
 
-            Point p = metricDataPoints.next();
+            StracePoint p = metricDataPoints.next();
 
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
