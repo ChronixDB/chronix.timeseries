@@ -247,7 +247,7 @@ public final class StraceTimeSeries implements Serializable {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        MetricTimeSeries rhs = (MetricTimeSeries) obj;
+        StraceTimeSeries rhs = (StraceTimeSeries) obj;
         return new EqualsBuilder()
                 .append(this.getMetric(), rhs.getMetric())
                 .isEquals();

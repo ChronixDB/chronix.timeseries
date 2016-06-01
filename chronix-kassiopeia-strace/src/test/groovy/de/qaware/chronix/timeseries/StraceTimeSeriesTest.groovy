@@ -63,4 +63,159 @@ class StraceTimeSeriesTest extends Specification {
         ts.getValuesAsArray().length == 11
         !ts.isEmpty()
     }
+
+    def "test points"() {
+        given:
+        def times = new LongList()
+        def values = new ArrayList<String>()
+        10.times {
+            times.add(100 - it as long)
+            values.add(it * 10 as String)
+        }
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").points(times, values).build()
+
+        when:
+
+        def stream = ts.points()
+        then:
+        stream.count() == 10
+
+    }
+
+    def "test sort"() {
+        given:
+        def times = []
+        def values = []
+        10.times {
+            times.add(100 - it as long)
+            values.add(100 - it as String)
+        }
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").build()
+        ts.addAll(times, values)
+
+        when:
+        ts.sort()
+
+        then:
+        ts.getValue(0) == "91"
+    }
+
+    def "test sort on empty time series"() {
+        given:
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").build()
+
+        when:
+        ts.sort()
+
+        then:
+        0 * ts.points()
+    }
+
+    def "test clear time series"() {
+        given:
+
+        def times = new LongList()
+        def values = new ArrayList<String>()
+
+        10.times {
+            times.add(it as long)
+            values.add(it * 10 as String)
+        }
+
+        def ts = new StraceTimeSeries.Builder("//CPU//Load")
+                .points(times, values)
+                .build()
+
+        when:
+        ts.clear()
+
+        then:
+        ts.size() == 0
+        ts.isEmpty()
+        ts.getEnd() == 0
+        ts.getStart() == 0
+    }
+
+    def "test to string"() {
+        given:
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").build()
+
+        when:
+        def string = ts.toString()
+
+        then:
+        string.contains("metric")
+    }
+
+    def "test equals"() {
+        given:
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").build()
+
+        when:
+        def result = ts.equals(other)
+
+        then:
+        result == expected
+
+        where:
+        other << [null, 1, new StraceTimeSeries.Builder("//CPU//Load").build()]
+        expected << [false, false, true]
+    }
+
+    def "test equals same instance"() {
+        given:
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").build()
+
+        expect:
+        ts.equals(ts)
+    }
+
+    def "test hash code"() {
+        given:
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").build()
+        def ts2 = new StraceTimeSeries.Builder("//CPU//Load").build()
+        def ts3 = new StraceTimeSeries.Builder("//CPU//Load//").build()
+
+        expect:
+        ts.hashCode() == ts2.hashCode()
+        ts.hashCode() != ts3.hashCode()
+    }
+
+    def "test empty points"() {
+        expect:
+        def ts = new StraceTimeSeries.Builder("").build()
+        ts.points().count() == 0l
+        ts.isEmpty()
+    }
+
+    def "test add all as array"() {
+        given:
+        def times = []
+        def values = []
+        10.times {
+            times.add(100 - it as long)
+            values.add(100 - it as String)
+        }
+        def ts = new StraceTimeSeries.Builder("//CPU//Load").build()
+        ts.addAll(times as long[], values as String[])
+
+        when:
+        ts.sort()
+
+        then:
+        ts.getValue(0) == "91"
+    }
+
+    def "test attribute reference"() {
+        given:
+        def ts = new StraceTimeSeries.Builder("//CPU//Load")
+                .attribute("added via builder", "oh dear")
+                .build()
+        when:
+        ts.getAttributesReference().clear()
+
+        then:
+        ts.attributes().size() == 0
+    }
+
 }
