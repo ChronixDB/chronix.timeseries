@@ -15,27 +15,27 @@
  */
 package de.qaware.chronix.converter.serializer;
 
-
 import de.qaware.chronix.converter.common.Compression;
-import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
-import de.qaware.chronix.timeseries.MetricTimeSeries;
-import de.qaware.chronix.timeseries.dt.DoubleList;
+import de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers;
+import de.qaware.chronix.timeseries.StraceTimeSeries;
 import de.qaware.chronix.timeseries.dt.LongList;
-import de.qaware.chronix.timeseries.dt.Point;
+import de.qaware.chronix.timeseries.dt.StracePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 /**
  * Class to easily convert the protocol buffer into Point<Long,Double>
  *
- * @author f.lautenschlager
+ * @author f.lautenschlager & m.jalowski
  */
-public final class ProtoBufKassiopeiaSimpleSerializer {
+public class ProtoBufKassiopeiaStraceSerializer {
 
     /**
      * Name of the system property to set the equals offset between the dates.
@@ -48,7 +48,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     /**
      * Private constructor
      */
-    private ProtoBufKassiopeiaSimpleSerializer() {
+    private ProtoBufKassiopeiaStraceSerializer() {
         //utility class
     }
 
@@ -60,7 +60,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param timeSeriesEnd   the end of the time series
      * @param builder         the time series builder
      */
-    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, MetricTimeSeries.Builder builder) {
+    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, StraceTimeSeries.Builder builder) {
         from(compressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, builder);
     }
 
@@ -75,7 +75,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param to              including points to
      * @param builder         the time series builder
      */
-    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, MetricTimeSeries.Builder builder) {
+    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, StraceTimeSeries.Builder builder) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
@@ -96,23 +96,23 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
         try {
             InputStream decompressedPointStream = Compression.decompressToStream(compressedBytes);
-            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(decompressedPointStream);
+            StraceProtocolBuffers.Points protocolBufferPoints = StraceProtocolBuffers.Points.parseFrom(decompressedPointStream);
 
             long lastOffset = ALMOST_EQUALS_OFFSET_MS;
             long calculatedPointDate = timeSeriesStart;
 
-            List<SimpleProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
+            List<StraceProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
 
             int size = pList.size();
-            SimpleProtocolBuffers.Point[] points = pList.toArray(new SimpleProtocolBuffers.Point[0]);
+            StraceProtocolBuffers.Point[] points = pList.toArray(new StraceProtocolBuffers.Point[0]);
 
             long[] timestamps = new long[pList.size()];
-            double[] values = new double[pList.size()];
+            String[] values = new String[pList.size()];
 
             int lastPointIndex = 0;
 
             for (int i = 0; i < size; i++) {
-                SimpleProtocolBuffers.Point p = points[i];
+                StraceProtocolBuffers.Point p = points[i];
 
                 if (i > 0) {
                     long offset = p.getT();
@@ -124,12 +124,14 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
                 //only add the point if it is within the date
                 if (calculatedPointDate >= from && calculatedPointDate <= to) {
-                    timestamps[lastPointIndex] = calculatedPointDate;
-                    values[lastPointIndex] = p.getV();
+                    timestamps[i] = calculatedPointDate;
+                    values[i] = p.getV();
                     lastPointIndex++;
                 }
             }
-            builder.points(new LongList(timestamps, lastPointIndex), new DoubleList(values, lastPointIndex));
+            ArrayList<String> valueList = new ArrayList<>(lastPointIndex);
+            valueList.addAll(Arrays.asList(values));
+            builder.points(new LongList(timestamps, lastPointIndex), valueList);
 
         } catch (IOException e) {
             LOGGER.info("Could not decode protocol buffers points");
@@ -143,20 +145,20 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param metricDataPoints - the list with points
      * @return a protocol buffer points object
      */
-    public static byte[] to(Iterator<Point> metricDataPoints) {
+    public static byte[] to(Iterator<StracePoint> metricDataPoints) {
         long previousDate = 0;
         long previousOffset = 0;
 
         int timesSinceLastOffset = 0;
         long lastStoredDate = 0;
 
-        SimpleProtocolBuffers.Point.Builder builder = SimpleProtocolBuffers.Point.newBuilder();
-        SimpleProtocolBuffers.Points.Builder points = SimpleProtocolBuffers.Points.newBuilder();
+        StraceProtocolBuffers.Point.Builder builder = StraceProtocolBuffers.Point.newBuilder();
+        StraceProtocolBuffers.Points.Builder points = StraceProtocolBuffers.Points.newBuilder();
 
 
         while (metricDataPoints.hasNext()) {
 
-            Point p = metricDataPoints.next();
+            StracePoint p = metricDataPoints.next();
 
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
@@ -193,7 +195,6 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                     timesSinceLastOffset = 1;
                     lastStoredDate = p.getTimestamp();
                 }
-
                 //set current as former previous date
                 previousOffset = offset;
                 previousDate = p.getTimestamp();

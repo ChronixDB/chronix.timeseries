@@ -15,8 +15,8 @@
  */
 package de.qaware.chronix.converter.serializer
 
-import de.qaware.chronix.timeseries.MetricTimeSeries
-import de.qaware.chronix.timeseries.dt.Point
+import de.qaware.chronix.timeseries.StraceTimeSeries
+import de.qaware.chronix.timeseries.dt.StracePoint
 import spock.lang.Shared
 import spock.lang.Specification
 
@@ -25,25 +25,25 @@ import java.util.stream.Collectors
 
 /**
  * Unit test for the protocol buffers serializer
- * @author f.lautenschlager
+ * @author f.lautenschlager & m.jalowski
  */
-class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
+class ProtoBufKassiopeiaStraceSerializerTest  extends Specification {
 
     def "test from without range query"() {
         given:
         def points = []
         100.times {
-            points.add(new Point(it, it + 1, it * 100))
+            points.add(new StracePoint(it, it + 1, it * 100 + " as string"))
         }
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
+        def compressedProtoPoints = ProtoBufKassiopeiaStraceSerializer.to(points.iterator())
 
         when:
-        def builder = new MetricTimeSeries.Builder("metric");
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 0, points.size(), 0, points.size(), builder)
+        def builder = new StraceTimeSeries.Builder("metric");
+        ProtoBufKassiopeiaStraceSerializer.from(compressedProtoPoints, 0, points.size(), 0, points.size(), builder)
         def ts = builder.build();
         then:
         100.times {
-            ts.getValue(it) == it * 100
+            ts.getValue(it) == it * 100 + " as string"
             ts.getTime(it) == it
         }
     }
@@ -58,24 +58,24 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def points = []
 
         100.times {
-            points.add(new Point(it, start.plusSeconds(it).toEpochMilli(), it * 100))
+            points.add(new StracePoint(it, start.plusSeconds(it).toEpochMilli(), it * 100 + " as string"))
         }
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
-        def builder = new MetricTimeSeries.Builder("metric");
+        def compressedProtoPoints = ProtoBufKassiopeiaStraceSerializer.to(points.iterator())
+        def builder = new StraceTimeSeries.Builder("metric");
 
         when:
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, start.toEpochMilli(), end.toEpochMilli(), from, to, builder)
+        ProtoBufKassiopeiaStraceSerializer.from(compressedProtoPoints, start.toEpochMilli(), end.toEpochMilli(), from, to, builder)
         def ts = builder.build();
 
         then:
-        List<Point> list = ts.points().collect(Collectors.toList())
+        List<StracePoint> list = ts.points().collect(Collectors.toList())
         list.size() == size
         if (size == 21) {
             list.get(0).timestamp == 1456394850774
-            list.get(0).value == 5000.0d
+            list.get(0).value == 5000 + " as string"
 
             list.get(20).timestamp == 1456394870774
-            list.get(20).value == 7000.0d
+            list.get(20).value == 7000 + " as string"
         }
 
         where:
@@ -88,14 +88,14 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         given:
         def points = []
         100.times {
-            points.add(new Point(it, it + 15, it * 100))
+            points.add(new StracePoint(it, it + 15, it * 100 + " as string"))
         }
         //Points that are null are ignored
         points.add(null)
-        def builder = new MetricTimeSeries.Builder("");
+        def builder = new StraceTimeSeries.Builder("");
         when:
-        def compressedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedPoints, 0, 114, builder)
+        def compressedPoints = ProtoBufKassiopeiaStraceSerializer.to(points.iterator())
+        ProtoBufKassiopeiaStraceSerializer.from(compressedPoints, 0, 114, builder)
 
         then:
         builder.build().size() == 100
@@ -103,7 +103,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
     def "test iterator with invalid arguments"() {
         when:
-        ProtoBufKassiopeiaSimpleSerializer.from(null, 0, 0, from, to, new MetricTimeSeries.Builder(""))
+        ProtoBufKassiopeiaStraceSerializer.from(null, 0, 0, from, to, new StraceTimeSeries.Builder(""))
         then:
         thrown IllegalArgumentException
         where:
@@ -115,7 +115,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
     def "test private constructor"() {
         when:
-        ProtoBufKassiopeiaSimpleSerializer.newInstance()
+        ProtoBufKassiopeiaStraceSerializer.newInstance()
         then:
         noExceptionThrown()
     }
@@ -124,29 +124,29 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
     def "test date-delta-compaction"() {
         given:
         def points = []
-        points.add(new Point(0, 10, -10))
-        points.add(new Point(1, 20, -20))
-        points.add(new Point(2, 30, -30))
-        points.add(new Point(3, 39, -39))
-        points.add(new Point(4, 48, -48))
-        points.add(new Point(5, 57, -57))
-        points.add(new Point(6, 66, -66))
-        points.add(new Point(7, 75, -75))
-        points.add(new Point(8, 84, -84))
-        points.add(new Point(9, 93, -93))
-        points.add(new Point(10, 102, -102))
-        points.add(new Point(11, 111, -109))
-        points.add(new Point(12, 120, -118))
-        points.add(new Point(13, 129, -127))
-        points.add(new Point(14, 138, -136))
+        points.add(new StracePoint(0, 10, "string0"))
+        points.add(new StracePoint(1, 20, "string1"))
+        points.add(new StracePoint(2, 30, "string2"))
+        points.add(new StracePoint(3, 39, "string3"))
+        points.add(new StracePoint(4, 48, "string4"))
+        points.add(new StracePoint(5, 57, "string5"))
+        points.add(new StracePoint(6, 66, "string6"))
+        points.add(new StracePoint(7, 75, "string7"))
+        points.add(new StracePoint(8, 84, "string8"))
+        points.add(new StracePoint(9, 93, "string9"))
+        points.add(new StracePoint(10, 102, "string10"))
+        points.add(new StracePoint(11, 111, "string11"))
+        points.add(new StracePoint(12, 120, "string12"))
+        points.add(new StracePoint(13, 129, "string13"))
+        points.add(new StracePoint(14, 138, "string14"))
 
-        def builder = new MetricTimeSeries.Builder("metric");
+        def builder = new StraceTimeSeries.Builder("metric");
 
         when:
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 10l, 1036l, builder)
+        def compressedProtoPoints = ProtoBufKassiopeiaStraceSerializer.to(points.iterator())
+        ProtoBufKassiopeiaStraceSerializer.from(compressedProtoPoints, 10l, 1036l, builder)
         def ts = builder.build()
-        def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
+        def listPoints = ts.points().collect(Collectors.toList()) as List<StracePoint>
 
         then:                            //diff to origin
         listPoints.get(0).timestamp == 10//0
@@ -170,29 +170,29 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
     def "test date-delta-compaction with different values"() {
         given:
         def points = []
-        points.add(new Point(0, 1462892410, -10))
-        points.add(new Point(1, 1462892420, -20))
-        points.add(new Point(2, 1462892430, -30))
-        points.add(new Point(3, 1462892439, -39))
-        points.add(new Point(4, 1462892448, -48))
-        points.add(new Point(5, 1462892457, -57))
-        points.add(new Point(6, 1462892466, -66))
-        points.add(new Point(7, 1462892475, -75))
-        points.add(new Point(8, 1462892484, -84))
-        points.add(new Point(9, 1462892493, -93))
-        points.add(new Point(10, 1462892502, -102))
-        points.add(new Point(11, 1462892511, -109))
-        points.add(new Point(12, 1462892520, -118))
-        points.add(new Point(13, 1462892529, -127))
-        points.add(new Point(14, 1462892538, -136))
+        points.add(new StracePoint(0, 1462892410, "string0"))
+        points.add(new StracePoint(1, 1462892420, "string1"))
+        points.add(new StracePoint(2, 1462892430, "string2"))
+        points.add(new StracePoint(3, 1462892439, "string3"))
+        points.add(new StracePoint(4, 1462892448, "string4"))
+        points.add(new StracePoint(5, 1462892457, "string5"))
+        points.add(new StracePoint(6, 1462892466, "string6"))
+        points.add(new StracePoint(7, 1462892475, "string7"))
+        points.add(new StracePoint(8, 1462892484, "string8"))
+        points.add(new StracePoint(9, 1462892493, "string9"))
+        points.add(new StracePoint(10, 1462892502, "string10"))
+        points.add(new StracePoint(11, 1462892511, "string11"))
+        points.add(new StracePoint(12, 1462892520, "string12"))
+        points.add(new StracePoint(13, 1462892529, "string13"))
+        points.add(new StracePoint(14, 1462892538, "string14"))
 
-        def builder = new MetricTimeSeries.Builder("metric1");
+        def builder = new StraceTimeSeries.Builder("metric1");
 
         when:
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1462892410l, 1462892543l, builder)
+        def compressedProtoPoints = ProtoBufKassiopeiaStraceSerializer.to(points.iterator())
+        ProtoBufKassiopeiaStraceSerializer.from(compressedProtoPoints, 1462892410l, 1462892543l, builder)
         def ts = builder.build()
-        def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
+        def listPoints = ts.points().collect(Collectors.toList()) as List<StracePoint>
 
         then:                            //diff to origin
         listPoints.get(0).timestamp == 1462892410//0
