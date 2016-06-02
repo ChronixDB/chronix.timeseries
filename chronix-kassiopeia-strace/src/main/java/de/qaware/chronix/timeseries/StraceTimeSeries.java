@@ -147,7 +147,7 @@ public final class StraceTimeSeries implements Serializable {
      * @param timestamps - the timestamps
      * @param values     - the values
      */
-    private void setAll(LongList timestamps, ArrayList<String> values) {
+    private void setAll(LongList timestamps, List<String> values) {
         this.timestamps = timestamps;
         this.values = values;
     }
@@ -340,7 +340,7 @@ public final class StraceTimeSeries implements Serializable {
          * @param values     the values
          * @return the builder
          */
-        public Builder points(LongList timestamps, ArrayList<String> values) {
+        public Builder points(LongList timestamps, List<String> values) {
             if (timestamps != null && values != null) {
                 straceTimeSeries.setAll(timestamps, values);
             }
