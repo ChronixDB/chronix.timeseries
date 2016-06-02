@@ -41,7 +41,7 @@ public final class StraceTimeSeries implements Serializable {
 
     private String metric;
     private LongList timestamps;
-    private ArrayList<String> values;
+    private List<String> values;
 
     private Map<String, Object> attributes = new HashMap<>();
 
@@ -74,7 +74,7 @@ public final class StraceTimeSeries implements Serializable {
     /**
      * @return the metric data strings
      */
-    public ArrayList<String> getValues() {
+    public List<String> getValues() {
         return values;
     }
 
