@@ -7,7 +7,7 @@
 # Chronix Kassiopeia
 Chronix Kassiopeia is a library that provides classes and functions to work with time series.
 Kassiopeia can easily plugged into Chronix.
-Kassiopeia is split up into two different time series classes with its belonging converters.
+Kassiopeia is split up into different time series classes with its belonging converters.
 The first implementation is Chronix-Kassiopeia. 
 It consists of the following packages: 
 - Chronix-Kassiopeia
@@ -16,6 +16,10 @@ It consists of the following packages:
 The second implementation is Chronix-Kassiopeia-Simple.
 - Chronix-Kassiopeia-Simple
 - Chronix-Kassiopeia-Simple-Converter
+
+The third implementation is Chronix-Kassiopeia-Strace (experimental)
+- Chronix-Kassiopeia-Strace
+- Chronix-Kassiopeia-Strace-Converter
 
 ## Chronix-Kassiopeia
 Chronix-Kassiopeia has no dependencies to Chronix.
