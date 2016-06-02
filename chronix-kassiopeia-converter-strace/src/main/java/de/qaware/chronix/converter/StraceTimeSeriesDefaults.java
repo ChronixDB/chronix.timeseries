@@ -29,7 +29,7 @@ import java.util.function.Function;
  *
  * @author f.lautenschlager & m.jalowski
  */
-public class StraceTimeSeriesDefaults {
+public final class StraceTimeSeriesDefaults {
 
     private StraceTimeSeriesDefaults() {
         //avoid instances
