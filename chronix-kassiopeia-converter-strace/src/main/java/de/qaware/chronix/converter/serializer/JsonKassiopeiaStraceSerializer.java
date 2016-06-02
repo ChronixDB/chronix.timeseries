@@ -40,7 +40,7 @@ public class JsonKassiopeiaStraceSerializer {
 
     public static final String UTF_8 = "UTF-8";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonKassiopeiaSimpleSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonKassiopeiaStraceSerializer.class);
     private static final byte[] EMPTY_JSON = "[[],[]]".getBytes(Charset.forName(UTF_8));
     private final Gson gson;
 

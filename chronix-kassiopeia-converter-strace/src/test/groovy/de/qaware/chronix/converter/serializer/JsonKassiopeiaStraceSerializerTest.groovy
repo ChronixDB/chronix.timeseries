@@ -15,8 +15,8 @@
  */
 package de.qaware.chronix.converter.serializer
 
+import de.qaware.chronix.converter.common.LongList
 import de.qaware.chronix.timeseries.StraceTimeSeries
-import de.qaware.chronix.timeseries.dt.LongList
 import spock.lang.Specification
 import spock.lang.Unroll
 

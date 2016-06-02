@@ -15,9 +15,9 @@
  */
 package de.qaware.chronix.converter.serializer
 
+import de.qaware.chronix.converter.common.DoubleList
+import de.qaware.chronix.converter.common.LongList
 import de.qaware.chronix.timeseries.MetricTimeSeries
-import de.qaware.chronix.timeseries.dt.DoubleList
-import de.qaware.chronix.timeseries.dt.LongList
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -7,7 +7,7 @@ sonarqube {
 dependencies {
 
     compile project(':chronix-kassiopeia')
-    compile project(':chronix-kassiopeia-converter-common')
+    compile project(':chronix-kassiopeia-common')
 
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'commons-io:commons-io:2.4'

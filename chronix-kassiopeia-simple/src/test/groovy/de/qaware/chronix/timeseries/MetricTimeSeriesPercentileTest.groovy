@@ -15,10 +15,11 @@
  */
 package de.qaware.chronix.timeseries
 
+import spock.lang.Specification
 /**
  * Created by c.hillmann on 07.04.2016.
  */
-class MetricTimeSeriesPercentileTest {
+class MetricTimeSeriesPercentileTest extends Specification {
     def "test percentile"() {
         given:
         MetricTimeSeries.Builder timeSeries = new MetricTimeSeries.Builder("P");

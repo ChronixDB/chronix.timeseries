@@ -15,7 +15,7 @@
  */
 package de.qaware.chronix.timeseries
 
-import de.qaware.chronix.timeseries.dt.LongList
+import de.qaware.chronix.converter.common.LongList
 import spock.lang.Specification
 import spock.lang.Unroll
 

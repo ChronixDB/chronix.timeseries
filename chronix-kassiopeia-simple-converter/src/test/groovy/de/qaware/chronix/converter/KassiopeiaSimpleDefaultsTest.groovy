@@ -16,7 +16,7 @@
 package de.qaware.chronix.converter
 
 import de.qaware.chronix.timeseries.MetricTimeSeries
-import de.qaware.chronix.timeseries.dt.Point
+import de.qaware.chronix.timeseries.Point
 import spock.lang.Specification
 
 import java.util.stream.Collectors

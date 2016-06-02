@@ -13,25 +13,25 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.timeseries.dt
+package de.qaware.chronix.converter.common
 
 import spock.lang.Specification
 import spock.lang.Unroll
 
 /**
- * Unit test for the long list
+ * Unit test for our DoubleList
  * @author f.lautenschlager
  */
-class LongListTest extends Specification {
+class DoubleListTest extends Specification {
     def "test size"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(1l)
-        list.add(2l)
+        list.add(1d)
+        list.add(2d)
 
-        list.remove(2l)
+        list.remove(2d)
         then:
         list.size() == 1
     }
@@ -44,19 +44,19 @@ class LongListTest extends Specification {
         list.isEmpty() == expected
 
         where:
-        insertedList << [new LongList()]
+        insertedList << [new DoubleList()]
         expected << [true]
     }
 
     def "test remove"() {
         given:
-        def list = new LongList(20)
+        def list = new DoubleList(20)
 
         when:
-        list.add(1l)
-        list.add(2l)
-        list.add(3l)
-        list.add(4l)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
+        list.add(4d)
 
         list.remove(2)
         then:
@@ -69,71 +69,71 @@ class LongListTest extends Specification {
     @Unroll
     def "test contains value: #values expected: #expected"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         def result = list.contains(values)
         result == expected
 
         where:
-        values << [3l, 4l, 5l, 6l, 2l]
+        values << [3d, 4d, 5d, 6d, 2d]
         expected << [true, true, true, false, false]
     }
 
     @Unroll
     def "test indexOf value: #values index: #expected"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         def result = list.indexOf(values)
         result == expected
 
         where:
-        values << [3l, 4l, 5l, 6l]
+        values << [3d, 4d, 5d, 6d]
         expected << [0, 1, 3, -1]
     }
 
     @Unroll
     def "test lastIndexOf value: #values index: #expected"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         def result = list.lastIndexOf(values)
         result == expected
 
         where:
-        values << [3l, 4l, 5l, 6l]
+        values << [3d, 4d, 5d, 6d]
         expected << [0, 2, 3, -1]
     }
 
     def "test copy"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         def result = list.copy()
@@ -143,28 +143,28 @@ class LongListTest extends Specification {
 
     def "test toArray"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         def result = list.toArray()
-        result == [3, 4, 4, 5] as long[]
+        result == [3d, 4d, 4d, 5d] as double[]
     }
 
     def "test get"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3)
-        list.add(4)
-        list.add(4)
-        list.add(5)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         def result = list.get(index)
@@ -172,19 +172,19 @@ class LongListTest extends Specification {
 
         where:
         index << [3, 2, 1, 0]
-        expected << [5l, 4l, 4l, 3l]
+        expected << [5d, 4d, 4d, 3d]
 
     }
 
     def "test set"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         def result = list.set(index, 4)
@@ -193,94 +193,94 @@ class LongListTest extends Specification {
 
         where:
         index << [3, 2, 1, 0]
-        expected << [5l, 4l, 4l, 3l]
+        expected << [5d, 4d, 4d, 3d]
     }
 
 
     def "test add"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         then:
         list.size() == 4
-        list.contains(3l)
-        list.contains(4l)
-        list.contains(4l)
-        list.contains(5l)
+        list.contains(3d)
+        list.contains(4d)
+        list.contains(4d)
+        list.contains(5d)
     }
 
 
     def "test add at index"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
-        list.add(3, 99l)
+        list.add(3, 99d)
 
         then:
         list.size() == 5
-        list.get(3) == 99l
+        list.get(3) == 99d
     }
 
     def "test remove double"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
-        def firstRemove = list.remove(4l)
-        def secondRemove = list.remove(1l)
+        def firstRemove = list.remove(4d)
+        def secondRemove = list.remove(1d)
 
         then:
         firstRemove
         !secondRemove
         list.size() == 3
-        list.get(1) == 4l
+        list.get(1) == 4d
     }
 
 
     def "test remove at index"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         def result = list.remove(3)
 
         then:
-        result == 5l
+        result == 5d
         list.size() == 3
     }
 
     def "test clear"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
         list.clear()
         then:
@@ -289,112 +289,114 @@ class LongListTest extends Specification {
 
     def "test addAll"() {
         given:
-        def list1 = new LongList()
-        def list2 = new LongList()
+        def list1 = new DoubleList()
+        def list2 = new DoubleList()
 
         when:
-        list1.add(1l)
-        list1.add(2l)
-        list1.add(3l)
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
 
 
-        list2.add(3l)
-        list2.add(4l)
-        list2.add(4l)
-        list2.add(5l)
+        list2.add(3d)
+        list2.add(4d)
+        list2.add(4d)
+        list2.add(5d)
 
         def result = list1.addAll(list2)
         then:
         result
         list1.size() == 7
-        list1.contains(3l)
-        list1.contains(4l)
-        list1.contains(5l)
+        list1.contains(3d)
+        list1.contains(4d)
+        list1.contains(5d)
 
     }
 
     def "test addAll with empty list"() {
         given:
-        def list1 = new LongList()
-        def list2 = new LongList()
+        def list1 = new DoubleList()
+        def list2 = new DoubleList()
 
         when:
-        list1.add(1l)
-        list1.add(2l)
-        list1.add(3l)
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
 
 
         def result = list1.addAll(list2)
         then:
         !result
         list1.size() == 3
-        list1.contains(1l)
-        list1.contains(2l)
-        list1.contains(3l)
+        list1.contains(1d)
+        list1.contains(2d)
+        list1.contains(3d)
     }
 
     def "test addAll with array"() {
         given:
-        def list1 = new LongList()
-        def list2 = [4l, 5l, 6l] as long[]
+        def list1 = new DoubleList()
+        def list2 = [4d, 5d, 6d] as double[]
 
         when:
-        list1.add(1l)
-        list1.add(2l)
-        list1.add(3l)
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
 
 
         def result = list1.addAll(list2)
         then:
         result
         list1.size() == 6
-        list1.contains(1l)
-        list1.contains(2l)
-        list1.contains(3l)
-        list1.contains(4l)
-        list1.contains(5l)
-        list1.contains(6l)
+        list1.contains(1d)
+        list1.contains(2d)
+        list1.contains(3d)
+        list1.contains(4d)
+        list1.contains(5d)
+        list1.contains(6d)
     }
 
 
     def "test addAll at index"() {
         given:
-        def list1 = new LongList(20)
-        def list2 = new LongList(20)
+        def list1 = new DoubleList()
+        def list2 = new DoubleList()
 
         when:
-        list1.add(1l)
-        list1.add(2l)
-        list1.add(3l)
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
 
 
-        list2.add(3l)
-        list2.add(4l)
-        list2.add(4l)
-        list2.add(5l)
+        list2.add(3d)
+        list2.add(4d)
+        list2.add(4d)
+        list2.add(5d)
 
         list2.remove(1)
+
 
         def result = list1.addAll(3, list2)
         then:
         result
         list1.size() == 6
-        list1.get(0) == 1l
-        list1.get(1) == 2l
-        list1.get(2) == 3l
-        list1.get(3) == 3l
-        list1.get(4) == 4l
-        list1.get(5) == 5l
+        list1.get(0) == 1d
+        list1.get(1) == 2d
+        list1.get(2) == 3d
+        list1.get(3) == 3d
+        list1.get(4) == 4d
+        list1.get(5) == 5d
+
     }
 
     def "test addAll of empty list at index"() {
         given:
-        def list1 = new LongList(20)
-        def list2 = new LongList(20)
+        def list1 = new DoubleList(20)
+        def list2 = new DoubleList(20)
         when:
-        list1.add(1l)
-        list1.add(2l)
-        list1.add(3l)
+        list1.add(1d)
+        list1.add(2d)
+        list1.add(3d)
 
         def result = list1.addAll(0, list2)
         then:
@@ -405,38 +407,38 @@ class LongListTest extends Specification {
 
     def "test removeRange"() {
         given:
-        def list = new LongList()
+        def list = new DoubleList()
 
         when:
-        list.add(1l)
-        list.add(2l)
-        list.add(3l)
-        list.add(3l)
-        list.add(4l)
-        list.add(4l)
-        list.add(5l)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
+        list.add(3d)
+        list.add(4d)
+        list.add(4d)
+        list.add(5d)
 
 
         list.removeRange(3, 6)
 
         then:
         list.size() == 4
-        !list.contains(4l)
+        !list.contains(4d)
     }
 
     def "test hash code"() {
         given:
-        def list = new LongList()
-        def list2 = new LongList()
+        def list = new DoubleList()
+        def list2 = new DoubleList()
 
         when:
-        list.add(1l)
-        list.add(2l)
-        list.add(3l)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
 
-        list2.add(1l)
-        list2.add(2l)
-        list2.add(3l)
+        list2.add(1d)
+        list2.add(2d)
+        list2.add(3d)
 
 
         then:
@@ -446,8 +448,8 @@ class LongListTest extends Specification {
 
     def "test to string"() {
         given:
-        def list = new LongList()
-        list.add(1l)
+        def list = new DoubleList()
+        list.add(1d)
 
         when:
         def toString = list.toString()
@@ -459,10 +461,10 @@ class LongListTest extends Specification {
 
     def "test equals"() {
         given:
-        def list = new LongList()
-        list.add(1l)
-        list.add(2l)
-        list.add(3l)
+        def list = new DoubleList()
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
 
         list.remove(1)
 
@@ -475,15 +477,15 @@ class LongListTest extends Specification {
         result == expected
 
         where:
-        other << [null, new Integer(1), new LongList(20), otherList()]
+        other << [null, new Integer(1), new DoubleList(20), otherList()]
         expected << [false, false, false, true]
     }
 
     def otherList() {
-        def list = new LongList(50)
-        list.add(1l)
-        list.add(2l)
-        list.add(3l)
+        def list = new DoubleList(50)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
 
         list.remove(1)
 
@@ -493,10 +495,10 @@ class LongListTest extends Specification {
     def "test constructor"() {
 
         when:
-        def list = new LongList(initialSize)
+        def list = new DoubleList(initialSize)
 
         then:
-        list.longs.size() == initialSize
+        list.doubles.size() == initialSize
 
         where:
         initialSize << [5, 0]
@@ -504,7 +506,7 @@ class LongListTest extends Specification {
 
     def "test invalid initial size"() {
         when:
-        new LongList(-1)
+        new DoubleList(-1)
         then:
         thrown IllegalArgumentException
     }
@@ -518,18 +520,20 @@ class LongListTest extends Specification {
         thrown IndexOutOfBoundsException
 
         where:
-        c1 << [{ new LongList().get(0) } as Closure, { new LongList().add(-1, 0) } as Closure]
+        c1 << [{ new DoubleList().get(0) } as Closure, { new DoubleList().add(-1, 0) } as Closure]
 
     }
 
     def "test grow"() {
         given:
-        def list = new LongList(2)
+        def list = new DoubleList(2)
+
 
         when:
-        list.add(1l)
-        list.add(2l)
-        list.add(3l)
+        list.add(1d)
+        list.add(2d)
+        list.add(3d)
+
 
         then:
         list.size() == 3
@@ -537,31 +541,34 @@ class LongListTest extends Specification {
 
     def "test array constructor"() {
         given:
-        def list = new LongList(initialArray, lastValidValue)
+        def list = new DoubleList(initialArray, lastValidValue)
 
         when:
-        list.add(765l)
+        list.add(765d)
 
         then:
         list.size() == size
 
         where:
-        initialArray << [[1, 2, 3] as long[], [] as long[]]
+        initialArray << [[1, 2, 3] as double[], [] as double[]]
         lastValidValue << [3, 0]
         size << [4, 1]
+
     }
 
     def "test array constructor null array"() {
         when:
-        new LongList(null, 0)
+        new DoubleList(null, 0)
         then:
         thrown IllegalArgumentException
     }
 
     def "test array constructor negative size"() {
         when:
-        new LongList([] as long[], -1)
+        new DoubleList([] as double[], -1)
         then:
         thrown IllegalArgumentException
     }
+
+
 }

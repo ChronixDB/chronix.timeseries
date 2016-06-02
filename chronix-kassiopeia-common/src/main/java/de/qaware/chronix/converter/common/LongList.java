@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.timeseries.dt;
+package de.qaware.chronix.converter.common;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -22,7 +22,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import static de.qaware.chronix.timeseries.dt.ListUtil.*;
+import static de.qaware.chronix.converter.common.ListUtil.*;
+
 
 /**
  * The long list implementation contains primitive longs and acts like an array list.

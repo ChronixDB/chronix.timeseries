@@ -35,11 +35,11 @@ public class StraceTimeSeriesConverter implements TimeSeriesConverter<StraceTime
     public static final String DATA_AS_JSON_FIELD = "dataAsJson";
     public static final String DATA_FUNCTION_VALUE = "function_value";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KassiopeiaSimpleConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(StraceTimeSeriesConverter.class);
 
     @Override
     public StraceTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
-        LOGGER.debug("Converting {} to MetricTimeSeries starting at {} and ending at {}", binaryTimeSeries, queryStart, queryEnd);
+        LOGGER.debug("Converting {} to StraceTimeSeries starting at {} and ending at {}", binaryTimeSeries, queryStart, queryEnd);
         //get the metric
         String metric = binaryTimeSeries.get(MetricTSSchema.METRIC).toString();
 

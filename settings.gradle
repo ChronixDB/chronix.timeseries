@@ -4,7 +4,7 @@ include 'chronix-kassiopeia-converter'
 include 'chronix-kassiopeia'
 include 'chronix-kassiopeia-simple'
 include 'chronix-kassiopeia-simple-converter'
-include 'chronix-kassiopeia-converter-common'
+include 'chronix-kassiopeia-common'
 include 'chronix-kassiopeia-strace'
 include 'chronix-kassiopeia-converter-strace'
 

@@ -16,9 +16,8 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.timeseries.dt.DoubleList;
-import de.qaware.chronix.timeseries.dt.LongList;
-import de.qaware.chronix.timeseries.dt.Point;
+import de.qaware.chronix.converter.common.DoubleList;
+import de.qaware.chronix.converter.common.LongList;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -486,6 +485,9 @@ public final class MetricTimeSeries implements Serializable {
      * @return the value of the n-th percentile
      */
     public double percentile(final double percentile) {
+        if (values.isEmpty()) {
+            return Double.NaN;
+        }
         return values.percentile(percentile);
     }
 }

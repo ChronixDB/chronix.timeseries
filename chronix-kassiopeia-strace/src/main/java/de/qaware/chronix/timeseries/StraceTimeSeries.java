@@ -15,7 +15,7 @@
  */
 package de.qaware.chronix.timeseries;
 
-import de.qaware.chronix.timeseries.dt.LongList;
+import de.qaware.chronix.converter.common.LongList;
 import de.qaware.chronix.timeseries.dt.StracePoint;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

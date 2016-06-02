@@ -1,8 +1,7 @@
 
 dependencies {
     compile project(':chronix-kassiopeia-strace')
-    compile project(':chronix-kassiopeia-simple-converter')
-    compile project(':chronix-kassiopeia-converter-common')
+    compile project(':chronix-kassiopeia-common')
 
     compile 'de.qaware.chronix:chronix-api:0.1'
     compile 'com.google.code.gson:gson:2.5'

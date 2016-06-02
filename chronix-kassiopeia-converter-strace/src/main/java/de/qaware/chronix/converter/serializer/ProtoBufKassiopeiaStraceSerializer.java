@@ -16,9 +16,9 @@
 package de.qaware.chronix.converter.serializer;
 
 import de.qaware.chronix.converter.common.Compression;
+import de.qaware.chronix.converter.common.LongList;
 import de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers;
 import de.qaware.chronix.timeseries.StraceTimeSeries;
-import de.qaware.chronix.timeseries.dt.LongList;
 import de.qaware.chronix.timeseries.dt.StracePoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public final class ProtoBufKassiopeiaStraceSerializer {
      */
     public static final String DATE_EQUALS_OFFSET_MS = "DATE_EQUALS_OFFSET_MS";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufKassiopeiaSimpleSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufKassiopeiaStraceSerializer.class);
     private static final long ALMOST_EQUALS_OFFSET_MS = Long.parseLong(System.getProperty(DATE_EQUALS_OFFSET_MS, "10"));
 
     /**
