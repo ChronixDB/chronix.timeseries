@@ -15,10 +15,12 @@
  */
 package de.qaware.chronix.timeseries
 
+import spock.lang.Specification
+
 /**
  * Created by c.hillmann on 07.04.2016.
  */
-class MetricTimeSeriesStdDeviationTest {
+class MetricTimeSeriesStdDeviationTest extends Specification{
 
     def "test execute"() {
         given:

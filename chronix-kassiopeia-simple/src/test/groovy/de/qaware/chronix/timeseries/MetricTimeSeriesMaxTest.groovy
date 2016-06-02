@@ -15,10 +15,9 @@
  */
 package de.qaware.chronix.timeseries
 
-import de.qaware.chronix.timeseries.dt.DoubleList
-import de.qaware.chronix.timeseries.dt.LongList
+import de.qaware.chronix.converter.common.DoubleList
+import de.qaware.chronix.converter.common.LongList
 import spock.lang.Specification
-
 /**
  * Unit test for the metric time series
  * @author f.lautenschlager

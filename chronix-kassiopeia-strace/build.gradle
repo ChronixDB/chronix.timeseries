@@ -1,7 +1,7 @@
 dependencies {
-    compile project(':chronix-kassiopeia-simple')
-
     compile 'org.apache.commons:commons-lang3:3.0'
+    compile project(':chronix-kassiopeia-common')
+
 }
 
 

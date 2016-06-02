@@ -13,23 +13,21 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.timeseries.dt;
+package de.qaware.chronix.timeseries;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 /**
- * A generic point of timestamp and value
+ * A pair of time stamp an value
  *
- * @param <T> the type of the value
  * @author f.lautenschlager
  */
-public class GenericPoint<T> {
+public class Point {
     private int index;
     private long timestamp;
-    private T value;
-
+    private double value;
 
     /**
      * Constructs a pair
@@ -38,14 +36,14 @@ public class GenericPoint<T> {
      * @param timestamp - the timestamp
      * @param value     - the value
      */
-    public GenericPoint(int index, long timestamp, T value) {
+    public Point(int index, long timestamp, double value) {
         this.index = index;
         this.timestamp = timestamp;
         this.value = value;
     }
 
     /**
-     * @return the index of within the time series
+     * @return the index
      */
     public int getIndex() {
         return index;
@@ -59,9 +57,9 @@ public class GenericPoint<T> {
     }
 
     /**
-     * @return the generic value
+     * @return the value
      */
-    public T getValue() {
+    public double getValue() {
         return value;
     }
 
@@ -77,7 +75,7 @@ public class GenericPoint<T> {
         if (obj.getClass() != getClass()) {
             return false;
         }
-        GenericPoint rhs = (GenericPoint) obj;
+        Point rhs = (Point) obj;
         return new EqualsBuilder()
                 .append(this.index, rhs.index)
                 .append(this.timestamp, rhs.timestamp)
@@ -93,6 +91,7 @@ public class GenericPoint<T> {
                 .append(value)
                 .toHashCode();
     }
+
 
     @Override
     public String toString() {
