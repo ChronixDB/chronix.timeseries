@@ -67,9 +67,15 @@ public class StracePoint {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o == this) return true;
-        if (o.getClass() != getClass()) return false;
+        if (o == null){
+            return false;
+        }
+        if (o == this){
+            return true;
+        }
+        if (o.getClass() != getClass()){
+            return false;
+        }
         StracePoint sp = (StracePoint) o;
         return new EqualsBuilder()
                 .append(this.index, sp.index)

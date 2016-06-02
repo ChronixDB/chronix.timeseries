@@ -35,7 +35,7 @@ import java.util.List;
  *
  * @author f.lautenschlager & m.jalowski
  */
-public class ProtoBufKassiopeiaStraceSerializer {
+public final class ProtoBufKassiopeiaStraceSerializer {
 
     /**
      * Name of the system property to set the equals offset between the dates.
