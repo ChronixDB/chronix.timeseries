@@ -1,3 +1,8 @@
+sonarqube {
+    properties {
+        property "sonar.projectName", "de.qaware.chronix:chronix-kassiopeia-converter-strace"
+    }
+}
 
 dependencies {
     compile project(':chronix-kassiopeia-strace')
@@ -85,7 +90,7 @@ def pomConfig = {
 
 publishing {
     publications {
-        chronixKassiopeiaSimpleConverter(MavenPublication) {
+        chronixKassiopeiaStraceConverter(MavenPublication) {
             from components.java
             artifact sourcesJar
             artifact javadocJar
@@ -97,6 +102,52 @@ publishing {
 
                 asNode().children().last() + pomConfig
             }
+        }
+    }
+}
+
+bintray {
+    user = project.hasProperty('bintrayUsername') ? project.bintrayUsername : 'unknown'
+    key = project.hasProperty('bintrayApiKey') ? project.bintrayApiKey : 'unknown'
+    publications = ['chronixKassiopeiaStraceConverter']
+    dryRun = false
+    publish = true
+    pkg {
+        repo = project.bintrayRepo
+        name = project.name
+        desc = project.description
+        licenses = ['Apache-2.0']
+        labels = ['java', 'time series', 'kassiopeia converter', 'chronix']
+        websiteUrl = project.websiteUrl
+        issueTrackerUrl = project.issueTrackerUrl
+        vcsUrl = project.scmUrl
+        publicDownloadNumbers = true
+        version {
+            name = project.version
+            desc = project.description
+            released = new Date().format("yyyy-MM-dd'T'HH:mm:ss.SSSZZ")
+            vcsTag = "v${project.version}"
+            attributes = [
+                    'chronix-kassiopeia-converter-strace': ['de.qaware.chronix', project.group, project.name].join(':')
+            ]
+            mavenCentralSync {
+                sync = false
+            }
+        }
+    }
+}
+
+pluginBundle {
+    website = project.websiteUrl
+    vcsUrl = project.scmUrl
+
+    plugins {
+        basePlugin {
+            id = 'de.qaware.chronix'
+            displayName = project.displayName
+            description = project.description
+            tags = ['chronix', 'time series database']
+            version = project.version
         }
     }
 }
