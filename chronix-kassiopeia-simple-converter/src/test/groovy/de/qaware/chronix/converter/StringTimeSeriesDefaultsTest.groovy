@@ -15,8 +15,8 @@
  */
 package de.qaware.chronix.converter
 
-import de.qaware.chronix.timeseries.MetricTimeSeries
-import de.qaware.chronix.timeseries.NumericPoint
+import de.qaware.chronix.timeseries.StringPoint
+import de.qaware.chronix.timeseries.StringTimeSeries
 import spock.lang.Specification
 
 import java.util.stream.Collectors
@@ -25,14 +25,14 @@ import java.util.stream.Collectors
  * Unit test for the reduce and group by defaults
  * @author f.lautenschlager
  */
-class KassiopeiaSimpleDefaultsTest extends Specification {
+class StringTimeSeriesDefaultsTest extends Specification {
 
     def "test default group by"() {
         given:
-        def metricTimeSeries = new MetricTimeSeries.Builder("metric").build();
+        def straceTimeSeries = new StringTimeSeries.Builder("metric").build();
 
         when:
-        def groupBy = KassiopeiaSimpleDefaults.GROUP_BY.apply(metricTimeSeries)
+        def groupBy = StraceTimeSeriesDefaults.GROUP_BY.apply(straceTimeSeries)
 
         then:
         groupBy == "metric"
@@ -41,32 +41,32 @@ class KassiopeiaSimpleDefaultsTest extends Specification {
     def "test default reduce"() {
 
         given:
-        def ts1 = new MetricTimeSeries.Builder("metric")
+        def ts1 = new StringTimeSeries.Builder("metric")
                 .attribute("existsInBoth", 1)
                 .attribute("onlyInTs1", "value only in ts1")
                 .attribute("simpleList", ["one", "two", "three"])
-                .point(1, 2)
-                .point(3, 6)
-                .point(5, 10)
+                .point(1, "2")
+                .point(3, "6")
+                .point(5, "10")
                 .build();
-        def ts2 = new MetricTimeSeries.Builder("metric")
+        def ts2 = new StringTimeSeries.Builder("metric")
                 .attribute("existsInBoth", 2)
                 .attribute("onlyInTs2", "ts1 would never see me")
                 .attribute("simpleList", ["four", "five", "six"])
                 .attribute("threads", [1, 2, 3])
-                .point(2, 4)
-                .point(4, 8)
-                .point(6, 12)
+                .point(2, "4")
+                .point(4, "8")
+                .point(6, "12")
                 .build();
         when:
-        def merged = KassiopeiaSimpleDefaults.REDUCE.apply(ts1, ts2)
+        def merged = StraceTimeSeriesDefaults.REDUCE.apply(ts1, ts2)
 
         then:
         merged.size() == 6
         merged.sort()
         def list = merged.points().collect(Collectors.toList())
-        list.containsAll([new NumericPoint(0, 1, 2), new NumericPoint(1, 2, 4), new NumericPoint(2, 3, 6)
-                          , new NumericPoint(3, 4, 8), new NumericPoint(4, 5, 10), new NumericPoint(5, 6, 12)])
+        list.containsAll([new StringPoint(0, 1, "2"), new StringPoint(1, 2, "4"), new StringPoint(2, 3, "6")
+                          , new StringPoint(3, 4, "8"), new StringPoint(4, 5, "10"), new StringPoint(5, 6, "12")])
         merged.attributes().size() == 5
         merged.attribute("existsInBoth") as Set<Integer> == [1, 2] as Set<Integer>
         merged.attribute("onlyInTs1") as String == "value only in ts1"
@@ -77,7 +77,7 @@ class KassiopeiaSimpleDefaultsTest extends Specification {
 
     def "test private constructor"() {
         when:
-        KassiopeiaSimpleDefaults.newInstance()
+        StraceTimeSeriesDefaults.newInstance()
         then:
         noExceptionThrown()
     }

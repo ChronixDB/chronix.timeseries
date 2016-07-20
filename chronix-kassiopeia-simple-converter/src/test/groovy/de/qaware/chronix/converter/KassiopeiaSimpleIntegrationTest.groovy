@@ -39,7 +39,7 @@ class KassiopeiaSimpleIntegrationTest extends Specification {
     def "test integration"() {
         given:
         SolrClient solr = new HttpSolrClient("http://localhost:8983/solr/chronix")
-        ChronixClient<MetricTimeSeries, SolrClient, SolrQuery> chronix = new ChronixClient<>(new KassiopeiaSimpleConverter(), new ChronixSolrStorage<>(200, GROUP_BY, REDUCE));
+        ChronixClient<MetricTimeSeries, SolrClient, SolrQuery> chronix = new ChronixClient<>(new MetricTimeSeriesConverter(), new ChronixSolrStorage<>(200, GROUP_BY, REDUCE));
 
         when:
         SolrQuery query = new SolrQuery("metric:*Load*")

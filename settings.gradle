@@ -5,6 +5,3 @@ include 'chronix-kassiopeia'
 include 'chronix-kassiopeia-simple'
 include 'chronix-kassiopeia-simple-converter'
 include 'chronix-kassiopeia-common'
-include 'chronix-kassiopeia-strace'
-include 'chronix-kassiopeia-converter-strace'
-
