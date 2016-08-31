@@ -24,7 +24,6 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -177,7 +176,7 @@ public final class MetricTimeSeries implements Serializable {
      * @param timestamps the timestamps
      * @param values     the values
      */
-    public final void addAll(List<Long> timestamps, List<Double> values) {
+    public final void addAll(LongList timestamps, DoubleList values) {
         for (int i = 0; i < timestamps.size(); i++) {
             add(timestamps.get(i), values.get(i));
         }

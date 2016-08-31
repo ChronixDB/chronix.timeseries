@@ -32,7 +32,6 @@ import static de.qaware.chronix.iterators.Iterators.of;
 import static de.qaware.chronix.iterators.Iterators.takeAll;
 import static de.qaware.chronix.timeseries.TimeSeries.merge;
 import static java.util.Arrays.asList;
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.TestCase.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
