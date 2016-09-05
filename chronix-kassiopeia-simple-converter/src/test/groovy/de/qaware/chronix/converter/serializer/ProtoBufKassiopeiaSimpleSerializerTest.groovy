@@ -161,7 +161,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
         when:
         def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 4l)
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1l, 1036l, 1l, 1036l, 4l, builder)
+        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1l, 1036l, 4l, builder)
         def ts = builder.build()
         def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
 
@@ -170,7 +170,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         listPoints.get(1).timestamp == 5//offset: 4
         listPoints.get(2).timestamp == 9//offset: 4
         listPoints.get(3).timestamp == 16//offset: 7
-        listPoints.get(4).timestamp == 23//offset: 7
+        listPoints.get(4).timestamp == 21//offset: 7
 
     }
 
@@ -217,53 +217,83 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         listPoints.get(11).timestamp == 115//5
         listPoints.get(12).timestamp == 120//5
         listPoints.get(13).timestamp == 130//5
-        listPoints.get(14).timestamp == 140//5
+        listPoints.get(14).timestamp == 138//5
     }
 
 
     def "test date-delta-compaction with different values"() {
         given:
         def points = []
-        points.add(new Point(0, 1462892410, -10))
-        points.add(new Point(1, 1462892420, -20))
-        points.add(new Point(2, 1462892430, -30))
-        points.add(new Point(3, 1462892439, -39))
-        points.add(new Point(4, 1462892448, -48))
-        points.add(new Point(5, 1462892457, -57))
-        points.add(new Point(6, 1462892466, -66))
-        points.add(new Point(7, 1462892475, -75))
-        points.add(new Point(8, 1462892484, -84))
-        points.add(new Point(9, 1462892493, -93))
+        points.add(new Point(0, 1462892410, 10))
+        points.add(new Point(1, 1462892420, 20))
+        points.add(new Point(2, 1462892430, 30))
+        points.add(new Point(3, 1462892439, 39))
+        points.add(new Point(4, 1462892448, 48))
+        points.add(new Point(5, 1462892457, 57))
+        points.add(new Point(6, 1462892466, 66))
+        points.add(new Point(7, 1462892475, 10))
+        points.add(new Point(8, 1462892484, 84))
+        points.add(new Point(9, 1462892493, 93))
         points.add(new Point(10, 1462892502, -102))
-        points.add(new Point(11, 1462892511, -109))
-        points.add(new Point(12, 1462892520, -118))
-        points.add(new Point(13, 1462892529, -127))
-        points.add(new Point(14, 1462892538, -136))
+        points.add(new Point(11, 1462892511, 109))
+        points.add(new Point(12, 1462892520, 118))
+        points.add(new Point(13, 1462892529, 127))
+        points.add(new Point(14, 1462892538, 136))
 
         def builder = new MetricTimeSeries.Builder("metric1");
 
         when:
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1462892410l, 1462892543l, builder)
+        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 10l)
+        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1462892410L, 1462892538L, 10l, builder)
         def ts = builder.build()
         def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
 
         then:                            //diff to origin
         listPoints.get(0).timestamp == 1462892410//0
+        listPoints.get(0).value == 10//0
+
         listPoints.get(1).timestamp == 1462892420//0
+        listPoints.get(1).value == 20//0
+
         listPoints.get(2).timestamp == 1462892430//0
+        listPoints.get(2).value == 30//0
+
         listPoints.get(3).timestamp == 1462892440//1
+        listPoints.get(3).value == 39//0
+
         listPoints.get(4).timestamp == 1462892450//2
+        listPoints.get(4).value == 48//0
+
         listPoints.get(5).timestamp == 1462892460//3
+        listPoints.get(5).value == 57//0
+
         listPoints.get(6).timestamp == 1462892470//4
+        listPoints.get(6).value == 66//0
+
         listPoints.get(7).timestamp == 1462892475//5
+        listPoints.get(7).value == 10//0
+
         listPoints.get(8).timestamp == 1462892485//5
+        listPoints.get(8).value == 84//0
+
         listPoints.get(9).timestamp == 1462892495//5
+        listPoints.get(9).value == 93//0
+
         listPoints.get(10).timestamp == 1462892505//5
+        listPoints.get(10).value == -102//0
+
         listPoints.get(11).timestamp == 1462892515//5
+        listPoints.get(11).value == 109//0
+
         listPoints.get(12).timestamp == 1462892520//5
+        listPoints.get(12).value == 118//0
+
         listPoints.get(13).timestamp == 1462892530//5
-        listPoints.get(14).timestamp == 1462892540//5
+        listPoints.get(13).value == 127//0
+
+        listPoints.get(14).timestamp == 1462892538//0
+        listPoints.get(14).value == 136//0
+
     }
 
 
@@ -272,24 +302,42 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def rawTimeSeriesList = readTimeSeriesData()
 
         when:
-
         rawTimeSeriesList.each {
+            println "Checking file ${it.key}"
             def rawTimeSeries = it.value;
             rawTimeSeries.sort()
 
+            def start = System.currentTimeMillis()
             def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(rawTimeSeries.points().iterator(), 0l)
+            def end = System.currentTimeMillis()
+
+            println "Serialization took ${end - start} ms"
+
             def builder = new MetricTimeSeries.Builder("heap");
 
+            start = System.currentTimeMillis()
             ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, rawTimeSeries.start, rawTimeSeries.end, 0l, builder)
+            end = System.currentTimeMillis()
+
+            println "Deserialization took ${end - start} ms"
             def modifiedTimeSeries = builder.build()
 
             def count = rawTimeSeries.size();
             println "Checking $count points for almost_equals = 0"
 
+            println "Your name is ${System.in.newReader().readLine()}"
+
+
             for (int i = 0; i < count; i++) {
-                long delta = rawTimeSeries.getTime(i) - modifiedTimeSeries.getTime(i)
                 if (rawTimeSeries.getTime(i) != modifiedTimeSeries.getTime(i)) {
+                    long delta = rawTimeSeries.getTime(i) - modifiedTimeSeries.getTime(i)
                     throw new IllegalStateException("Points are not equals at " + i + ". Should " + rawTimeSeries.getTime(i) + " but is " + modifiedTimeSeries.getTime(i) + " a delta of " + delta);
+                }
+                if (rawTimeSeries.getValue(i) != modifiedTimeSeries.getValue(i)) {
+                    double delta = rawTimeSeries.getValue(i) - modifiedTimeSeries.getValue(i)
+
+                    throw new IllegalStateException("Values not equals at " + i + ". Should " + rawTimeSeries.getValue(i) + " but is " + modifiedTimeSeries.getValue(i) + " a delta of " + delta);
+
                 }
             }
         }

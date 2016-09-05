@@ -12,10 +12,6 @@ dependencies {
     compile 'de.qaware.chronix:chronix-api:0.1'
     compile 'com.google.code.gson:gson:2.5'
     compile 'com.google.protobuf:protobuf-java:2.6.1'
-
-
-    testCompile 'org.apache.solr:solr-solrj:6.0.0'
-    testCompile 'de.qaware.chronix:chronix-server-client:0.2-beta-1'
 }
 
 //add the generated classes to the sources

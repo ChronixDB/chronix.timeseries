@@ -23,11 +23,16 @@ option optimize_for = SPEED;
 //Our point
 message Point {
     //The date as int64 (java long)
-    optional int64 t = 1;
-    required double v = 2;
-    required double vbp = 3;
-    //The serialized value could either be a base point or the delta
-    optional bool bp = 4;
+    optional sint64 tlong = 1;
+    optional sint32 tint = 2;
+    //time base point
+    optional sint64 tlongBP = 3;
+    optional sint64 tintBP = 4;
+
+    //time base point
+    optional double v = 5;
+    optional sint32 vIndex = 6;
+
 }
 
 //The data of a time series is a list of points

@@ -139,8 +139,8 @@ class MetricTimeSeriesTest extends Specification {
 
     def "test sort"() {
         given:
-        def times = []
-        def values = []
+        def times = new LongList()
+        def values = new DoubleList()
         10.times {
             times.add(100 - it as long)
             values.add(100 - it as double)

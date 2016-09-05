@@ -27,9 +27,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.Instant;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class to easily convert the protocol buffer into Point<Long,Double>
@@ -137,23 +138,17 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             long calculatedPointDate = timeSeriesStart;
             int lastPointIndex = 0;
 
+            double value;
+
             for (int i = 0; i < size; i++) {
                 SimpleProtocolBuffers.Point p = points[i];
 
+                //Decode the time
                 if (i > 0) {
-                    if (p.hasT()) {
-                        lastOffset = p.getT();
-                    }
-
-                 /*   if (p.hasBp()) {
-                        lastOffset = p.getBp();
-                    }
-                    */
-
+                    lastOffset = calculatePoint(p, lastOffset);
                     calculatedPointDate += lastOffset;
-
-                    //reset as it is a base point
-                    if (p.getBp()) {
+                    //rest the offset
+                    if (almostEqualsMs > 0 && (p.hasTintBP() || p.hasTlongBP())) {
                         lastOffset = almostEqualsMs;
                     }
                 }
@@ -161,10 +156,15 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                 //only add the point if it is within the date
                 if (calculatedPointDate >= from && calculatedPointDate <= to) {
                     timestamps[lastPointIndex] = calculatedPointDate;
-                    values[lastPointIndex] = p.getV();
+
+                    //Check if the point refers to an index
+                    if (p.hasVIndex()) {
+                        value = pList.get(p.getVIndex()).getV();
+                    } else {
+                        value = p.getV();
+                    }
+                    values[lastPointIndex] = value;
                     lastPointIndex++;
-                } else {
-                    LOGGER.info("Point is not within the defined range. Delta is  {}", calculatedPointDate - to);
                 }
             }
             builder.points(new LongList(timestamps, lastPointIndex), new DoubleList(values, lastPointIndex));
@@ -175,15 +175,28 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
     }
 
+    private static long calculatePoint(SimpleProtocolBuffers.Point p, long lastOffset) {
+        //Normal delta
+        if (p.hasTint() || p.hasTlong()) {
+            lastOffset = p.getTint() + p.getTlong();
+        }
+        //Base point delta
+        if (p.hasTintBP() || p.hasTlongBP()) {
+            lastOffset = p.getTintBP() + p.getTlongBP();
+        }
+
+        return lastOffset;
+    }
+
     /**
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
      * @param metricDataPoints - the list with points
-     * @return a protocol buffer points object
      */
     public static byte[] to(Iterator<Point> metricDataPoints) {
         return to(metricDataPoints, ALMOST_EQUALS_OFFSET_MS);
     }
+
 
     /**
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
@@ -192,7 +205,8 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param almostEquals     - the aberration threshold for the deltas
      * @return a protocol buffer points object
      */
-    public static byte[] to(Iterator<Point> metricDataPoints, long almostEquals) {
+    public static byte[] to(final Iterator<Point> metricDataPoints, final long almostEquals) {
+
         long previousDate = 0;
         long previousOffset = 0;
         long previousDrift = 0;
@@ -202,15 +216,20 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
         long startDate = 0;
 
-        double currentValue = 0;
+        double currentValue;
 
-        SimpleProtocolBuffers.Point.Builder builder = SimpleProtocolBuffers.Point.newBuilder();
+        Map<Double, Integer> valueIndex = new HashMap<>();
+
+        int index = 0;
+
+        SimpleProtocolBuffers.Point.Builder point = SimpleProtocolBuffers.Point.newBuilder();
         SimpleProtocolBuffers.Points.Builder points = SimpleProtocolBuffers.Points.newBuilder();
 
         while (metricDataPoints.hasNext()) {
 
             Point p = metricDataPoints.next();
             boolean lastPoint = !metricDataPoints.hasNext();
+            point.clear();
 
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
@@ -218,22 +237,31 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             }
 
             long currentTimestamp = p.getTimestamp();
+
             currentValue = p.getValue();
+
+            //build value index
+            if (valueIndex.containsKey(currentValue)) {
+                point.setVIndex(valueIndex.get(currentValue));
+            } else {
+                valueIndex.put(currentValue, index);
+                point.setV(currentValue);
+            }
+
 
             long offset = 0;
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp
                 lastStoredDate = currentTimestamp;
                 startDate = currentTimestamp;
+
             } else {
                 offset = currentTimestamp - previousDate;
             }
 
             //Semantic Compression
             if (almostEquals == -1) {
-                builder.clearT()
-                        .setV(p.getValue());
-                points.addP(builder.build());
+                points.addP(point.build());
             } else {
 
                 //we always store the first an the last point as supporting points
@@ -241,23 +269,24 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                 if (lastPoint) {
 
                     long calcPoint = calcPoint(startDate, points.getPList(), almostEquals);
-                    //Store offset
-                    long offsetToEnd = currentTimestamp - calcPoint - almostEquals;
+                    //Calc offset
+                    long offsetToEnd = currentTimestamp - calcPoint;
 
                     //everything okay
                     if (offsetToEnd >= 0) {
-                        builder.setT(offsetToEnd)
-                                .setV(p.getValue())
-                                .build();
-                        points.addP(builder.build());
+                        if (safeLongToInt(offsetToEnd)) {
+                            points.addP(point.setTint((int) offsetToEnd).build());
+                        } else {
+                            points.addP(point.setTlong(offsetToEnd).build());
+                        }
+
                     } else {
                         //break the offset down on all points
-
-                        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 / (double) (points.getPCount() - 1));
+                        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (points.getPCount() - 1));
 
                         for (int i = 1; i < points.getPCount(); i++) {
                             SimpleProtocolBuffers.Point mod = points.getP(i);
-                            long t = mod.getT();
+                            long t = getT(mod);
 
                             //check if can correct the deltas
                             if (offsetToEnd < 0) {
@@ -270,13 +299,12 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                                 //if we have a t value
                                 if (t > avgPerDelta) {
                                     newOffset = t - avgPerDelta;
-                                    mod = mod.toBuilder().setT(newOffset).build();
+                                    setT(mod.toBuilder(), newOffset);
                                 }
 
                                 offsetToEnd += avgPerDelta;
                             }
                             points.setP(i, mod);
-                            // points.addP(mod);
                         }
 
 
@@ -285,24 +313,13 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
                         long storedOffsetToEnd = currentTimestamp - arragendPoint;
                         if (storedOffsetToEnd < 0) {
-                            LOGGER.warn("Stored offset is negative. Setting to 0. But thats an error.");
+                            LOGGER.warn("Stored offset is negative. Setting to 0. But that is an error.");
                             storedOffsetToEnd = 0;
                         }
-                        builder.setT(storedOffsetToEnd)
-                                .setV(p.getValue())
-                                .build();
-                        points.addP(builder.build());
-
-                        long reconstructedEndPoint = calcPoint(startDate, points.getPList(), almostEquals);
-
-
-                        if (reconstructedEndPoint - currentTimestamp != 0) {
-                            LOGGER.info("Calculated end-timestamp-1 after rearrangement: {}", Instant.ofEpochMilli(arragendPoint));
-
-                            LOGGER.info("Calculated end-timestamp after rearrangement: {}", Instant.ofEpochMilli(reconstructedEndPoint));
-                            LOGGER.info("end-timestamp: {}", Instant.ofEpochMilli(currentTimestamp));
-
-                            LOGGER.info("Reconstructed end timestamp {} and end timestamp {} are not equals", Instant.ofEpochMilli(reconstructedEndPoint), Instant.ofEpochMilli(currentTimestamp));
+                        if (safeLongToInt(storedOffsetToEnd)) {
+                            points.addP(point.setTintBP(storedOffsetToEnd).build());
+                        } else {
+                            points.addP(point.setTlongBP(storedOffsetToEnd).build());
                         }
                     }
 
@@ -311,28 +328,31 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                     long drift = drift(currentTimestamp, lastStoredDate, timesSinceLastOffset, almostEquals);
 
                     if (almostEquals(previousOffset, offset, almostEquals) && noDrift(drift, almostEquals)) {
-
-                        builder.clearT()
-                                .setV(p.getValue());
-                        points.addP(builder.build());
+                        points.addP(point.build());
                         timesSinceLastOffset += 1;
-
                     } else {
                         long timeStamp = offset;
 
                         //If the previous offset was not stored, correct the following offset using the calculated drift
                         if (timesSinceLastOffset > 1 && offset > previousDrift) {
                             timeStamp = offset - previousDrift;
-                            builder.setBp(true);
-                            builder.setT(timeStamp);
+
+                            if (safeLongToInt(timeStamp)) {
+                                point.setTintBP((int) timeStamp);
+                            } else {
+                                point.setTlongBP(timeStamp);
+                            }
+
                         } else {
-                            builder.setT(timeStamp);
+                            if (safeLongToInt(timeStamp)) {
+                                point.setTint((int) timeStamp);
+                            } else {
+                                point.setTlong(timeStamp);
+                            }
                         }
 
                         //Store offset
-                        builder.setV(p.getValue())
-                                .build();
-                        points.addP(builder.build());
+                        points.addP(point.build());
                         //reset the offset counter
                         timesSinceLastOffset = 1;
                         lastStoredDate = p.getTimestamp();
@@ -343,9 +363,48 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                     previousDate = currentTimestamp;
                 }
             }
+            index++;
+        }
+        //todo: optimize
+        return Compression.compress(points.build().toByteArray());
+    }
+
+    /**
+     * Sets the new t for the point. Checks which t was set.
+     *
+     * @param builder   the point builder
+     * @param newOffset the new offset
+     */
+    private static void setT(SimpleProtocolBuffers.Point.Builder builder, long newOffset) {
+        if (safeLongToInt(newOffset)) {
+            if (builder.hasTintBP()) {
+                builder.setTintBP((int) newOffset);
+            }
+            if (builder.hasTint()) {
+                builder.setTint((int) newOffset);
+            }
+        } else {
+            if (builder.hasTintBP()) {
+                builder.setTlongBP(newOffset);
+            }
+            if (builder.hasTint()) {
+                builder.setTlong(newOffset);
+            }
         }
 
-        return Compression.compress(points.build().toByteArray());
+    }
+
+    /**
+     * @param point the current point
+     * @return the value of t
+     */
+    private static long getT(SimpleProtocolBuffers.Point point) {
+        //only one is set, others are zero
+        return point.getTlongBP() + point.getTlong() + point.getTint() + point.getTintBP();
+    }
+
+    private static boolean safeLongToInt(long l) {
+        return !(l < Integer.MIN_VALUE || l > Integer.MAX_VALUE);
     }
 
 
@@ -354,29 +413,18 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
         long lastOffset = almostEquals;
         long calculatedPointDate = startDate;
 
-        for (int i = 0; i < pList.size(); i++) {
+        for (int i = 1; i < pList.size(); i++) {
             SimpleProtocolBuffers.Point p = pList.get(i);
+            lastOffset = calculatePoint(p, lastOffset);
+            calculatedPointDate += lastOffset;
 
-            if (i > 0) {
-                if (p.hasT()) {
-                    lastOffset = p.getT();
-                    //If the offset is below almost equals, it is a drift detection
-                    // resetOffset = lastOffset <= almostEquals;
-                }
-               /* if (p.hasBp()) {
-                    lastOffset = p.getBp();
-                }*/
-                calculatedPointDate += lastOffset;
-
-                if (p.getBp()) {
-                    //LOGGER.info("Resetting offset to {} from {}", almostEquals, lastOffset);
-                    lastOffset = almostEquals;
-                }
-
+            if (almostEquals > 0 && (p.hasTintBP() || p.hasTlongBP())) {
+                lastOffset = almostEquals;
             }
         }
         return calculatedPointDate;
     }
+
 
     private static boolean noDrift(long drift, long almostEquals) {
         return drift == 0 || drift < (almostEquals / 2);
@@ -405,20 +453,18 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     /**
      * Check if two deltas are almost equals.
      * <p>
-     * abs(previousOffset - offset) <= aberration
+     * abs(offset - previousOffset) <= aberration
      * </p>
      *
-     * @param previousOffset
-     * @param offset
-     * @param almostEquals
-     * @return
+     * @param previousOffset the previous offset
+     * @param offset         the current offset
+     * @param almostEquals   the threshold for equality
+     * @return true if set offsets are equals using the threshold
      */
     private static boolean almostEquals(long previousOffset, long offset, long almostEquals) {
         //check the deltas
         double diff = Math.abs(offset - previousOffset);
         return (diff <= almostEquals);
-
-        //return offset <= almostEquals;
     }
 
 }
