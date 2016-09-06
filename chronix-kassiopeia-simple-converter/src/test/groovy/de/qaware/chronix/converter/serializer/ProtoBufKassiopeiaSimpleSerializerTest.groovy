@@ -41,7 +41,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
         when:
         def builder = new MetricTimeSeries.Builder("metric");
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 0, points.size(), 0, points.size(), builder)
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(compressedProtoPoints), 0, points.size(), 0, points.size(), builder)
         def ts = builder.build();
         then:
         100.times {
@@ -62,11 +62,11 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         100.times {
             points.add(new Point(it, start.plusSeconds(it).toEpochMilli(), it * 100))
         }
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
+        def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
         def builder = new MetricTimeSeries.Builder("metric");
 
         when:
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, start.toEpochMilli(), end.toEpochMilli(), from, to, builder)
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), start.toEpochMilli(), end.toEpochMilli(), from, to, builder)
         def ts = builder.build();
 
         then:
@@ -96,8 +96,8 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         points.add(null)
         def builder = new MetricTimeSeries.Builder("");
         when:
-        def compressedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedPoints, 0, 114, builder)
+        def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator())
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), 0, 114, builder)
 
         then:
         builder.build().size() == 100
@@ -134,8 +134,8 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def builder = new MetricTimeSeries.Builder("metric");
 
         when:
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 0l)
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1l, 1036l, 1l, 1036l, 0l, builder)
+        def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 0l)
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), 1l, 1036l, 1l, 1036l, 0l, builder)
         def ts = builder.build()
         def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
 
@@ -160,8 +160,8 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def builder = new MetricTimeSeries.Builder("metric");
 
         when:
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 4l)
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1l, 1036l, 4l, builder)
+        def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 4l)
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), 1l, 1036l, 4l, builder)
         def ts = builder.build()
         def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
 
@@ -197,8 +197,8 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def builder = new MetricTimeSeries.Builder("metric");
 
         when:
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 10l)
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 10l, 1036l, 10l, builder)
+        def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 10l)
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), 10l, 1036l, 10l, builder)
         def ts = builder.build()
         def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
 
@@ -243,8 +243,8 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         def builder = new MetricTimeSeries.Builder("metric1");
 
         when:
-        def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 10l)
-        ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, 1462892410L, 1462892538L, 10l, builder)
+        def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 10l)
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), 1462892410L, 1462892538L, 10l, builder)
         def ts = builder.build()
         def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
 
@@ -297,6 +297,31 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
     }
 
 
+    def "test rearrange points"() {
+        given:
+        def points = []
+        points.add(new Point(0, 100, 10))
+        points.add(new Point(1, 202, 20))
+        points.add(new Point(2, 305, 30))
+        points.add(new Point(3, 401, 39))
+        points.add(new Point(4, 509, 48))
+        points.add(new Point(5, 510, 10))
+
+        def builder = new MetricTimeSeries.Builder("rearrange");
+
+        when:
+        def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(points.iterator(), 10)
+        ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), 100L, 510L, 10, builder)
+
+        def ts = builder.build()
+        def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
+
+        then:
+        listPoints.get(5).timestamp == 510
+
+    }
+
+
     def "test raw time series with almost_equals = 0"() {
         given:
         def rawTimeSeriesList = readTimeSeriesData()
@@ -308,7 +333,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
             rawTimeSeries.sort()
 
             def start = System.currentTimeMillis()
-            def compressedProtoPoints = ProtoBufKassiopeiaSimpleSerializer.to(rawTimeSeries.points().iterator(), 0l)
+            def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(rawTimeSeries.points().iterator(), 0l)
             def end = System.currentTimeMillis()
 
             println "Serialization took ${end - start} ms"
@@ -316,7 +341,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
             def builder = new MetricTimeSeries.Builder("heap");
 
             start = System.currentTimeMillis()
-            ProtoBufKassiopeiaSimpleSerializer.from(compressedProtoPoints, rawTimeSeries.start, rawTimeSeries.end, 0l, builder)
+            ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), rawTimeSeries.start, rawTimeSeries.end, 0l, builder)
             end = System.currentTimeMillis()
 
             println "Deserialization took ${end - start} ms"

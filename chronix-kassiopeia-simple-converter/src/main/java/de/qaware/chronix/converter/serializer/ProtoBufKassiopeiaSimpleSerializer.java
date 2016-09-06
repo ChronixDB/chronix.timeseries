@@ -16,7 +16,6 @@
 package de.qaware.chronix.converter.serializer;
 
 
-import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.DoubleList;
 import de.qaware.chronix.converter.common.LongList;
 import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
@@ -57,53 +56,53 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
     /**
      * Adds the points (compressed byte array) to the given builder
      *
-     * @param compressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart the start of the time series
-     * @param timeSeriesEnd   the end of the time series
-     * @param builder         the time series builder
+     * @param decompressedBytes the compressed bytes holding the data points
+     * @param timeSeriesStart   the start of the time series
+     * @param timeSeriesEnd     the end of the time series
+     * @param builder           the time series builder
      */
-    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, MetricTimeSeries.Builder builder) {
-        from(compressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, builder);
+    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, MetricTimeSeries.Builder builder) {
+        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, builder);
     }
 
     /**
      * Adds the points (compressed byte array) to the given builder
      *
-     * @param compressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart the start of the time series
-     * @param timeSeriesEnd   the end of the time series
-     * @param builder         the time series builder
+     * @param decompressedBytes the compressed bytes holding the data points
+     * @param timeSeriesStart   the start of the time series
+     * @param timeSeriesEnd     the end of the time series
+     * @param builder           the time series builder
      */
-    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, long almost_equals_ms, MetricTimeSeries.Builder builder) {
-        from(compressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, almost_equals_ms, builder);
+    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long almost_equals_ms, MetricTimeSeries.Builder builder) {
+        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, almost_equals_ms, builder);
     }
 
     /**
      * Adds the points (compressed byte array) to the given builder
      *
-     * @param compressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart the start of the time series
-     * @param timeSeriesEnd   the end of the time series
-     * @param from            including points from
-     * @param to              including points to
-     * @param builder         the time series builder
+     * @param decompressedBytes the compressed bytes holding the data points
+     * @param timeSeriesStart   the start of the time series
+     * @param timeSeriesEnd     the end of the time series
+     * @param from              including points from
+     * @param to                including points to
+     * @param builder           the time series builder
      */
-    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, MetricTimeSeries.Builder builder) {
-        from(compressedBytes, timeSeriesStart, timeSeriesEnd, from, to, ALMOST_EQUALS_OFFSET_MS, builder);
+    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, MetricTimeSeries.Builder builder) {
+        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, from, to, ALMOST_EQUALS_OFFSET_MS, builder);
     }
 
     /**
      * Adds the points (compressed byte array) to the given builder
      *
-     * @param compressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart the start of the time series
-     * @param timeSeriesEnd   the end of the time series
-     * @param from            including points from
-     * @param to              including points to
-     * @param almostEqualsMs  the aberration for the deltas
-     * @param builder         the time series builder
+     * @param decompressedBytes the compressed bytes holding the data points
+     * @param timeSeriesStart   the start of the time series
+     * @param timeSeriesEnd     the end of the time series
+     * @param from              including points from
+     * @param to                including points to
+     * @param almostEqualsMs    the aberration for the deltas
+     * @param builder           the time series builder
      */
-    public static void from(final byte[] compressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, long almostEqualsMs, MetricTimeSeries.Builder builder) {
+    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, long almostEqualsMs, MetricTimeSeries.Builder builder) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
@@ -123,8 +122,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
         }
 
         try {
-            InputStream decompressedPointStream = Compression.decompressToStream(compressedBytes);
-            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(decompressedPointStream);
+            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(decompressedBytes);
 
             List<SimpleProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
 
@@ -203,7 +201,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      *
      * @param metricDataPoints - the list with points
      * @param almostEquals     - the aberration threshold for the deltas
-     * @return a protocol buffer points object
+     * @return the serialized points
      */
     public static byte[] to(final Iterator<Point> metricDataPoints, final long almostEquals) {
 
@@ -299,10 +297,12 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                                 //if we have a t value
                                 if (t > avgPerDelta) {
                                     newOffset = t - avgPerDelta;
-                                    setT(mod.toBuilder(), newOffset);
+                                    SimpleProtocolBuffers.Point.Builder modPoint = mod.toBuilder();
+                                    setT(modPoint, newOffset);
+                                    mod = modPoint.build();
+                                    offsetToEnd += avgPerDelta;
                                 }
 
-                                offsetToEnd += avgPerDelta;
                             }
                             points.setP(i, mod);
                         }
@@ -365,8 +365,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             }
             index++;
         }
-        //todo: optimize
-        return Compression.compress(points.build().toByteArray());
+        return points.build().toByteArray();
     }
 
     /**

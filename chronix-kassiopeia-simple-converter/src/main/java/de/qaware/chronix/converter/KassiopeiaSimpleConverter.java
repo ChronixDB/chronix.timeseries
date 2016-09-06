@@ -15,6 +15,7 @@
  */
 package de.qaware.chronix.converter;
 
+import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
 import de.qaware.chronix.converter.serializer.ProtoBufKassiopeiaSimpleSerializer;
@@ -22,6 +23,7 @@ import de.qaware.chronix.timeseries.MetricTimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.nio.charset.Charset;
 
 /**
@@ -70,7 +72,8 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
     }
 
     private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
-        ProtoBufKassiopeiaSimpleSerializer.from(binaryTimeSeries.getPoints(), binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd, builder);
+        final InputStream decompressed = Compression.decompressToStream(binaryTimeSeries.getPoints());
+        ProtoBufKassiopeiaSimpleSerializer.from(decompressed, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd, builder);
     }
 
     private void fromJson(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
@@ -86,7 +89,8 @@ public class KassiopeiaSimpleConverter implements TimeSeriesConverter<MetricTime
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         //serialize
-        byte[] compressedPoints = ProtoBufKassiopeiaSimpleSerializer.to(timeSeries.points().iterator());
+        byte[] serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(timeSeries.points().iterator());
+        byte[] compressedPoints = Compression.compress(serializedPoints);
 
         //Add the minimum required fields
         builder.start(timeSeries.getStart())
