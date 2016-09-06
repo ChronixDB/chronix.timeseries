@@ -434,7 +434,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
 
     static def readTimeSeriesData() {
-        def url = ProtoBufKassiopeiaSimpleSerializerTest.getResource("/data-mini");
+        def url = ProtoBufKassiopeiaSimpleSerializerTest.getResource("/error");
         def tsDir = new File(url.toURI())
 
         def documents = new HashMap<String, MetricTimeSeries>()
