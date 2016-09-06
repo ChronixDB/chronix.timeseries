@@ -145,10 +145,6 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                 if (i > 0) {
                     lastOffset = calculatePoint(p, lastOffset);
                     calculatedPointDate += lastOffset;
-                    //rest the offset
-                    if (almostEqualsMs > 0 && (p.hasTintBP() || p.hasTlongBP())) {
-                        lastOffset = almostEqualsMs;
-                    }
                 }
 
                 //only add the point if it is within the date
@@ -211,6 +207,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
         int timesSinceLastOffset = 0;
         long lastStoredDate = 0;
+        long lastStoredOffset = 0;
 
         long startDate = 0;
 
@@ -222,6 +219,8 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
         SimpleProtocolBuffers.Point.Builder point = SimpleProtocolBuffers.Point.newBuilder();
         SimpleProtocolBuffers.Points.Builder points = SimpleProtocolBuffers.Points.newBuilder();
+
+        long offset = 0;
 
         while (metricDataPoints.hasNext()) {
 
@@ -247,7 +246,6 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             }
 
 
-            long offset = 0;
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp
                 lastStoredDate = currentTimestamp;
@@ -325,16 +323,21 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
                 } else {
 
-                    long drift = drift(currentTimestamp, lastStoredDate, timesSinceLastOffset, almostEquals);
 
-                    if (almostEquals(previousOffset, offset, almostEquals) && noDrift(drift, almostEquals)) {
+                    boolean isAlmostEquals = almostEquals(previousOffset, offset, almostEquals);
+                    long drift = 0;
+                    if (isAlmostEquals) {
+                        drift = drift(currentTimestamp, lastStoredDate, timesSinceLastOffset, lastStoredOffset);
+                    }
+
+                    if (isAlmostEquals && noDrift(drift, almostEquals, timesSinceLastOffset) && drift >= 0) {
                         points.addP(point.build());
                         timesSinceLastOffset += 1;
                     } else {
                         long timeStamp = offset;
 
                         //If the previous offset was not stored, correct the following offset using the calculated drift
-                        if (timesSinceLastOffset > 1 && offset > previousDrift) {
+                        if (timesSinceLastOffset > 0 && offset > previousDrift) {
                             timeStamp = offset - previousDrift;
 
                             if (safeLongToInt(timeStamp)) {
@@ -354,8 +357,10 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                         //Store offset
                         points.addP(point.build());
                         //reset the offset counter
-                        timesSinceLastOffset = 1;
+                        timesSinceLastOffset = 0;
                         lastStoredDate = p.getTimestamp();
+                        lastStoredOffset = timeStamp;
+
                     }
                     //set current as former previous date
                     previousDrift = drift;
@@ -416,17 +421,13 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             SimpleProtocolBuffers.Point p = pList.get(i);
             lastOffset = calculatePoint(p, lastOffset);
             calculatedPointDate += lastOffset;
-
-            if (almostEquals > 0 && (p.hasTintBP() || p.hasTlongBP())) {
-                lastOffset = almostEquals;
-            }
         }
         return calculatedPointDate;
     }
 
 
-    private static boolean noDrift(long drift, long almostEquals) {
-        return drift == 0 || drift < (almostEquals / 2);
+    private static boolean noDrift(long drift, long almostEquals, long timeSinceLastStoredOffset) {
+        return timeSinceLastStoredOffset == 0 || drift == 0 || drift < (almostEquals / 2);
     }
 
     /**
@@ -435,18 +436,13 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param timestamp            the current time stamp
      * @param lastStoredDate       the last stored time stamp
      * @param timesSinceLastOffset times since the last time stamp was stored
-     * @param almostEquals         the aberration threshold
-     * @return 0 if the drift is negative, or the drift
+     * @param lastStoredOffset     the last stored offset
      */
-    private static long drift(long timestamp, long lastStoredDate, int timesSinceLastOffset, long almostEquals) {
-        long calculatedMaxOffset = almostEquals * timesSinceLastOffset;
-        long drift = lastStoredDate + calculatedMaxOffset - timestamp;
 
-        if (drift > 0) {
-            return drift;
-        } else {
-            return 0;
-        }
+
+    private static long drift(long timestamp, long lastStoredDate, int timesSinceLastOffset, long lastStoredOffset) {
+        long calculatedMaxOffset = lastStoredOffset * (timesSinceLastOffset + 1);
+        return lastStoredDate + calculatedMaxOffset - timestamp;
     }
 
     /**

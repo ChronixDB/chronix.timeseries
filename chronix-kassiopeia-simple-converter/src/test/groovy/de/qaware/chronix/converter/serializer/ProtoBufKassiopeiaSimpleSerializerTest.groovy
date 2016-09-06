@@ -19,6 +19,7 @@ import de.qaware.chronix.timeseries.MetricTimeSeries
 import de.qaware.chronix.timeseries.Point
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import java.text.DecimalFormat
 import java.time.Instant
@@ -210,14 +211,15 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         listPoints.get(4).timestamp == 50//2
         listPoints.get(5).timestamp == 60//3
         listPoints.get(6).timestamp == 70//4
-        listPoints.get(7).timestamp == 75//5 drift detected
-        listPoints.get(8).timestamp == 85//5 drift
-        listPoints.get(9).timestamp == 95//5 drift
-        listPoints.get(10).timestamp == 105//5
-        listPoints.get(11).timestamp == 115//5
-        listPoints.get(12).timestamp == 120//5
-        listPoints.get(13).timestamp == 130//5
-        listPoints.get(14).timestamp == 138//5
+        listPoints.get(7).timestamp == 75//5 drift detected OK
+
+        listPoints.get(8).timestamp == 84//9
+        listPoints.get(9).timestamp == 93//9
+        listPoints.get(10).timestamp == 102//9
+        listPoints.get(11).timestamp == 111//9
+        listPoints.get(12).timestamp == 120//9
+        listPoints.get(13).timestamp == 129//9
+        listPoints.get(14).timestamp == 138//9
     }
 
 
@@ -273,22 +275,22 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         listPoints.get(7).timestamp == 1462892475//5
         listPoints.get(7).value == 10//0
 
-        listPoints.get(8).timestamp == 1462892485//5
+        listPoints.get(8).timestamp == 1462892484//5
         listPoints.get(8).value == 84//0
 
-        listPoints.get(9).timestamp == 1462892495//5
+        listPoints.get(9).timestamp == 1462892493//5
         listPoints.get(9).value == 93//0
 
-        listPoints.get(10).timestamp == 1462892505//5
+        listPoints.get(10).timestamp == 1462892502//5
         listPoints.get(10).value == -102//0
 
-        listPoints.get(11).timestamp == 1462892515//5
+        listPoints.get(11).timestamp == 1462892511//5
         listPoints.get(11).value == 109//0
 
         listPoints.get(12).timestamp == 1462892520//5
         listPoints.get(12).value == 118//0
 
-        listPoints.get(13).timestamp == 1462892530//5
+        listPoints.get(13).timestamp == 1462892529//5
         listPoints.get(13).value == 127//0
 
         listPoints.get(14).timestamp == 1462892538//0
@@ -350,9 +352,6 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
             def count = rawTimeSeries.size();
             println "Checking $count points for almost_equals = 0"
 
-            println "Your name is ${System.in.newReader().readLine()}"
-
-
             for (int i = 0; i < count; i++) {
                 if (rawTimeSeries.getTime(i) != modifiedTimeSeries.getTime(i)) {
                     long delta = rawTimeSeries.getTime(i) - modifiedTimeSeries.getTime(i)
@@ -368,6 +367,68 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         }
         then:
         noExceptionThrown()
+
+    }
+
+    @Unroll
+    def "test raw time series with almost_equals = #almostEquals"() {
+        given:
+        def rawTimeSeriesList = readTimeSeriesData()
+
+        when:
+        rawTimeSeriesList.each {
+            println "Checking file ${it.key}"
+            def rawTimeSeries = it.value;
+            rawTimeSeries.sort()
+
+            def unique = new MetricTimeSeries.Builder("Unique");
+
+            List<Point> list = rawTimeSeries.points().collect(Collectors.toList());
+
+            def prevDate = list.get(0).timestamp;
+
+            for (int i = 1; i < list.size(); i++) {
+
+                def currentDate = list.get(i).timestamp
+
+                if (currentDate != prevDate) {
+                    unique.point(currentDate, list.get(i).value);
+                }
+                prevDate = currentDate;
+
+            }
+
+            unique = unique.build()
+            unique.sort()
+
+            def start = System.currentTimeMillis()
+            def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(unique.points().iterator(), almostEquals)
+            def end = System.currentTimeMillis()
+
+            println "Serialization took ${end - start} ms"
+
+            def builder = new MetricTimeSeries.Builder("heap");
+
+            start = System.currentTimeMillis()
+            ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), unique.start, unique.end, almostEquals, builder)
+            end = System.currentTimeMillis()
+
+            println "Deserialization took ${end - start} ms"
+            def modifiedTimeSeries = builder.build()
+
+            def count = unique.size();
+
+            for (int i = 0; i < count; i++) {
+                if (modifiedTimeSeries.getTime(i) - unique.getTime(i) > almostEquals) {
+                    throw new Exception("Position ${i}: Time diff is ${modifiedTimeSeries.getTime(i) - unique.getTime(i)}. Orginal ts: ${unique.getTime(i)}. Reconstructed ts: ${modifiedTimeSeries.getTime(i)}")
+                }
+            }
+        }
+        then:
+        noExceptionThrown()
+
+        where:
+        almostEquals << [10L, 100L]
 
     }
 
