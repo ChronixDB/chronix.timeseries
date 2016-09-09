@@ -28,58 +28,64 @@ public final class SimpleProtocolBuffers {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>optional sint64 tlong = 1;</code>
+     * <code>optional uint64 tlong = 1;</code>
      *
      * <pre>
-     *The date as int64 (java long)
+     *The delta as long
      * </pre>
      */
     boolean hasTlong();
     /**
-     * <code>optional sint64 tlong = 1;</code>
+     * <code>optional uint64 tlong = 1;</code>
      *
      * <pre>
-     *The date as int64 (java long)
+     *The delta as long
      * </pre>
      */
     long getTlong();
 
     /**
-     * <code>optional sint32 tint = 2;</code>
+     * <code>optional uint32 tint = 2;</code>
+     *
+     * <pre>
+     *Perhaps we can store the delta as int
+     * </pre>
      */
     boolean hasTint();
     /**
-     * <code>optional sint32 tint = 2;</code>
+     * <code>optional uint32 tint = 2;</code>
+     *
+     * <pre>
+     *Perhaps we can store the delta as int
+     * </pre>
      */
     int getTint();
 
     /**
-     * <code>optional sint64 tlongBP = 3;</code>
+     * <code>optional uint64 tlongBP = 3;</code>
      *
      * <pre>
-     *time base point
+     *time base point points
      * </pre>
      */
     boolean hasTlongBP();
-
     /**
-     * <code>optional sint64 tlongBP = 3;</code>
-     * <p>
+     * <code>optional uint64 tlongBP = 3;</code>
+     *
      * <pre>
-     * time base point
+     *time base point points
      * </pre>
      */
     long getTlongBP();
 
     /**
-     * <code>optional sint64 tintBP = 4;</code>
+     * <code>optional uint32 tintBP = 4;</code>
      */
     boolean hasTintBP();
-
     /**
-     * <code>optional sint64 tintBP = 4;</code>
+     * <code>optional uint32 tintBP = 4;</code>
      */
-    long getTintBP();
+    int getTintBP();
 
     /**
      * <code>optional double v = 5;</code>
@@ -89,7 +95,6 @@ public final class SimpleProtocolBuffers {
      * </pre>
      */
     boolean hasV();
-
     /**
      * <code>optional double v = 5;</code>
      *
@@ -100,12 +105,11 @@ public final class SimpleProtocolBuffers {
     double getV();
 
     /**
-     * <code>optional sint32 vIndex = 6;</code>
+     * <code>optional uint32 vIndex = 6;</code>
      */
     boolean hasVIndex();
-
     /**
-     * <code>optional sint32 vIndex = 6;</code>
+     * <code>optional uint32 vIndex = 6;</code>
      */
     int getVIndex();
   }
@@ -167,22 +171,22 @@ public final class SimpleProtocolBuffers {
             }
             case 8: {
               bitField0_ |= 0x00000001;
-              tlong_ = input.readSInt64();
+              tlong_ = input.readUInt64();
               break;
             }
             case 16: {
               bitField0_ |= 0x00000002;
-              tint_ = input.readSInt32();
+              tint_ = input.readUInt32();
               break;
             }
             case 24: {
               bitField0_ |= 0x00000004;
-              tlongBP_ = input.readSInt64();
+              tlongBP_ = input.readUInt64();
               break;
             }
             case 32: {
               bitField0_ |= 0x00000008;
-              tintBP_ = input.readSInt64();
+              tintBP_ = input.readUInt32();
               break;
             }
             case 41: {
@@ -192,7 +196,7 @@ public final class SimpleProtocolBuffers {
             }
             case 48: {
               bitField0_ |= 0x00000020;
-              vIndex_ = input.readSInt32();
+              vIndex_ = input.readUInt32();
               break;
             }
           }
@@ -237,23 +241,21 @@ public final class SimpleProtocolBuffers {
     private int bitField0_;
     public static final int TLONG_FIELD_NUMBER = 1;
     private long tlong_;
-
     /**
-     * <code>optional sint64 tlong = 1;</code>
+     * <code>optional uint64 tlong = 1;</code>
      *
      * <pre>
-     *The date as int64 (java long)
+     *The delta as long
      * </pre>
      */
     public boolean hasTlong() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
-
     /**
-     * <code>optional sint64 tlong = 1;</code>
+     * <code>optional uint64 tlong = 1;</code>
      *
      * <pre>
-     *The date as int64 (java long)
+     *The delta as long
      * </pre>
      */
     public long getTlong() {
@@ -262,16 +264,22 @@ public final class SimpleProtocolBuffers {
 
     public static final int TINT_FIELD_NUMBER = 2;
     private int tint_;
-
     /**
-     * <code>optional sint32 tint = 2;</code>
+     * <code>optional uint32 tint = 2;</code>
+     *
+     * <pre>
+     *Perhaps we can store the delta as int
+     * </pre>
      */
     public boolean hasTint() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
-
     /**
-     * <code>optional sint32 tint = 2;</code>
+     * <code>optional uint32 tint = 2;</code>
+     *
+     * <pre>
+     *Perhaps we can store the delta as int
+     * </pre>
      */
     public int getTint() {
       return tint_;
@@ -279,23 +287,21 @@ public final class SimpleProtocolBuffers {
 
     public static final int TLONGBP_FIELD_NUMBER = 3;
     private long tlongBP_;
-
     /**
-     * <code>optional sint64 tlongBP = 3;</code>
+     * <code>optional uint64 tlongBP = 3;</code>
      *
      * <pre>
-     *time base point
+     *time base point points
      * </pre>
      */
     public boolean hasTlongBP() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
-
     /**
-     * <code>optional sint64 tlongBP = 3;</code>
-     * <p>
+     * <code>optional uint64 tlongBP = 3;</code>
+     *
      * <pre>
-     * time base point
+     *time base point points
      * </pre>
      */
     public long getTlongBP() {
@@ -303,25 +309,22 @@ public final class SimpleProtocolBuffers {
     }
 
     public static final int TINTBP_FIELD_NUMBER = 4;
-    private long tintBP_;
-
+    private int tintBP_;
     /**
-     * <code>optional sint64 tintBP = 4;</code>
+     * <code>optional uint32 tintBP = 4;</code>
      */
     public boolean hasTintBP() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
-
     /**
-     * <code>optional sint64 tintBP = 4;</code>
+     * <code>optional uint32 tintBP = 4;</code>
      */
-    public long getTintBP() {
+    public int getTintBP() {
       return tintBP_;
     }
 
     public static final int V_FIELD_NUMBER = 5;
     private double v_;
-
     /**
      * <code>optional double v = 5;</code>
      *
@@ -332,7 +335,6 @@ public final class SimpleProtocolBuffers {
     public boolean hasV() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
-
     /**
      * <code>optional double v = 5;</code>
      *
@@ -346,16 +348,14 @@ public final class SimpleProtocolBuffers {
 
     public static final int VINDEX_FIELD_NUMBER = 6;
     private int vIndex_;
-
     /**
-     * <code>optional sint32 vIndex = 6;</code>
+     * <code>optional uint32 vIndex = 6;</code>
      */
     public boolean hasVIndex() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
-
     /**
-     * <code>optional sint32 vIndex = 6;</code>
+     * <code>optional uint32 vIndex = 6;</code>
      */
     public int getVIndex() {
       return vIndex_;
@@ -365,7 +365,7 @@ public final class SimpleProtocolBuffers {
       tlong_ = 0L;
       tint_ = 0;
       tlongBP_ = 0L;
-      tintBP_ = 0L;
+      tintBP_ = 0;
       v_ = 0D;
       vIndex_ = 0;
     }
@@ -383,22 +383,22 @@ public final class SimpleProtocolBuffers {
                         throws java.io.IOException {
       getSerializedSize();
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
-        output.writeSInt64(1, tlong_);
+        output.writeUInt64(1, tlong_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
-        output.writeSInt32(2, tint_);
+        output.writeUInt32(2, tint_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
-        output.writeSInt64(3, tlongBP_);
+        output.writeUInt64(3, tlongBP_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
-        output.writeSInt64(4, tintBP_);
+        output.writeUInt32(4, tintBP_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         output.writeDouble(5, v_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
-        output.writeSInt32(6, vIndex_);
+        output.writeUInt32(6, vIndex_);
       }
       getUnknownFields().writeTo(output);
     }
@@ -411,27 +411,27 @@ public final class SimpleProtocolBuffers {
       size = 0;
       if (((bitField0_ & 0x00000001) == 0x00000001)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeSInt64Size(1, tlong_);
+          .computeUInt64Size(1, tlong_);
       }
       if (((bitField0_ & 0x00000002) == 0x00000002)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeSInt32Size(2, tint_);
+          .computeUInt32Size(2, tint_);
       }
       if (((bitField0_ & 0x00000004) == 0x00000004)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeSInt64Size(3, tlongBP_);
+          .computeUInt64Size(3, tlongBP_);
       }
       if (((bitField0_ & 0x00000008) == 0x00000008)) {
         size += com.google.protobuf.CodedOutputStream
-                .computeSInt64Size(4, tintBP_);
+          .computeUInt32Size(4, tintBP_);
       }
       if (((bitField0_ & 0x00000010) == 0x00000010)) {
         size += com.google.protobuf.CodedOutputStream
-                .computeDoubleSize(5, v_);
+          .computeDoubleSize(5, v_);
       }
       if (((bitField0_ & 0x00000020) == 0x00000020)) {
         size += com.google.protobuf.CodedOutputStream
-          .computeSInt32Size(6, vIndex_);
+          .computeUInt32Size(6, vIndex_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -560,7 +560,7 @@ public final class SimpleProtocolBuffers {
         bitField0_ = (bitField0_ & ~0x00000002);
         tlongBP_ = 0L;
         bitField0_ = (bitField0_ & ~0x00000004);
-        tintBP_ = 0L;
+        tintBP_ = 0;
         bitField0_ = (bitField0_ & ~0x00000008);
         v_ = 0D;
         bitField0_ = (bitField0_ & ~0x00000010);
@@ -633,8 +633,7 @@ public final class SimpleProtocolBuffers {
       }
 
       public Builder mergeFrom(de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Point other) {
-        if (other == de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Point.getDefaultInstance())
-          return this;
+        if (other == de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Point.getDefaultInstance()) return this;
         if (other.hasTlong()) {
           setTlong(other.getTlong());
         }
@@ -678,35 +677,34 @@ public final class SimpleProtocolBuffers {
         }
         return this;
       }
-
       private int bitField0_;
 
       private long tlong_ ;
       /**
-       * <code>optional sint64 tlong = 1;</code>
+       * <code>optional uint64 tlong = 1;</code>
        *
        * <pre>
-       *The date as int64 (java long)
+       *The delta as long
        * </pre>
        */
       public boolean hasTlong() {
         return ((bitField0_ & 0x00000001) == 0x00000001);
       }
       /**
-       * <code>optional sint64 tlong = 1;</code>
+       * <code>optional uint64 tlong = 1;</code>
        *
        * <pre>
-       *The date as int64 (java long)
+       *The delta as long
        * </pre>
        */
       public long getTlong() {
         return tlong_;
       }
       /**
-       * <code>optional sint64 tlong = 1;</code>
+       * <code>optional uint64 tlong = 1;</code>
        *
        * <pre>
-       *The date as int64 (java long)
+       *The delta as long
        * </pre>
        */
       public Builder setTlong(long value) {
@@ -716,10 +714,10 @@ public final class SimpleProtocolBuffers {
         return this;
       }
       /**
-       * <code>optional sint64 tlong = 1;</code>
+       * <code>optional uint64 tlong = 1;</code>
        *
        * <pre>
-       *The date as int64 (java long)
+       *The delta as long
        * </pre>
        */
       public Builder clearTlong() {
@@ -729,24 +727,33 @@ public final class SimpleProtocolBuffers {
         return this;
       }
 
-      private int tint_;
-
+      private int tint_ ;
       /**
-       * <code>optional sint32 tint = 2;</code>
+       * <code>optional uint32 tint = 2;</code>
+       *
+       * <pre>
+       *Perhaps we can store the delta as int
+       * </pre>
        */
       public boolean hasTint() {
         return ((bitField0_ & 0x00000002) == 0x00000002);
       }
-
       /**
-       * <code>optional sint32 tint = 2;</code>
+       * <code>optional uint32 tint = 2;</code>
+       *
+       * <pre>
+       *Perhaps we can store the delta as int
+       * </pre>
        */
       public int getTint() {
         return tint_;
       }
-
       /**
-       * <code>optional sint32 tint = 2;</code>
+       * <code>optional uint32 tint = 2;</code>
+       *
+       * <pre>
+       *Perhaps we can store the delta as int
+       * </pre>
        */
       public Builder setTint(int value) {
         bitField0_ |= 0x00000002;
@@ -754,9 +761,12 @@ public final class SimpleProtocolBuffers {
         onChanged();
         return this;
       }
-
       /**
-       * <code>optional sint32 tint = 2;</code>
+       * <code>optional uint32 tint = 2;</code>
+       *
+       * <pre>
+       *Perhaps we can store the delta as int
+       * </pre>
        */
       public Builder clearTint() {
         bitField0_ = (bitField0_ & ~0x00000002);
@@ -765,35 +775,32 @@ public final class SimpleProtocolBuffers {
         return this;
       }
 
-      private long tlongBP_;
-
+      private long tlongBP_ ;
       /**
-       * <code>optional sint64 tlongBP = 3;</code>
+       * <code>optional uint64 tlongBP = 3;</code>
        *
        * <pre>
-       *time base point
+       *time base point points
        * </pre>
        */
       public boolean hasTlongBP() {
         return ((bitField0_ & 0x00000004) == 0x00000004);
       }
-
       /**
-       * <code>optional sint64 tlongBP = 3;</code>
+       * <code>optional uint64 tlongBP = 3;</code>
        *
        * <pre>
-       *time base point
+       *time base point points
        * </pre>
        */
       public long getTlongBP() {
         return tlongBP_;
       }
-
       /**
-       * <code>optional sint64 tlongBP = 3;</code>
+       * <code>optional uint64 tlongBP = 3;</code>
        *
        * <pre>
-       *time base point
+       *time base point points
        * </pre>
        */
       public Builder setTlongBP(long value) {
@@ -802,12 +809,11 @@ public final class SimpleProtocolBuffers {
         onChanged();
         return this;
       }
-
       /**
-       * <code>optional sint64 tlongBP = 3;</code>
+       * <code>optional uint64 tlongBP = 3;</code>
        *
        * <pre>
-       *time base point
+       *time base point points
        * </pre>
        */
       public Builder clearTlongBP() {
@@ -817,44 +823,39 @@ public final class SimpleProtocolBuffers {
         return this;
       }
 
-      private long tintBP_;
-
+      private int tintBP_ ;
       /**
-       * <code>optional sint64 tintBP = 4;</code>
+       * <code>optional uint32 tintBP = 4;</code>
        */
       public boolean hasTintBP() {
         return ((bitField0_ & 0x00000008) == 0x00000008);
       }
-
       /**
-       * <code>optional sint64 tintBP = 4;</code>
+       * <code>optional uint32 tintBP = 4;</code>
        */
-      public long getTintBP() {
+      public int getTintBP() {
         return tintBP_;
       }
-
       /**
-       * <code>optional sint64 tintBP = 4;</code>
+       * <code>optional uint32 tintBP = 4;</code>
        */
-      public Builder setTintBP(long value) {
+      public Builder setTintBP(int value) {
         bitField0_ |= 0x00000008;
         tintBP_ = value;
         onChanged();
         return this;
       }
-
       /**
-       * <code>optional sint64 tintBP = 4;</code>
+       * <code>optional uint32 tintBP = 4;</code>
        */
       public Builder clearTintBP() {
         bitField0_ = (bitField0_ & ~0x00000008);
-        tintBP_ = 0L;
+        tintBP_ = 0;
         onChanged();
         return this;
       }
 
       private double v_ ;
-
       /**
        * <code>optional double v = 5;</code>
        *
@@ -865,7 +866,6 @@ public final class SimpleProtocolBuffers {
       public boolean hasV() {
         return ((bitField0_ & 0x00000010) == 0x00000010);
       }
-
       /**
        * <code>optional double v = 5;</code>
        *
@@ -876,7 +876,6 @@ public final class SimpleProtocolBuffers {
       public double getV() {
         return v_;
       }
-
       /**
        * <code>optional double v = 5;</code>
        *
@@ -890,7 +889,6 @@ public final class SimpleProtocolBuffers {
         onChanged();
         return this;
       }
-
       /**
        * <code>optional double v = 5;</code>
        *
@@ -905,24 +903,21 @@ public final class SimpleProtocolBuffers {
         return this;
       }
 
-      private int vIndex_;
-
+      private int vIndex_ ;
       /**
-       * <code>optional sint32 vIndex = 6;</code>
+       * <code>optional uint32 vIndex = 6;</code>
        */
       public boolean hasVIndex() {
         return ((bitField0_ & 0x00000020) == 0x00000020);
       }
-
       /**
-       * <code>optional sint32 vIndex = 6;</code>
+       * <code>optional uint32 vIndex = 6;</code>
        */
       public int getVIndex() {
         return vIndex_;
       }
-
       /**
-       * <code>optional sint32 vIndex = 6;</code>
+       * <code>optional uint32 vIndex = 6;</code>
        */
       public Builder setVIndex(int value) {
         bitField0_ |= 0x00000020;
@@ -930,9 +925,8 @@ public final class SimpleProtocolBuffers {
         onChanged();
         return this;
       }
-
       /**
-       * <code>optional sint32 vIndex = 6;</code>
+       * <code>optional uint32 vIndex = 6;</code>
        */
       public Builder clearVIndex() {
         bitField0_ = (bitField0_ & ~0x00000020);
@@ -1756,22 +1750,20 @@ public final class SimpleProtocolBuffers {
   private static final com.google.protobuf.Descriptors.Descriptor
     internal_static_Points_descriptor;
   private static
-  com.google.protobuf.GeneratedMessage.FieldAccessorTable
+    com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_Points_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
     return descriptor;
   }
-
   private static com.google.protobuf.Descriptors.FileDescriptor
-          descriptor;
-
+      descriptor;
   static {
     java.lang.String[] descriptorData = {
-            "\n\013Point.proto\"`\n\005Point\022\r\n\005tlong\030\001 \001(\022\022\014\n" +
-                    "\004tint\030\002 \001(\021\022\017\n\007tlongBP\030\003 \001(\022\022\016\n\006tintBP\030\004" +
-                    " \001(\022\022\t\n\001v\030\005 \001(\001\022\016\n\006vIndex\030\006 \001(\021\"\033\n\006Point" +
+      "\n\013Point.proto\"`\n\005Point\022\r\n\005tlong\030\001 \001(\004\022\014\n" +
+      "\004tint\030\002 \001(\r\022\017\n\007tlongBP\030\003 \001(\004\022\016\n\006tintBP\030\004" +
+      " \001(\r\022\t\n\001v\030\005 \001(\001\022\016\n\006vIndex\030\006 \001(\r\"\033\n\006Point" +
       "s\022\021\n\001p\030\001 \003(\0132\006.PointBE\n*de.qaware.chroni" +
       "x.converter.serializer.genB\025SimpleProtoc" +
       "olBuffersH\001"
@@ -1791,7 +1783,7 @@ public final class SimpleProtocolBuffers {
     internal_static_Point_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_Point_fieldAccessorTable = new
-            com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_Point_descriptor,
         new java.lang.String[] { "Tlong", "Tint", "TlongBP", "TintBP", "V", "VIndex", });
     internal_static_Points_descriptor =

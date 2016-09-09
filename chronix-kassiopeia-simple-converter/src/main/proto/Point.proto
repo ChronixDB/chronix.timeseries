@@ -13,7 +13,6 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
 option java_package = "de.qaware.chronix.converter.serializer.gen";
 
 option java_outer_classname = "SimpleProtocolBuffers";
@@ -22,16 +21,17 @@ option optimize_for = SPEED;
 
 //Our point
 message Point {
-    //The date as int64 (java long)
-    optional sint64 tlong = 1;
-    optional sint32 tint = 2;
-    //time base point
-    optional sint64 tlongBP = 3;
-    optional sint64 tintBP = 4;
+    //The delta as long
+    optional uint64 tlong = 1;
+    //Perhaps we can store the delta as int
+    optional uint32 tint = 2;
+    //time base point points
+    optional uint64 tlongBP = 3;
+    optional uint32 tintBP = 4;
 
     //time base point
     optional double v = 5;
-    optional sint32 vIndex = 6;
+    optional uint32 vIndex = 6;
 
 }
 

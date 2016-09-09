@@ -178,9 +178,9 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
         if (p.hasTintBP() || p.hasTlongBP()) {
             lastOffset = p.getTintBP() + p.getTlongBP();
         }
-
         return lastOffset;
     }
+
 
     /**
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
@@ -245,7 +245,6 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                 point.setV(currentValue);
             }
 
-
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp
                 lastStoredDate = currentTimestamp;
@@ -270,7 +269,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
 
                     //everything okay
                     if (offsetToEnd >= 0) {
-                        if (safeLongToInt(offsetToEnd)) {
+                        if (safeLongToUInt(offsetToEnd)) {
                             points.addP(point.setTint((int) offsetToEnd).build());
                         } else {
                             points.addP(point.setTlong(offsetToEnd).build());
@@ -314,8 +313,8 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                             LOGGER.warn("Stored offset is negative. Setting to 0. But that is an error.");
                             storedOffsetToEnd = 0;
                         }
-                        if (safeLongToInt(storedOffsetToEnd)) {
-                            points.addP(point.setTintBP(storedOffsetToEnd).build());
+                        if (safeLongToUInt(storedOffsetToEnd)) {
+                            points.addP(point.setTintBP((int) storedOffsetToEnd).build());
                         } else {
                             points.addP(point.setTlongBP(storedOffsetToEnd).build());
                         }
@@ -340,14 +339,14 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                         if (timesSinceLastOffset > 0 && offset > previousDrift) {
                             timeStamp = offset - previousDrift;
 
-                            if (safeLongToInt(timeStamp)) {
+                            if (safeLongToUInt(timeStamp)) {
                                 point.setTintBP((int) timeStamp);
                             } else {
                                 point.setTlongBP(timeStamp);
                             }
 
                         } else {
-                            if (safeLongToInt(timeStamp)) {
+                            if (safeLongToUInt(timeStamp)) {
                                 point.setTint((int) timeStamp);
                             } else {
                                 point.setTlong(timeStamp);
@@ -380,7 +379,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param newOffset the new offset
      */
     private static void setT(SimpleProtocolBuffers.Point.Builder builder, long newOffset) {
-        if (safeLongToInt(newOffset)) {
+        if (safeLongToUInt(newOffset)) {
             if (builder.hasTintBP()) {
                 builder.setTintBP((int) newOffset);
             }
@@ -388,10 +387,10 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
                 builder.setTint((int) newOffset);
             }
         } else {
-            if (builder.hasTintBP()) {
+            if (builder.hasTlongBP()) {
                 builder.setTlongBP(newOffset);
             }
-            if (builder.hasTint()) {
+            if (builder.hasTlong()) {
                 builder.setTlong(newOffset);
             }
         }
@@ -407,10 +406,9 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
         return point.getTlongBP() + point.getTlong() + point.getTint() + point.getTintBP();
     }
 
-    private static boolean safeLongToInt(long l) {
-        return !(l < Integer.MIN_VALUE || l > Integer.MAX_VALUE);
+    private static boolean safeLongToUInt(long l) {
+        return !(l < 0 || l > Integer.MAX_VALUE);
     }
-
 
     private static long calcPoint(long startDate, List<SimpleProtocolBuffers.Point> pList, long almostEquals) {
 

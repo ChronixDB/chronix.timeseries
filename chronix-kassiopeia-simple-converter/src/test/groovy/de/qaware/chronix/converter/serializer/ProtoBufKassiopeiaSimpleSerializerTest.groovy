@@ -15,6 +15,7 @@
  */
 package de.qaware.chronix.converter.serializer
 
+import de.qaware.chronix.converter.common.Compression
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import de.qaware.chronix.timeseries.Point
 import spock.lang.Shared
@@ -370,6 +371,141 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
     }
 
+    def "test change rate"() {
+
+        given:
+        def rawTimeSeriesList = readTimeSeriesData()
+
+
+        when:
+        def file = new File("ddc-threshold.csv")
+        file.write("")
+        writeToFile(file, "Index;AlmostEquals;Legend;Value")
+
+        def index = 1
+
+        [0, 10, 25, 50, 100].eachWithIndex { def almostEquals, def almostEqualsIndex ->
+
+            println "============================================================="
+            println "===================     ${almostEquals} ms       ========================="
+            println "============================================================="
+
+            def changes = 0
+            def sumOfPoint = 0
+            def maxDeviation = 0
+            def indexwiseDeltaRaw = 0
+            def indexwiseDeltaMod = 0
+            def averageDeviation = 0
+
+            def totalBytes = 0;
+            def totalSerializedBytes = 0;
+
+
+            rawTimeSeriesList.each { pair, rawTimeSeries ->
+
+                rawTimeSeries.sort()
+
+                def changesTS = 0
+                def sumOfPointTS = 0
+                def maxDeviationTS = 0
+                def indexwiseDeltaRawTS = 0
+                def indexwiseDeltaModTS = 0
+                def averageDeviationTS = 0
+                def rawBytes = rawTimeSeries.attribute("bytes") as Integer
+                def compressedBytes = 0;
+
+                def builder = new MetricTimeSeries.Builder(rawTimeSeries.getMetric())
+                def modTimeSeries = ProtoBufKassiopeiaSimpleSerializer.to(rawTimeSeries.points().iterator(), almostEquals)
+
+                def bytes = modTimeSeries.length
+                compressedBytes = Compression.compress(modTimeSeries).length
+
+                totalBytes += rawBytes
+                totalSerializedBytes += bytes
+
+                ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(modTimeSeries), rawTimeSeries.getStart(), rawTimeSeries.getEnd(), almostEquals, builder)
+
+                modTimeSeries = builder.build()
+
+                sumOfPoint += rawTimeSeries.size()
+                sumOfPointTS = rawTimeSeries.size()
+
+                for (int j = 0; j < rawTimeSeries.size(); j++) {
+
+                    def rawTS = rawTimeSeries.getTime(j);
+                    def modTS = modTimeSeries.getTime(j);
+
+                    def deviation = Math.abs(rawTS - modTS);
+
+                    averageDeviationTS += deviation
+                    averageDeviation += deviation
+
+                    if (deviation > maxDeviation) {
+                        maxDeviation = deviation;
+                    }
+
+                    if (deviation > maxDeviationTS) {
+                        maxDeviationTS = deviation;
+                    }
+
+                    if (j + 1 < rawTimeSeries.size()) {
+                        indexwiseDeltaRaw += Math.abs(rawTimeSeries.getTime(j + 1) - rawTS)
+                        indexwiseDeltaMod += Math.abs(modTimeSeries.getTime(j + 1) - modTS)
+
+                        indexwiseDeltaRawTS += indexwiseDeltaRaw
+                        indexwiseDeltaModTS += indexwiseDeltaMod
+                    }
+
+                    if (rawTS != modTS) {
+                        changes++;
+                        changesTS++;
+                    }
+                }
+                println "======================================================="
+                println "TS ${rawTimeSeries.getMetric()} start: ${Instant.ofEpochMilli(rawTimeSeries.getStart())} end: ${Instant.ofEpochMilli(rawTimeSeries.getEnd())}"
+                println "TS-MOD ${modTimeSeries.getMetric()} start: ${Instant.ofEpochMilli(modTimeSeries.getStart())} end: ${Instant.ofEpochMilli(modTimeSeries.getEnd())}"
+                println "Max deviation: $maxDeviationTS in milliseconds"
+                println "Raw: Sum of deltas: $indexwiseDeltaRawTS in minutes"
+                println "Mod: Sum of deltas: $indexwiseDeltaModTS in minutes"
+                println "Change rate per point: ${changesTS / sumOfPointTS}"
+                println "Average deviation per point: ${averageDeviationTS / sumOfPointTS}"
+                println "Bytes after serialization: $bytes"
+                println "Bytes before serialization: $rawBytes"
+                println "Safes: ${(1 - bytes / rawBytes) * 100} %"
+                println "Bytes per point: ${bytes / sumOfPointTS}"
+                println "Compressed Bytes per point: ${compressedBytes / sumOfPointTS}"
+                println "======================================================="
+            }
+            println "======================================================="
+            println "= Overall almost equals: $almostEquals"
+            println "======================================================="
+            println "Max deviation: $maxDeviation in milliseconds"
+            println "Raw: Sum of deltas: $indexwiseDeltaRaw in minutes"
+            println "Mod: Sum of deltas: $indexwiseDeltaMod in minutes"
+            println "Change rate per point: ${changes / sumOfPoint}"
+            println "Average deviation per point: ${averageDeviation / sumOfPoint}"
+
+
+            def changeRate = (changes / sumOfPoint) * 100
+            def compressionRate = (1 - (totalSerializedBytes / totalBytes)) * 100
+
+            writeToFile(file, "${index};${almostEquals};Timstamp Change Rate;${changeRate}")
+            writeToFile(file, "${index};${almostEquals};Compression Rate;${compressionRate}")
+            index++
+
+        }
+
+
+
+        then:
+        noExceptionThrown()
+    }
+
+    public void writeToFile(def file, def message) {
+        file.append(message)
+        file.append("\n")
+    }
+
     @Unroll
     def "test raw time series with almost_equals = #almostEquals"() {
         given:
@@ -398,11 +534,11 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
             }
 
-            unique = unique.build()
-            unique.sort()
+            MetricTimeSeries uniqueTS = unique.build()
+            uniqueTS.sort()
 
             def start = System.currentTimeMillis()
-            def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(unique.points().iterator(), almostEquals)
+            def serializedPoints = ProtoBufKassiopeiaSimpleSerializer.to(uniqueTS.points().iterator(), almostEquals)
             def end = System.currentTimeMillis()
 
             println "Serialization took ${end - start} ms"
@@ -410,17 +546,17 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
             def builder = new MetricTimeSeries.Builder("heap");
 
             start = System.currentTimeMillis()
-            ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), unique.start, unique.end, almostEquals, builder)
+            ProtoBufKassiopeiaSimpleSerializer.from(new ByteArrayInputStream(serializedPoints), uniqueTS.getStart(), uniqueTS.getEnd(), almostEquals, builder)
             end = System.currentTimeMillis()
 
             println "Deserialization took ${end - start} ms"
             def modifiedTimeSeries = builder.build()
 
-            def count = unique.size();
+            def count = uniqueTS.size();
 
             for (int i = 0; i < count; i++) {
-                if (modifiedTimeSeries.getTime(i) - unique.getTime(i) > almostEquals) {
-                    throw new Exception("Position ${i}: Time diff is ${modifiedTimeSeries.getTime(i) - unique.getTime(i)}. Orginal ts: ${unique.getTime(i)}. Reconstructed ts: ${modifiedTimeSeries.getTime(i)}")
+                if (modifiedTimeSeries.getTime(i) - uniqueTS.getTime(i) > almostEquals) {
+                    println("Position ${i}: Time diff is ${modifiedTimeSeries.getTime(i) - uniqueTS.getTime(i)}. Orginal ts: ${uniqueTS.getTime(i)}. Reconstructed ts: ${modifiedTimeSeries.getTime(i)}")
                 }
             }
         }
@@ -428,7 +564,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
         noExceptionThrown()
 
         where:
-        almostEquals << [10L, 100L]
+        almostEquals << [10L]
 
     }
 
@@ -441,7 +577,9 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
 
         tsDir.listFiles().each { File file ->
             println("Processing file $file")
-            documents.put(file.name, new MetricTimeSeries.Builder(file.name).build())
+            def bytes = new GZIPInputStream(new FileInputStream(file)).getBytes()
+
+            documents.put(file.name, new MetricTimeSeries.Builder(file.name).attribute("bytes", bytes.length).build())
 
             def nf = DecimalFormat.getInstance(Locale.ENGLISH);
             def filePoints = 0
@@ -459,6 +597,7 @@ class ProtoBufKassiopeiaSimpleSerializerTest extends Specification {
                     }
                 }
             }
+
         }
         documents
     }
