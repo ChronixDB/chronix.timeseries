@@ -48,6 +48,10 @@ public final class MetricTimeSeries implements Serializable {
     private long end;
     private long start;
 
+    //Marks if the time series needs a sort
+    //Used to avoid unnecessary sorts.
+    private boolean needsSort;
+
     /**
      * Private constructor.
      * To instantiate a metric time series use the builder class.
@@ -64,6 +68,7 @@ public final class MetricTimeSeries implements Serializable {
         //When the time stamps are empty we do not set the start and end
         //An aggregation or analysis response does not have a data field per default.
         if (!timestamps.isEmpty()) {
+            sort();
             start = timestamps.get(0);
             end = timestamps.get(size() - 1);
         }
@@ -127,7 +132,7 @@ public final class MetricTimeSeries implements Serializable {
      * Sorts the time series values.
      */
     public void sort() {
-        if (timestamps.size() > 1) {
+        if (needsSort && timestamps.size() > 1) {
 
             LongList sortedTimes = new LongList(timestamps.size());
             DoubleList sortedValues = new DoubleList(values.size());
@@ -139,6 +144,8 @@ public final class MetricTimeSeries implements Serializable {
 
             timestamps = sortedTimes;
             values = sortedValues;
+
+            needsSort = false;
         }
     }
 
@@ -168,6 +175,8 @@ public final class MetricTimeSeries implements Serializable {
     private void setAll(LongList timestamps, DoubleList values) {
         this.timestamps = timestamps;
         this.values = values;
+
+        needsSort = true;
     }
 
     /**
@@ -189,6 +198,8 @@ public final class MetricTimeSeries implements Serializable {
     public final void addAll(long[] timestamps, double[] values) {
         this.timestamps.addAll(timestamps);
         this.values.addAll(values);
+
+        needsSort = true;
     }
 
     /**
@@ -200,6 +211,8 @@ public final class MetricTimeSeries implements Serializable {
     public final void add(long timestamp, double value) {
         this.timestamps.add(timestamp);
         this.values.add(value);
+
+        needsSort = true;
     }
 
     /**
