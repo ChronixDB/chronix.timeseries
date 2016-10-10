@@ -17,7 +17,7 @@ The second implementation is Chronix-Kassiopeia-Simple.
 - Chronix-Kassiopeia-Simple-Converter
 
 ## Chronix-Kassiopeia
-Chronix-Kassiopeia has no dependencies to Chronix.
+Chronix time series has no dependencies to Chronix.
 Hence it can be used in any project without putting any Chronix libraries to the classpath.
 
 ### Chronix-Kassiopeia Time Series
