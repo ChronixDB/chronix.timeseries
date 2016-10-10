@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ChronixDB/chronix.timeseries.svg)](https://travis-ci.org/ChronixDB/chronix.kassiopeia)
+[![Build Status](https://travis-ci.org/ChronixDB/chronix.timeseries.svg)](https://travis-ci.org/ChronixDB/chronix.timeseries)
 [![Coverage Status](https://coveralls.io/repos/ChronixDB/chronix.kassiopeia/badge.svg?branch=master&service=github)](https://coveralls.io/github/ChronixDB/chronix.kassiopeia?branch=master)
 [![Stories in Ready](https://badge.waffle.io/ChronixDB/chronix.kassiopeia.png?label=ready&title=Ready)](https://waffle.io/ChronixDB/chronix.kassiopeia)
 [![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.kassiopeia/blob/master/LICENSE)
