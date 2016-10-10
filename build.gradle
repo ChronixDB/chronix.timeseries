@@ -176,8 +176,8 @@ sonarqube {
         property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
         property "sonar.jdbc.username", "$jdbcUser"
         property "sonar.jdbc.password", "$jdbcPw"
-        property "sonar.projectName", "Chronix-Kassiopeia"
-        property "sonar.projectKey", "de.qaware.chronix:chronix.kassiopeia"
+        property "sonar.projectName", "Chronix-Timeseries"
+        property "sonar.projectKey", "de.qaware.chronix:chronix.timeseries"
         property "sonar.projectVersion","$project.version"
         property "sonar.exclusions","src/main/generated/de/qaware/chronix/converter/serializer/gen/*"
     }
