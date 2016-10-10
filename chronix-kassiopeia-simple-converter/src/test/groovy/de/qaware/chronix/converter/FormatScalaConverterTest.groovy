@@ -24,7 +24,7 @@ import java.time.Instant
  * Unit test for the kassiopeia simple converter
  * @author f.lautenschlager
  */
-class KassiopeiaSimpleConverterTest extends Specification {
+class FormatScalaConverterTest extends Specification {
 
     def "test to and from compressed data"() {
         given:
@@ -35,7 +35,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
             ts.point(start.plusSeconds(it).toEpochMilli(), it * 2)
         }
 
-        def converter = new KassiopeiaSimpleConverter();
+        def converter = new FormatScalaConverter();
 
         when:
         def binaryTimeSeries = converter.to(ts.build())
@@ -51,7 +51,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
 
     def "test to and from aggregated value"() {
         given:
-        def converter = new KassiopeiaSimpleConverter();
+        def converter = new FormatScalaConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
                 .field("0_function_avg", 4711d)
@@ -72,7 +72,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
 
     def "test to and from json data"() {
         given:
-        def converter = new KassiopeiaSimpleConverter();
+        def converter = new FormatScalaConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
                 .field("0_function_avg", 4711d)
@@ -94,7 +94,7 @@ class KassiopeiaSimpleConverterTest extends Specification {
 
     def "test to and from json data with encoding exception"() {
         given:
-        def converter = new KassiopeiaSimpleConverter();
+        def converter = new FormatScalaConverter();
 
         def binTs = new BinaryTimeSeries.Builder()
                 .field("0_function_avg", 4711d)

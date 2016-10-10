@@ -59,9 +59,9 @@ public final class StraceProtocolBuffers {
 
         /**
          * <code>optional uint32 tint = 2;</code>
-         * <p>
+         *
          * <pre>
-         * Perhaps we can store the delta as int
+         *Perhaps we can store the delta as int
          * </pre>
          */
         int getTint();
@@ -77,9 +77,9 @@ public final class StraceProtocolBuffers {
 
         /**
          * <code>optional uint64 tlongBP = 3;</code>
-         * <p>
+         *
          * <pre>
-         * time base point points
+         *time base point points
          * </pre>
          */
         long getTlongBP();
@@ -92,7 +92,7 @@ public final class StraceProtocolBuffers {
         /**
          * <code>optional uint32 tintBP = 4;</code>
          */
-        int getTintBP();
+    int getTintBP();
 
         /**
          * <code>optional uint32 pid = 5;</code>
@@ -237,7 +237,7 @@ public final class StraceProtocolBuffers {
 
         public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-            return de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.internal_static_StracePoint_descriptor;
+      return de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.internal_static_StracePoint_descriptor;
         }
 
         protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
@@ -318,9 +318,9 @@ public final class StraceProtocolBuffers {
 
         /**
          * <code>optional uint64 tlongBP = 3;</code>
-         * <p>
+         *
          * <pre>
-         * time base point points
+         *time base point points
          * </pre>
          */
         public boolean hasTlongBP() {
@@ -798,9 +798,9 @@ public final class StraceProtocolBuffers {
 
             /**
              * <code>optional uint64 tlong = 1;</code>
-             * <p>
+             *
              * <pre>
-             * The delta as long
+             *The delta as long
              * </pre>
              */
             public Builder setTlong(long value) {
@@ -1143,9 +1143,9 @@ public final class StraceProtocolBuffers {
 
         /**
          * <code>repeated .StracePoint p = 1;</code>
-         * <p>
+         *
          * <pre>
-         * The list of points
+         *The list of points
          * </pre>
          */
         java.util.List<? extends de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePointOrBuilder>
@@ -1160,6 +1160,16 @@ public final class StraceProtocolBuffers {
          */
         de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePointOrBuilder getPOrBuilder(
                 int index);
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        boolean hasDdc();
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        int getDdc();
     }
 
     /**
@@ -1232,6 +1242,11 @@ public final class StraceProtocolBuffers {
                             p_.add(input.readMessage(de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint.PARSER, extensionRegistry));
                             break;
                         }
+                        case 16: {
+                            bitField0_ |= 0x00000001;
+                            ddc_ = input.readUInt32();
+                            break;
+                        }
                     }
                 }
             } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -1275,6 +1290,7 @@ public final class StraceProtocolBuffers {
             return PARSER;
         }
 
+        private int bitField0_;
         public static final int P_FIELD_NUMBER = 1;
         private java.util.List<de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint> p_;
 
@@ -1303,9 +1319,9 @@ public final class StraceProtocolBuffers {
 
         /**
          * <code>repeated .StracePoint p = 1;</code>
-         * <p>
+         *
          * <pre>
-         * The list of points
+         *The list of points
          * </pre>
          */
         public int getPCount() {
@@ -1325,9 +1341,9 @@ public final class StraceProtocolBuffers {
 
         /**
          * <code>repeated .StracePoint p = 1;</code>
-         * <p>
+         *
          * <pre>
-         * The list of points
+         *The list of points
          * </pre>
          */
         public de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePointOrBuilder getPOrBuilder(
@@ -1335,8 +1351,26 @@ public final class StraceProtocolBuffers {
             return p_.get(index);
         }
 
+        public static final int DDC_FIELD_NUMBER = 2;
+        private int ddc_;
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        public boolean hasDdc() {
+            return ((bitField0_ & 0x00000001) == 0x00000001);
+        }
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        public int getDdc() {
+            return ddc_;
+        }
+
         private void initFields() {
             p_ = java.util.Collections.emptyList();
+            ddc_ = 0;
         }
 
         private byte memoizedIsInitialized = -1;
@@ -1356,6 +1390,9 @@ public final class StraceProtocolBuffers {
             for (int i = 0; i < p_.size(); i++) {
                 output.writeMessage(1, p_.get(i));
             }
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                output.writeUInt32(2, ddc_);
+            }
             getUnknownFields().writeTo(output);
         }
 
@@ -1369,6 +1406,10 @@ public final class StraceProtocolBuffers {
             for (int i = 0; i < p_.size(); i++) {
                 size += com.google.protobuf.CodedOutputStream
                         .computeMessageSize(1, p_.get(i));
+            }
+            if (((bitField0_ & 0x00000001) == 0x00000001)) {
+                size += com.google.protobuf.CodedOutputStream
+                        .computeUInt32Size(2, ddc_);
             }
             size += getUnknownFields().getSerializedSize();
             memoizedSerializedSize = size;
@@ -1424,13 +1465,12 @@ public final class StraceProtocolBuffers {
                 throws java.io.IOException {
             return PARSER.parseDelimitedFrom(input);
         }
-
-        public static de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Strace parseDelimitedFrom(
-                java.io.InputStream input,
-                com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-                throws java.io.IOException {
-            return PARSER.parseDelimitedFrom(input, extensionRegistry);
-        }
+    public static de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Strace parseDelimitedFrom(
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
+        return PARSER.parseDelimitedFrom(input, extensionRegistry);
+    }
 
         public static de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Strace parseFrom(
                 com.google.protobuf.CodedInputStream input)
@@ -1520,6 +1560,8 @@ public final class StraceProtocolBuffers {
                 } else {
                     pBuilder_.clear();
                 }
+                ddc_ = 0;
+                bitField0_ = (bitField0_ & ~0x00000002);
                 return this;
             }
 
@@ -1547,6 +1589,7 @@ public final class StraceProtocolBuffers {
             public de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Strace buildPartial() {
                 de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Strace result = new de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.Strace(this);
                 int from_bitField0_ = bitField0_;
+                int to_bitField0_ = 0;
                 if (pBuilder_ == null) {
                     if (((bitField0_ & 0x00000001) == 0x00000001)) {
                         p_ = java.util.Collections.unmodifiableList(p_);
@@ -1556,6 +1599,11 @@ public final class StraceProtocolBuffers {
                 } else {
                     result.p_ = pBuilder_.build();
                 }
+                if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+                    to_bitField0_ |= 0x00000001;
+                }
+                result.ddc_ = ddc_;
+                result.bitField0_ = to_bitField0_;
                 onBuilt();
                 return result;
             }
@@ -1597,6 +1645,9 @@ public final class StraceProtocolBuffers {
                             pBuilder_.addAllMessages(other.p_);
                         }
                     }
+                }
+                if (other.hasDdc()) {
+                    setDdc(other.getDdc());
                 }
                 this.mergeUnknownFields(other.getUnknownFields());
                 return this;
@@ -1686,9 +1737,9 @@ public final class StraceProtocolBuffers {
 
             /**
              * <code>repeated .StracePoint p = 1;</code>
-             * <p>
+             *
              * <pre>
-             * The list of points
+             *The list of points
              * </pre>
              */
             public Builder setP(
@@ -1708,9 +1759,9 @@ public final class StraceProtocolBuffers {
 
             /**
              * <code>repeated .StracePoint p = 1;</code>
-             * <p>
+             *
              * <pre>
-             * The list of points
+             *The list of points
              * </pre>
              */
             public Builder setP(
@@ -1724,49 +1775,47 @@ public final class StraceProtocolBuffers {
                 }
                 return this;
             }
-
-            /**
-             * <code>repeated .StracePoint p = 1;</code>
-             * <p>
-             * <pre>
-             * The list of points
-             * </pre>
-             */
-            public Builder addP(de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint value) {
-                if (pBuilder_ == null) {
-                    if (value == null) {
-                        throw new NullPointerException();
-                    }
-                    ensurePIsMutable();
-                    p_.add(value);
-                    onChanged();
-                } else {
-                    pBuilder_.addMessage(value);
-                }
-                return this;
-            }
-
-            /**
-             * <code>repeated .StracePoint p = 1;</code>
-             * <p>
-             * <pre>
-             * The list of points
-             * </pre>
-             */
-            public Builder addP(
-                    int index, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint value) {
-                if (pBuilder_ == null) {
-                    if (value == null) {
-                        throw new NullPointerException();
-                    }
-                    ensurePIsMutable();
-                    p_.add(index, value);
-                    onChanged();
-                } else {
-                    pBuilder_.addMessage(index, value);
-                }
-                return this;
-            }
+      /**
+       * <code>repeated .StracePoint p = 1;</code>
+       *
+       * <pre>
+       *The list of points
+       * </pre>
+       */
+      public Builder addP(de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint value) {
+          if (pBuilder_ == null) {
+              if (value == null) {
+                  throw new NullPointerException();
+              }
+              ensurePIsMutable();
+              p_.add(value);
+              onChanged();
+          } else {
+              pBuilder_.addMessage(value);
+          }
+          return this;
+      }
+      /**
+       * <code>repeated .StracePoint p = 1;</code>
+       *
+       * <pre>
+       *The list of points
+       * </pre>
+       */
+      public Builder addP(
+              int index, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint value) {
+          if (pBuilder_ == null) {
+              if (value == null) {
+                  throw new NullPointerException();
+              }
+              ensurePIsMutable();
+              p_.add(index, value);
+              onChanged();
+          } else {
+              pBuilder_.addMessage(index, value);
+          }
+          return this;
+      }
 
             /**
              * <code>repeated .StracePoint p = 1;</code>
@@ -1933,9 +1982,9 @@ public final class StraceProtocolBuffers {
 
             /**
              * <code>repeated .StracePoint p = 1;</code>
-             * <p>
+             *
              * <pre>
-             * The list of points
+             *The list of points
              * </pre>
              */
             public java.util.List<de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint.Builder>
@@ -1944,7 +1993,7 @@ public final class StraceProtocolBuffers {
             }
 
             private com.google.protobuf.RepeatedFieldBuilder<
-                    de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint.Builder, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePointOrBuilder>
+          de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePoint.Builder, de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers.StracePointOrBuilder>
             getPFieldBuilder() {
                 if (pBuilder_ == null) {
                     pBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
@@ -1956,6 +2005,42 @@ public final class StraceProtocolBuffers {
                     p_ = null;
                 }
                 return pBuilder_;
+            }
+
+            private int ddc_;
+
+            /**
+             * <code>optional uint32 ddc = 2;</code>
+             */
+            public boolean hasDdc() {
+                return ((bitField0_ & 0x00000002) == 0x00000002);
+            }
+
+            /**
+             * <code>optional uint32 ddc = 2;</code>
+             */
+            public int getDdc() {
+                return ddc_;
+            }
+
+            /**
+             * <code>optional uint32 ddc = 2;</code>
+             */
+            public Builder setDdc(int value) {
+                bitField0_ |= 0x00000002;
+                ddc_ = value;
+                onChanged();
+                return this;
+            }
+
+            /**
+             * <code>optional uint32 ddc = 2;</code>
+             */
+            public Builder clearDdc() {
+                bitField0_ = (bitField0_ & ~0x00000002);
+                ddc_ = 0;
+                onChanged();
+                return this;
             }
 
             // @@protoc_insertion_point(builder_scope:Strace)
@@ -1981,47 +2066,46 @@ public final class StraceProtocolBuffers {
             internal_static_Strace_fieldAccessorTable;
 
     public static com.google.protobuf.Descriptors.FileDescriptor
-    getDescriptor() {
-        return descriptor;
-    }
-
-    private static com.google.protobuf.Descriptors.FileDescriptor
-            descriptor;
-
-    static {
-        java.lang.String[] descriptorData = {
-                "\n\021StracePoint.proto\"f\n\013StracePoint\022\r\n\005tl" +
-                        "ong\030\001 \001(\004\022\014\n\004tint\030\002 \001(\r\022\017\n\007tlongBP\030\003 \001(\004" +
-                        "\022\016\n\006tintBP\030\004 \001(\r\022\013\n\003pid\030\005 \001(\r\022\014\n\004call\030\006 " +
-                        "\001(\t\"!\n\006Strace\022\027\n\001p\030\001 \003(\0132\014.StracePointBE" +
-                        "\n*de.qaware.chronix.converter.serializer" +
-                        ".genB\025StraceProtocolBuffersH\001"
+      getDescriptor() {
+    return descriptor;
+  }
+  private static com.google.protobuf.Descriptors.FileDescriptor
+      descriptor;
+  static {
+    java.lang.String[] descriptorData = {
+      "\n\021StracePoint.proto\"f\n\013StracePoint\022\r\n\005tl" +
+      "ong\030\001 \001(\004\022\014\n\004tint\030\002 \001(\r\022\017\n\007tlongBP\030\003 \001(\004" +
+      "\022\016\n\006tintBP\030\004 \001(\r\022\013\n\003pid\030\005 \001(\r\022\014\n\004call\030\006 " +
+      "\001(\t\".\n\006Strace\022\027\n\001p\030\001 \003(\0132\014.StracePoint\022\013" +
+      "\n\003ddc\030\002 \001(\rBE\n*de.qaware.chronix.convert" +
+      "er.serializer.genB\025StraceProtocolBuffers" +
+      "H\001"
+    };
+    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
+        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
+          public com.google.protobuf.ExtensionRegistry assignDescriptors(
+              com.google.protobuf.Descriptors.FileDescriptor root) {
+            descriptor = root;
+            return null;
+          }
         };
-        com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-                new com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner() {
-                    public com.google.protobuf.ExtensionRegistry assignDescriptors(
-                            com.google.protobuf.Descriptors.FileDescriptor root) {
-                        descriptor = root;
-                        return null;
-                    }
-                };
-        com.google.protobuf.Descriptors.FileDescriptor
-                .internalBuildGeneratedFileFrom(descriptorData,
-                        new com.google.protobuf.Descriptors.FileDescriptor[]{
-                        }, assigner);
-        internal_static_StracePoint_descriptor =
-                getDescriptor().getMessageTypes().get(0);
-        internal_static_StracePoint_fieldAccessorTable = new
-                com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                internal_static_StracePoint_descriptor,
-                new java.lang.String[]{"Tlong", "Tint", "TlongBP", "TintBP", "Pid", "Call",});
-        internal_static_Strace_descriptor =
-                getDescriptor().getMessageTypes().get(1);
-        internal_static_Strace_fieldAccessorTable = new
-                com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-                internal_static_Strace_descriptor,
-                new java.lang.String[]{"P",});
-    }
+    com.google.protobuf.Descriptors.FileDescriptor
+      .internalBuildGeneratedFileFrom(descriptorData,
+        new com.google.protobuf.Descriptors.FileDescriptor[] {
+        }, assigner);
+    internal_static_StracePoint_descriptor =
+      getDescriptor().getMessageTypes().get(0);
+    internal_static_StracePoint_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_StracePoint_descriptor,
+        new java.lang.String[] { "Tlong", "Tint", "TlongBP", "TintBP", "Pid", "Call", });
+    internal_static_Strace_descriptor =
+      getDescriptor().getMessageTypes().get(1);
+    internal_static_Strace_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessage.FieldAccessorTable(
+        internal_static_Strace_descriptor,
+        new java.lang.String[] { "P", "Ddc", });
+  }
 
-    // @@protoc_insertion_point(outer_class_scope)
+  // @@protoc_insertion_point(outer_class_scope)
 }

@@ -39,4 +39,5 @@ message Point {
 message Points {
     //The list of points
     repeated Point p = 1;
+    optional uint32 ddc = 2;
 }

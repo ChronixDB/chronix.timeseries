@@ -36,45 +36,27 @@ import java.util.Map;
  *
  * @author f.lautenschlager
  */
-public final class ProtoBufKassiopeiaSimpleSerializer {
+public final class ProtoBufFormatScalarSerializer {
 
-    /**
-     * Name of the system property to set the equals offset between the dates.
-     */
-    public static final String DATE_EQUALS_OFFSET_MS = "DATE_EQUALS_OFFSET_MS";
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufKassiopeiaSimpleSerializer.class);
-    private static final long ALMOST_EQUALS_OFFSET_MS = Long.parseLong(System.getProperty(DATE_EQUALS_OFFSET_MS, "10"));
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufFormatScalarSerializer.class);
 
     /**
      * Private constructor
      */
-    private ProtoBufKassiopeiaSimpleSerializer() {
+    private ProtoBufFormatScalarSerializer() {
         //utility class
     }
 
     /**
-     * Adds the points (compressed byte array) to the given builder
+     * Add the points to the given builder
      *
-     * @param decompressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart   the start of the time series
-     * @param timeSeriesEnd     the end of the time series
-     * @param builder           the time series builder
+     * @param decompressedBytes the decompressed input stream
+     * @param timeSeriesStart   start of the time series
+     * @param timeSeriesEnd     end of the time series
+     * @param builder           the builder
      */
     public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, MetricTimeSeries.Builder builder) {
         from(decompressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, builder);
-    }
-
-    /**
-     * Adds the points (compressed byte array) to the given builder
-     *
-     * @param decompressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart   the start of the time series
-     * @param timeSeriesEnd     the end of the time series
-     * @param builder           the time series builder
-     */
-    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long almost_equals_ms, MetricTimeSeries.Builder builder) {
-        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, almost_equals_ms, builder);
     }
 
     /**
@@ -88,21 +70,6 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param builder           the time series builder
      */
     public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, MetricTimeSeries.Builder builder) {
-        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, from, to, ALMOST_EQUALS_OFFSET_MS, builder);
-    }
-
-    /**
-     * Adds the points (compressed byte array) to the given builder
-     *
-     * @param decompressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart   the start of the time series
-     * @param timeSeriesEnd     the end of the time series
-     * @param from              including points from
-     * @param to                including points to
-     * @param almostEqualsMs    the aberration for the deltas
-     * @param builder           the time series builder
-     */
-    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, long almostEqualsMs, MetricTimeSeries.Builder builder) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
@@ -132,7 +99,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             long[] timestamps = new long[pList.size()];
             double[] values = new double[pList.size()];
 
-            long lastOffset = almostEqualsMs;
+            long lastOffset = protocolBufferPoints.getDdc();
             long calculatedPointDate = timeSeriesStart;
             int lastPointIndex = 0;
 
@@ -188,7 +155,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param metricDataPoints - the list with points
      */
     public static byte[] to(Iterator<Point> metricDataPoints) {
-        return to(metricDataPoints, ALMOST_EQUALS_OFFSET_MS);
+        return to(metricDataPoints, 0);
     }
 
 
@@ -199,7 +166,7 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
      * @param almostEquals     - the aberration threshold for the deltas
      * @return the serialized points
      */
-    public static byte[] to(final Iterator<Point> metricDataPoints, final long almostEquals) {
+    public static byte[] to(final Iterator<Point> metricDataPoints, final int almostEquals) {
 
         long previousDate = 0;
         long previousOffset = 0;
@@ -368,6 +335,8 @@ public final class ProtoBufKassiopeiaSimpleSerializer {
             }
             index++;
         }
+        //set the ddc value
+        points.setDdc(almostEquals);
         return points.build().toByteArray();
     }
 

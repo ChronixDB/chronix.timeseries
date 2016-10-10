@@ -29,7 +29,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Class to easily convert the protocol buffer into Point<Long,Double>
@@ -38,13 +37,8 @@ import java.util.Set;
  */
 public final class ProtoBufFormatLsofSerializer {
 
-    /**
-     * Name of the system property to set the equals offset between the dates.
-     */
-    public static final String DATE_EQUALS_OFFSET_MS = "DATE_EQUALS_OFFSET_MS";
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufFormatLsofSerializer.class);
-    private static final long ALMOST_EQUALS_OFFSET_MS = Long.parseLong(System.getProperty(DATE_EQUALS_OFFSET_MS, "10"));
 
     /**
      * Private constructor
@@ -53,29 +47,6 @@ public final class ProtoBufFormatLsofSerializer {
         //utility class
     }
 
-    /**
-     * Adds the points (compressed byte array) to the given builder
-     *
-     * @param decompressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart   the start of the time series
-     * @param timeSeriesEnd     the end of the time series
-     * @param builder           the time series builder
-     */
-    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, LsofTimeSeries.Builder builder) {
-        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, builder);
-    }
-
-    /**
-     * Adds the points (compressed byte array) to the given builder
-     *
-     * @param decompressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart   the start of the time series
-     * @param timeSeriesEnd     the end of the time series
-     * @param builder           the time series builder
-     */
-    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long almost_equals_ms, LsofTimeSeries.Builder builder) {
-        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, almost_equals_ms, builder);
-    }
 
     /**
      * Adds the points (compressed byte array) to the given builder
@@ -88,21 +59,6 @@ public final class ProtoBufFormatLsofSerializer {
      * @param builder           the time series builder
      */
     public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, LsofTimeSeries.Builder builder) {
-        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, from, to, ALMOST_EQUALS_OFFSET_MS, builder);
-    }
-
-    /**
-     * Adds the points (compressed byte array) to the given builder
-     *
-     * @param decompressedBytes the compressed bytes holding the data points
-     * @param timeSeriesStart   the start of the time series
-     * @param timeSeriesEnd     the end of the time series
-     * @param from              including points from
-     * @param to                including points to
-     * @param almostEqualsMs    the aberration for the deltas
-     * @param builder           the time series builder
-     */
-    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, long almostEqualsMs, LsofTimeSeries.Builder builder) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
@@ -131,7 +87,7 @@ public final class ProtoBufFormatLsofSerializer {
             long[] timestamps = new long[pList.size()];
             List<List<Lsof>> values = new ArrayList<>();
 
-            long lastOffset = almostEqualsMs;
+            long lastOffset = lsofProtocoLBuffers.getDdc();
             long calculatedPointDate = timeSeriesStart;
             int lastPointIndex = 0;
 
@@ -197,7 +153,7 @@ public final class ProtoBufFormatLsofSerializer {
      * @param lsofPoints - the list with points
      */
     public static byte[] to(Iterator<LsofPoint> lsofPoints) {
-        return to(lsofPoints, ALMOST_EQUALS_OFFSET_MS);
+        return to(lsofPoints, 0);
     }
 
 
@@ -208,7 +164,7 @@ public final class ProtoBufFormatLsofSerializer {
      * @param almostEquals      - the aberration threshold for the deltas
      * @return the serialized points
      */
-    public static byte[] to(final Iterator<LsofPoint> lsofPointIterator, final long almostEquals) {
+    public static byte[] to(final Iterator<LsofPoint> lsofPointIterator, final int almostEquals) {
 
         long previousDate = 0;
         long previousOffset = 0;
@@ -219,8 +175,6 @@ public final class ProtoBufFormatLsofSerializer {
         long lastStoredOffset = 0;
 
         long startDate = 0;
-
-        Set<Lsof> currentValue;
 
         LsofProtocolBuffers.LsofPoints.Builder points = LsofProtocolBuffers.LsofPoints.newBuilder();
         LsofProtocolBuffers.Lsof.Builder lsof = LsofProtocolBuffers.Lsof.newBuilder();
@@ -364,6 +318,7 @@ public final class ProtoBufFormatLsofSerializer {
                 }
             }
         }
+        lsof.setDdc(almostEquals);
         return lsof.build().toByteArray();
     }
 

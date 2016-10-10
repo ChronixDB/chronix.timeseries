@@ -39,4 +39,5 @@ message StracePoint {
 message Strace {
     //The list of points
     repeated StracePoint p = 1;
+    optional uint32 ddc = 2;
 }

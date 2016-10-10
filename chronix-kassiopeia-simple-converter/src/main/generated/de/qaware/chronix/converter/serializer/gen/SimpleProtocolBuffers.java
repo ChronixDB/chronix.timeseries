@@ -993,6 +993,16 @@ public final class SimpleProtocolBuffers {
      */
     de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.PointOrBuilder getPOrBuilder(
         int index);
+
+      /**
+       * <code>optional uint32 ddc = 2;</code>
+       */
+      boolean hasDdc();
+
+      /**
+       * <code>optional uint32 ddc = 2;</code>
+       */
+      int getDdc();
   }
   /**
    * Protobuf type {@code Points}
@@ -1058,6 +1068,11 @@ public final class SimpleProtocolBuffers {
               p_.add(input.readMessage(de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Point.PARSER, extensionRegistry));
               break;
             }
+              case 16: {
+                  bitField0_ |= 0x00000001;
+                  ddc_ = input.readUInt32();
+                  break;
+            }
           }
         }
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
@@ -1100,6 +1115,7 @@ public final class SimpleProtocolBuffers {
       return PARSER;
     }
 
+      private int bitField0_;
     public static final int P_FIELD_NUMBER = 1;
     private java.util.List<de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Point> p_;
     /**
@@ -1155,8 +1171,26 @@ public final class SimpleProtocolBuffers {
       return p_.get(index);
     }
 
+      public static final int DDC_FIELD_NUMBER = 2;
+      private int ddc_;
+
+      /**
+       * <code>optional uint32 ddc = 2;</code>
+       */
+      public boolean hasDdc() {
+          return ((bitField0_ & 0x00000001) == 0x00000001);
+      }
+
+      /**
+       * <code>optional uint32 ddc = 2;</code>
+       */
+      public int getDdc() {
+          return ddc_;
+    }
+
     private void initFields() {
       p_ = java.util.Collections.emptyList();
+      ddc_ = 0;
     }
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
@@ -1174,6 +1208,9 @@ public final class SimpleProtocolBuffers {
       for (int i = 0; i < p_.size(); i++) {
         output.writeMessage(1, p_.get(i));
       }
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            output.writeUInt32(2, ddc_);
+      }
       getUnknownFields().writeTo(output);
     }
 
@@ -1186,6 +1223,10 @@ public final class SimpleProtocolBuffers {
       for (int i = 0; i < p_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, p_.get(i));
+      }
+        if (((bitField0_ & 0x00000001) == 0x00000001)) {
+            size += com.google.protobuf.CodedOutputStream
+                    .computeUInt32Size(2, ddc_);
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSerializedSize = size;
@@ -1313,8 +1354,10 @@ public final class SimpleProtocolBuffers {
           p_ = java.util.Collections.emptyList();
           bitField0_ = (bitField0_ & ~0x00000001);
         } else {
-          pBuilder_.clear();
+            pBuilder_.clear();
         }
+          ddc_ = 0;
+          bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -1342,6 +1385,7 @@ public final class SimpleProtocolBuffers {
       public de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Points buildPartial() {
         de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Points result = new de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers.Points(this);
         int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
         if (pBuilder_ == null) {
           if (((bitField0_ & 0x00000001) == 0x00000001)) {
             p_ = java.util.Collections.unmodifiableList(p_);
@@ -1351,6 +1395,11 @@ public final class SimpleProtocolBuffers {
         } else {
           result.p_ = pBuilder_.build();
         }
+          if (((from_bitField0_ & 0x00000002) == 0x00000002)) {
+              to_bitField0_ |= 0x00000001;
+          }
+          result.ddc_ = ddc_;
+          result.bitField0_ = to_bitField0_;
         onBuilt();
         return result;
       }
@@ -1391,6 +1440,9 @@ public final class SimpleProtocolBuffers {
               pBuilder_.addAllMessages(other.p_);
             }
           }
+        }
+          if (other.hasDdc()) {
+              setDdc(other.getDdc());
         }
         this.mergeUnknownFields(other.getUnknownFields());
         return this;
@@ -1728,7 +1780,43 @@ public final class SimpleProtocolBuffers {
                   isClean());
           p_ = null;
         }
-        return pBuilder_;
+          return pBuilder_;
+      }
+
+        private int ddc_;
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        public boolean hasDdc() {
+            return ((bitField0_ & 0x00000002) == 0x00000002);
+        }
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        public int getDdc() {
+            return ddc_;
+        }
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        public Builder setDdc(int value) {
+            bitField0_ |= 0x00000002;
+            ddc_ = value;
+            onChanged();
+            return this;
+        }
+
+        /**
+         * <code>optional uint32 ddc = 2;</code>
+         */
+        public Builder clearDdc() {
+            bitField0_ = (bitField0_ & ~0x00000002);
+            ddc_ = 0;
+            onChanged();
+        return this;
       }
 
       // @@protoc_insertion_point(builder_scope:Points)
@@ -1763,10 +1851,10 @@ public final class SimpleProtocolBuffers {
     java.lang.String[] descriptorData = {
       "\n\013Point.proto\"`\n\005Point\022\r\n\005tlong\030\001 \001(\004\022\014\n" +
       "\004tint\030\002 \001(\r\022\017\n\007tlongBP\030\003 \001(\004\022\016\n\006tintBP\030\004" +
-      " \001(\r\022\t\n\001v\030\005 \001(\001\022\016\n\006vIndex\030\006 \001(\r\"\033\n\006Point" +
-      "s\022\021\n\001p\030\001 \003(\0132\006.PointBE\n*de.qaware.chroni" +
-      "x.converter.serializer.genB\025SimpleProtoc" +
-      "olBuffersH\001"
+              " \001(\r\022\t\n\001v\030\005 \001(\001\022\016\n\006vIndex\030\006 \001(\r\"(\n\006Point" +
+              "s\022\021\n\001p\030\001 \003(\0132\006.Point\022\013\n\003ddc\030\002 \001(\rBE\n*de." +
+              "qaware.chronix.converter.serializer.genB" +
+      "\025SimpleProtocolBuffersH\001"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1790,8 +1878,8 @@ public final class SimpleProtocolBuffers {
       getDescriptor().getMessageTypes().get(1);
     internal_static_Points_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_Points_descriptor,
-        new java.lang.String[] { "P", });
+            internal_static_Points_descriptor,
+        new java.lang.String[] { "P", "Ddc", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

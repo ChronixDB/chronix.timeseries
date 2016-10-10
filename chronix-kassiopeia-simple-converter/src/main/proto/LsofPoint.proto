@@ -49,4 +49,5 @@ message LsofPoints {
 message Lsof {
     //The list of points
     repeated LsofPoints p = 1;
+    optional uint32 ddc = 2;
 }
