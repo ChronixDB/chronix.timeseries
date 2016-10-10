@@ -27,7 +27,7 @@ import java.time.Instant
 /**
  * Created by f.lautenschlager on 16.09.2016.
  */
-class FormatLsofConverterTest extends Specification {
+class LsofTimeSeriesConverterTest extends Specification {
 
     @Ignore
     def "test from"() {
@@ -52,7 +52,7 @@ class FormatLsofConverterTest extends Specification {
 
         then:
         def ts = builder.build()
-        new FormatLsofConverter().to(ts)
+        new LsofTimeSeriesConverter().to(ts)
         noExceptionThrown()
     }
 

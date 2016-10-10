@@ -13,7 +13,7 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.converter.serializer;
+package de.qaware.chronix.converter.serializer.json;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -35,18 +35,18 @@ import java.util.List;
  *
  * @author f.lautenschlager
  */
-public class JsonKassiopeiaSimpleSerializer {
+public class JsonMetricTimeSeriesSerializer {
 
     public static final String UTF_8 = "UTF-8";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JsonKassiopeiaSimpleSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JsonMetricTimeSeriesSerializer.class);
     private static final byte[] EMPTY_JSON = "[[],[]]".getBytes(Charset.forName(UTF_8));
     private final Gson gson;
 
     /**
-     * Constructs a new JsonKassiopeiaSimpleSerializer.
+     * Constructs a new JsonMetricTimeSeriesSerializer.
      */
-    public JsonKassiopeiaSimpleSerializer() {
+    public JsonMetricTimeSeriesSerializer() {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gson = gsonBuilder.create();
     }

@@ -17,8 +17,8 @@ package de.qaware.chronix.converter;
 
 import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
-import de.qaware.chronix.converter.serializer.JsonKassiopeiaSimpleSerializer;
-import de.qaware.chronix.converter.serializer.ProtoBufFormatScalarSerializer;
+import de.qaware.chronix.converter.serializer.json.JsonMetricTimeSeriesSerializer;
+import de.qaware.chronix.converter.serializer.protobuf.ProtoBufMetricTimeSeriesSerializer;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -28,15 +28,15 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 
 /**
- * The kassiopeia time series converter for the simple time series class
+ * The metric time series converter for the simple time series class
  *
  * @author f.lautenschlager
  */
-public class FormatScalaConverter implements TimeSeriesConverter<MetricTimeSeries> {
+public class MetricTimeSeriesConverter implements TimeSeriesConverter<MetricTimeSeries> {
 
     public static final String DATA_AS_JSON_FIELD = "dataAsJson";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FormatScalaConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetricTimeSeriesConverter.class);
 
     @Override
     public MetricTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
@@ -74,15 +74,15 @@ public class FormatScalaConverter implements TimeSeriesConverter<MetricTimeSerie
 
     private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
         final InputStream decompressed = Compression.decompressToStream(binaryTimeSeries.getPoints());
-        ProtoBufFormatScalarSerializer.from(decompressed, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd, builder);
+        ProtoBufMetricTimeSeriesSerializer.from(decompressed, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd, builder);
         IOUtils.closeQuietly(decompressed);
     }
 
     private void fromJson(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, MetricTimeSeries.Builder builder) {
         String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
         //Second deserialize
-        JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-        serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd, builder);
+        JsonMetricTimeSeriesSerializer serializer = new JsonMetricTimeSeriesSerializer();
+        serializer.fromJson(jsonString.getBytes(Charset.forName(JsonMetricTimeSeriesSerializer.UTF_8)), queryStart, queryEnd, builder);
     }
 
     @Override
@@ -91,7 +91,7 @@ public class FormatScalaConverter implements TimeSeriesConverter<MetricTimeSerie
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         //serialize
-        byte[] serializedPoints = ProtoBufFormatScalarSerializer.to(timeSeries.points().iterator());
+        byte[] serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(timeSeries.points().iterator());
         byte[] compressedPoints = Compression.compress(serializedPoints);
 
         //Add the minimum required fields

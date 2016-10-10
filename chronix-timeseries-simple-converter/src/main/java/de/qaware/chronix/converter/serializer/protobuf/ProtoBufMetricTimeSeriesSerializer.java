@@ -13,40 +13,51 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.converter.serializer;
+package de.qaware.chronix.converter.serializer.protobuf;
 
 
+import de.qaware.chronix.converter.common.DoubleList;
 import de.qaware.chronix.converter.common.LongList;
-import de.qaware.chronix.converter.serializer.gen.LsofProtocolBuffers;
-import de.qaware.chronix.timeseries.Lsof;
-import de.qaware.chronix.timeseries.LsofPoint;
-import de.qaware.chronix.timeseries.LsofTimeSeries;
+import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
+import de.qaware.chronix.timeseries.MetricTimeSeries;
+import de.qaware.chronix.timeseries.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class to easily convert the protocol buffer into Point<Long,Double>
  *
  * @author f.lautenschlager
  */
-public final class ProtoBufFormatLsofSerializer {
+public final class ProtoBufMetricTimeSeriesSerializer {
 
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufFormatLsofSerializer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufMetricTimeSeriesSerializer.class);
 
     /**
      * Private constructor
      */
-    private ProtoBufFormatLsofSerializer() {
+    private ProtoBufMetricTimeSeriesSerializer() {
         //utility class
     }
 
+    /**
+     * Add the points to the given builder
+     *
+     * @param decompressedBytes the decompressed input stream
+     * @param timeSeriesStart   start of the time series
+     * @param timeSeriesEnd     end of the time series
+     * @param builder           the builder
+     */
+    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, MetricTimeSeries.Builder builder) {
+        from(decompressedBytes, timeSeriesStart, timeSeriesEnd, timeSeriesStart, timeSeriesEnd, builder);
+    }
 
     /**
      * Adds the points (compressed byte array) to the given builder
@@ -58,7 +69,7 @@ public final class ProtoBufFormatLsofSerializer {
      * @param to                including points to
      * @param builder           the time series builder
      */
-    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, LsofTimeSeries.Builder builder) {
+    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, MetricTimeSeries.Builder builder) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
@@ -78,22 +89,24 @@ public final class ProtoBufFormatLsofSerializer {
         }
 
         try {
-            LsofProtocolBuffers.Lsof lsofProtocoLBuffers = LsofProtocolBuffers.Lsof.parseFrom(decompressedBytes);
+            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(decompressedBytes);
 
-            List<LsofProtocolBuffers.LsofPoints> pList = lsofProtocoLBuffers.getPList();
+            List<SimpleProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
 
             int size = pList.size();
+            SimpleProtocolBuffers.Point[] points = pList.toArray(new SimpleProtocolBuffers.Point[0]);
 
             long[] timestamps = new long[pList.size()];
-            List<List<Lsof>> values = new ArrayList<>();
+            double[] values = new double[pList.size()];
 
-            long lastOffset = lsofProtocoLBuffers.getDdc();
+            long lastOffset = protocolBufferPoints.getDdc();
             long calculatedPointDate = timeSeriesStart;
             int lastPointIndex = 0;
 
+            double value;
 
             for (int i = 0; i < size; i++) {
-                LsofProtocolBuffers.LsofPoints p = pList.get(i);
+                SimpleProtocolBuffers.Point p = points[i];
 
                 //Decode the time
                 if (i > 0) {
@@ -104,11 +117,18 @@ public final class ProtoBufFormatLsofSerializer {
                 //only add the point if it is within the date
                 if (calculatedPointDate >= from && calculatedPointDate <= to) {
                     timestamps[lastPointIndex] = calculatedPointDate;
-                    values.add(convert(p.getPList()));
+
+                    //Check if the point refers to an index
+                    if (p.hasVIndex()) {
+                        value = pList.get(p.getVIndex()).getV();
+                    } else {
+                        value = p.getV();
+                    }
+                    values[lastPointIndex] = value;
                     lastPointIndex++;
                 }
             }
-            builder.points(new LongList(timestamps, lastPointIndex), values);
+            builder.points(new LongList(timestamps, lastPointIndex), new DoubleList(values, lastPointIndex));
 
         } catch (IOException e) {
             LOGGER.info("Could not decode protocol buffers points");
@@ -116,25 +136,7 @@ public final class ProtoBufFormatLsofSerializer {
 
     }
 
-    private static List<Lsof> convert(List<LsofProtocolBuffers.LsofPoint> pList) {
-        List<Lsof> converted = new ArrayList<>(pList.size());
-
-        for (LsofProtocolBuffers.LsofPoint lsof : pList) {
-            converted.add(new Lsof.Builder()
-                    .command(lsof.getCommand())
-                    .pid(lsof.getPid())
-                    .user(lsof.getUser())
-                    .fd(lsof.getUser())
-                    .device(lsof.getDevice())
-                    .size(lsof.getSize())
-                    .node(lsof.getNode())
-                    .node(lsof.getName())
-                    .build());
-        }
-        return converted;
-    }
-
-    private static long calculatePoint(LsofProtocolBuffers.LsofPoints p, long lastOffset) {
+    private static long calculatePoint(SimpleProtocolBuffers.Point p, long lastOffset) {
         //Normal delta
         if (p.hasTint() || p.hasTlong()) {
             lastOffset = p.getTint() + p.getTlong();
@@ -150,21 +152,21 @@ public final class ProtoBufFormatLsofSerializer {
     /**
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
-     * @param lsofPoints - the list with points
+     * @param metricDataPoints - the list with points
      */
-    public static byte[] to(Iterator<LsofPoint> lsofPoints) {
-        return to(lsofPoints, 0);
+    public static byte[] to(Iterator<Point> metricDataPoints) {
+        return to(metricDataPoints, 0);
     }
 
 
     /**
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
-     * @param lsofPointIterator - the list with points
-     * @param almostEquals      - the aberration threshold for the deltas
+     * @param metricDataPoints - the list with points
+     * @param almostEquals     - the aberration threshold for the deltas
      * @return the serialized points
      */
-    public static byte[] to(final Iterator<LsofPoint> lsofPointIterator, final int almostEquals) {
+    public static byte[] to(final Iterator<Point> metricDataPoints, final int almostEquals) {
 
         long previousDate = 0;
         long previousOffset = 0;
@@ -176,26 +178,40 @@ public final class ProtoBufFormatLsofSerializer {
 
         long startDate = 0;
 
-        LsofProtocolBuffers.LsofPoints.Builder points = LsofProtocolBuffers.LsofPoints.newBuilder();
-        LsofProtocolBuffers.Lsof.Builder lsof = LsofProtocolBuffers.Lsof.newBuilder();
+        double currentValue;
+
+        Map<Double, Integer> valueIndex = new HashMap<>();
+
+        int index = 0;
+
+        SimpleProtocolBuffers.Point.Builder point = SimpleProtocolBuffers.Point.newBuilder();
+        SimpleProtocolBuffers.Points.Builder points = SimpleProtocolBuffers.Points.newBuilder();
 
         long offset = 0;
 
-        while (lsofPointIterator.hasNext()) {
+        while (metricDataPoints.hasNext()) {
 
-            LsofPoint p = lsofPointIterator.next();
-            boolean lastPoint = !lsofPointIterator.hasNext();
-            points.clear();
+            Point p = metricDataPoints.next();
+            boolean lastPoint = !metricDataPoints.hasNext();
+            point.clear();
 
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
                 continue;
             }
 
-            points.addAllP(convertToProto(p.getValue()));
-
-
             long currentTimestamp = p.getTimestamp();
+
+            currentValue = p.getValue();
+
+            //build value index
+            if (valueIndex.containsKey(currentValue)) {
+                point.setVIndex(valueIndex.get(currentValue));
+            } else {
+                valueIndex.put(currentValue, index);
+                point.setV(currentValue);
+            }
+
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp
                 lastStoredDate = currentTimestamp;
@@ -206,31 +222,31 @@ public final class ProtoBufFormatLsofSerializer {
 
             //Semantic Compression
             if (almostEquals == -1) {
-                lsof.addP(points.build());
+                points.addP(point.build());
             } else {
 
                 //we always store the first an the last point as supporting points
                 //Date-Delta-Compaction is within a defined start and end
                 if (lastPoint) {
 
-                    long calcPoint = calcPoint(startDate, lsof.getPList(), almostEquals);
+                    long calcPoint = calcPoint(startDate, points.getPList(), almostEquals);
                     //Calc offset
                     long offsetToEnd = currentTimestamp - calcPoint;
 
                     //everything okay
                     if (offsetToEnd >= 0) {
                         if (safeLongToUInt(offsetToEnd)) {
-                            lsof.addP(points.setTint((int) offsetToEnd).build());
+                            points.addP(point.setTint((int) offsetToEnd).build());
                         } else {
-                            lsof.addP(points.setTlong(offsetToEnd).build());
+                            points.addP(point.setTlong(offsetToEnd).build());
                         }
 
                     } else {
                         //break the offset down on all points
-                        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (lsof.getPCount() - 1));
+                        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (points.getPCount() - 1));
 
-                        for (int i = 1; i < lsof.getPCount(); i++) {
-                            LsofProtocolBuffers.LsofPoints mod = lsof.getP(i);
+                        for (int i = 1; i < points.getPCount(); i++) {
+                            SimpleProtocolBuffers.Point mod = points.getP(i);
                             long t = getT(mod);
 
                             //check if can correct the deltas
@@ -244,19 +260,19 @@ public final class ProtoBufFormatLsofSerializer {
                                 //if we have a t value
                                 if (t > avgPerDelta) {
                                     newOffset = t - avgPerDelta;
-                                    LsofProtocolBuffers.LsofPoints.Builder modPoint = mod.toBuilder();
+                                    SimpleProtocolBuffers.Point.Builder modPoint = mod.toBuilder();
                                     setT(modPoint, newOffset);
                                     mod = modPoint.build();
                                     offsetToEnd += avgPerDelta;
                                 }
 
                             }
-                            lsof.setP(i, mod);
+                            points.setP(i, mod);
                         }
 
 
                         //Done
-                        long arragendPoint = calcPoint(startDate, lsof.getPList(), almostEquals);
+                        long arragendPoint = calcPoint(startDate, points.getPList(), almostEquals);
 
                         long storedOffsetToEnd = currentTimestamp - arragendPoint;
                         if (storedOffsetToEnd < 0) {
@@ -264,9 +280,9 @@ public final class ProtoBufFormatLsofSerializer {
                             storedOffsetToEnd = 0;
                         }
                         if (safeLongToUInt(storedOffsetToEnd)) {
-                            lsof.addP(points.setTintBP((int) storedOffsetToEnd).build());
+                            points.addP(point.setTintBP((int) storedOffsetToEnd).build());
                         } else {
-                            lsof.addP(points.setTlongBP(storedOffsetToEnd).build());
+                            points.addP(point.setTlongBP(storedOffsetToEnd).build());
                         }
                     }
 
@@ -280,7 +296,7 @@ public final class ProtoBufFormatLsofSerializer {
                     }
 
                     if (isAlmostEquals && noDrift(drift, almostEquals, timesSinceLastOffset) && drift >= 0) {
-                        lsof.addP(points.build());
+                        points.addP(point.build());
                         timesSinceLastOffset += 1;
                     } else {
                         long timeStamp = offset;
@@ -290,21 +306,21 @@ public final class ProtoBufFormatLsofSerializer {
                             timeStamp = offset - previousDrift;
 
                             if (safeLongToUInt(timeStamp)) {
-                                points.setTintBP((int) timeStamp);
+                                point.setTintBP((int) timeStamp);
                             } else {
-                                points.setTlongBP(timeStamp);
+                                point.setTlongBP(timeStamp);
                             }
 
                         } else {
                             if (safeLongToUInt(timeStamp)) {
-                                points.setTint((int) timeStamp);
+                                point.setTint((int) timeStamp);
                             } else {
-                                points.setTlong(timeStamp);
+                                point.setTlong(timeStamp);
                             }
                         }
 
                         //Store offset
-                        lsof.addP(points.build());
+                        points.addP(point.build());
                         //reset the offset counter
                         timesSinceLastOffset = 0;
                         lastStoredDate = p.getTimestamp();
@@ -317,29 +333,11 @@ public final class ProtoBufFormatLsofSerializer {
                     previousDate = currentTimestamp;
                 }
             }
+            index++;
         }
-        lsof.setDdc(almostEquals);
-        return lsof.build().toByteArray();
-    }
-
-    private static List<LsofProtocolBuffers.LsofPoint> convertToProto(List<Lsof> value) {
-        List<LsofProtocolBuffers.LsofPoint> converted = new ArrayList<>();
-        LsofProtocolBuffers.LsofPoint.Builder point = LsofProtocolBuffers.LsofPoint.newBuilder();
-
-        for (Lsof lsof : value) {
-            converted.add(point
-                    .setCommand(lsof.getCommand())
-                    .setPid(lsof.getPid())
-                    .setUser(lsof.getUser())
-                    .setFd(lsof.getFd())
-                    .setDevice(lsof.getDevice())
-                    .setSize(lsof.getSize())
-                    .setNode(lsof.getNode())
-                    .setName(lsof.getName())
-                    .build());
-        }
-
-        return converted;
+        //set the ddc value
+        points.setDdc(almostEquals);
+        return points.build().toByteArray();
     }
 
     /**
@@ -348,7 +346,7 @@ public final class ProtoBufFormatLsofSerializer {
      * @param builder   the point builder
      * @param newOffset the new offset
      */
-    private static void setT(LsofProtocolBuffers.LsofPoints.Builder builder, long newOffset) {
+    private static void setT(SimpleProtocolBuffers.Point.Builder builder, long newOffset) {
         if (safeLongToUInt(newOffset)) {
             if (builder.hasTintBP()) {
                 builder.setTintBP((int) newOffset);
@@ -371,7 +369,7 @@ public final class ProtoBufFormatLsofSerializer {
      * @param point the current point
      * @return the value of t
      */
-    private static long getT(LsofProtocolBuffers.LsofPoints point) {
+    private static long getT(SimpleProtocolBuffers.Point point) {
         //only one is set, others are zero
         return point.getTlongBP() + point.getTlong() + point.getTint() + point.getTintBP();
     }
@@ -380,13 +378,13 @@ public final class ProtoBufFormatLsofSerializer {
         return !(l < 0 || l > Integer.MAX_VALUE);
     }
 
-    private static long calcPoint(long startDate, List<LsofProtocolBuffers.LsofPoints> pList, long almostEquals) {
+    private static long calcPoint(long startDate, List<SimpleProtocolBuffers.Point> pList, long almostEquals) {
 
         long lastOffset = almostEquals;
         long calculatedPointDate = startDate;
 
         for (int i = 1; i < pList.size(); i++) {
-            LsofProtocolBuffers.LsofPoints p = pList.get(i);
+            SimpleProtocolBuffers.Point p = pList.get(i);
             lastOffset = calculatePoint(p, lastOffset);
             calculatedPointDate += lastOffset;
         }

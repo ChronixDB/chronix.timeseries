@@ -17,6 +17,7 @@ package de.qaware.chronix.converter.serializer
 
 import de.qaware.chronix.converter.common.DoubleList
 import de.qaware.chronix.converter.common.LongList
+import de.qaware.chronix.converter.serializer.json.JsonMetricTimeSeriesSerializer
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -27,7 +28,7 @@ import java.nio.charset.Charset
  * Unit test for the kassiopeia serializer
  * @author f.lautenschlager
  */
-class JsonKassiopeiaSimpleSerializerTest extends Specification {
+class JsonMetricTimeSeriesSerializerTest extends Specification {
 
     def "test serialize to and deserialize from json"() {
         given:
@@ -35,7 +36,7 @@ class JsonKassiopeiaSimpleSerializerTest extends Specification {
         def values = doubleList([4711d, 8564d, 1237d])
         def ts = new MetricTimeSeries.Builder("test").points(times, values).build()
 
-        def serializer = new JsonKassiopeiaSimpleSerializer()
+        def serializer = new JsonMetricTimeSeriesSerializer()
         def start = 0l
         def end = 2l
 
@@ -67,7 +68,7 @@ class JsonKassiopeiaSimpleSerializerTest extends Specification {
         def values = doubleList([4711, 8564, 8564, 1237, 1237, 1237])
         def ts = new MetricTimeSeries.Builder("test").points(times, values).build()
 
-        def serializer = new JsonKassiopeiaSimpleSerializer()
+        def serializer = new JsonMetricTimeSeriesSerializer()
 
         when:
         def builder = new MetricTimeSeries.Builder("test")
@@ -85,7 +86,7 @@ class JsonKassiopeiaSimpleSerializerTest extends Specification {
 
     def "test serialize to json with empty timestamps / values"() {
         given:
-        def serializer = new JsonKassiopeiaSimpleSerializer()
+        def serializer = new JsonMetricTimeSeriesSerializer()
         def ts = new MetricTimeSeries.Builder("test").points(times, values).build()
 
         when:
@@ -115,7 +116,7 @@ class JsonKassiopeiaSimpleSerializerTest extends Specification {
 
     def "test deserialize from empty json "() {
         given:
-        def serializer = new JsonKassiopeiaSimpleSerializer()
+        def serializer = new JsonMetricTimeSeriesSerializer()
         def builder = new MetricTimeSeries.Builder("test")
 
         when:

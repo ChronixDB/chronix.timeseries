@@ -13,14 +13,14 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.converter.serializer;
+package de.qaware.chronix.converter.serializer.protobuf;
 
 
 import de.qaware.chronix.converter.common.LongList;
-import de.qaware.chronix.converter.serializer.gen.StraceProtocolBuffers;
-import de.qaware.chronix.timeseries.Strace;
-import de.qaware.chronix.timeseries.StracePoint;
-import de.qaware.chronix.timeseries.StraceTimeSeries;
+import de.qaware.chronix.converter.serializer.gen.LsofProtocolBuffers;
+import de.qaware.chronix.timeseries.Lsof;
+import de.qaware.chronix.timeseries.LsofPoint;
+import de.qaware.chronix.timeseries.LsofTimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,16 +35,18 @@ import java.util.List;
  *
  * @author f.lautenschlager
  */
-public final class ProtoBufFormatStraceSerializer {
+public final class ProtoBufLsofTimeSeriesSerializer {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufFormatStraceSerializer.class);
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProtoBufLsofTimeSeriesSerializer.class);
 
     /**
      * Private constructor
      */
-    private ProtoBufFormatStraceSerializer() {
+    private ProtoBufLsofTimeSeriesSerializer() {
         //utility class
     }
+
 
     /**
      * Adds the points (compressed byte array) to the given builder
@@ -56,7 +58,7 @@ public final class ProtoBufFormatStraceSerializer {
      * @param to                including points to
      * @param builder           the time series builder
      */
-    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, StraceTimeSeries.Builder builder) {
+    public static void from(final InputStream decompressedBytes, long timeSeriesStart, long timeSeriesEnd, long from, long to, LsofTimeSeries.Builder builder) {
         if (from == -1 || to == -1) {
             throw new IllegalArgumentException("FROM or TO have to be >= 0");
         }
@@ -76,22 +78,22 @@ public final class ProtoBufFormatStraceSerializer {
         }
 
         try {
-            StraceProtocolBuffers.Strace straceProtoBuf = StraceProtocolBuffers.Strace.parseFrom(decompressedBytes);
+            LsofProtocolBuffers.Lsof lsofProtocoLBuffers = LsofProtocolBuffers.Lsof.parseFrom(decompressedBytes);
 
-            List<StraceProtocolBuffers.StracePoint> pList = straceProtoBuf.getPList();
+            List<LsofProtocolBuffers.LsofPoints> pList = lsofProtocoLBuffers.getPList();
 
             int size = pList.size();
-            StraceProtocolBuffers.StracePoint[] points = pList.toArray(new StraceProtocolBuffers.StracePoint[0]);
 
             long[] timestamps = new long[pList.size()];
-            List<Strace> values = new ArrayList<>(pList.size());
+            List<List<Lsof>> values = new ArrayList<>();
 
-            long lastOffset = straceProtoBuf.getDdc();
+            long lastOffset = lsofProtocoLBuffers.getDdc();
             long calculatedPointDate = timeSeriesStart;
             int lastPointIndex = 0;
 
+
             for (int i = 0; i < size; i++) {
-                StraceProtocolBuffers.StracePoint p = points[i];
+                LsofProtocolBuffers.LsofPoints p = pList.get(i);
 
                 //Decode the time
                 if (i > 0) {
@@ -102,7 +104,7 @@ public final class ProtoBufFormatStraceSerializer {
                 //only add the point if it is within the date
                 if (calculatedPointDate >= from && calculatedPointDate <= to) {
                     timestamps[lastPointIndex] = calculatedPointDate;
-                    values.add(convert(p));
+                    values.add(convert(p.getPList()));
                     lastPointIndex++;
                 }
             }
@@ -114,11 +116,25 @@ public final class ProtoBufFormatStraceSerializer {
 
     }
 
-    private static Strace convert(StraceProtocolBuffers.StracePoint p) {
-        return new Strace(p.getPid(), p.getCall());
+    private static List<Lsof> convert(List<LsofProtocolBuffers.LsofPoint> pList) {
+        List<Lsof> converted = new ArrayList<>(pList.size());
+
+        for (LsofProtocolBuffers.LsofPoint lsof : pList) {
+            converted.add(new Lsof.Builder()
+                    .command(lsof.getCommand())
+                    .pid(lsof.getPid())
+                    .user(lsof.getUser())
+                    .fd(lsof.getUser())
+                    .device(lsof.getDevice())
+                    .size(lsof.getSize())
+                    .node(lsof.getNode())
+                    .node(lsof.getName())
+                    .build());
+        }
+        return converted;
     }
 
-    private static long calculatePoint(StraceProtocolBuffers.StracePoint p, long lastOffset) {
+    private static long calculatePoint(LsofProtocolBuffers.LsofPoints p, long lastOffset) {
         //Normal delta
         if (p.hasTint() || p.hasTlong()) {
             lastOffset = p.getTint() + p.getTlong();
@@ -134,21 +150,21 @@ public final class ProtoBufFormatStraceSerializer {
     /**
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
-     * @param stracePointIterator - the list with points
+     * @param lsofPoints - the list with points
      */
-    public static byte[] to(Iterator<StracePoint> stracePointIterator) {
-        return to(stracePointIterator, 0);
+    public static byte[] to(Iterator<LsofPoint> lsofPoints) {
+        return to(lsofPoints, 0);
     }
 
 
     /**
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
-     * @param straceIterator - the list with points
-     * @param almostEquals   - the aberration threshold for the deltas
+     * @param lsofPointIterator - the list with points
+     * @param almostEquals      - the aberration threshold for the deltas
      * @return the serialized points
      */
-    public static byte[] to(final Iterator<StracePoint> straceIterator, final int almostEquals) {
+    public static byte[] to(final Iterator<LsofPoint> lsofPointIterator, final int almostEquals) {
 
         long previousDate = 0;
         long previousOffset = 0;
@@ -160,31 +176,26 @@ public final class ProtoBufFormatStraceSerializer {
 
         long startDate = 0;
 
-        Strace currentValue;
-
-        StraceProtocolBuffers.Strace.Builder strace = StraceProtocolBuffers.Strace.newBuilder();
-        StraceProtocolBuffers.StracePoint.Builder stracePoint = StraceProtocolBuffers.StracePoint.newBuilder();
+        LsofProtocolBuffers.LsofPoints.Builder points = LsofProtocolBuffers.LsofPoints.newBuilder();
+        LsofProtocolBuffers.Lsof.Builder lsof = LsofProtocolBuffers.Lsof.newBuilder();
 
         long offset = 0;
 
-        while (straceIterator.hasNext()) {
+        while (lsofPointIterator.hasNext()) {
 
-            StracePoint p = straceIterator.next();
-            boolean lastPoint = !straceIterator.hasNext();
-            stracePoint.clear();
+            LsofPoint p = lsofPointIterator.next();
+            boolean lastPoint = !lsofPointIterator.hasNext();
+            points.clear();
 
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
                 continue;
             }
 
+            points.addAllP(convertToProto(p.getValue()));
+
+
             long currentTimestamp = p.getTimestamp();
-
-            currentValue = p.getValue();
-            stracePoint.setPid(currentValue.getPid());
-            stracePoint.setCall(currentValue.getCall());
-
-
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp
                 lastStoredDate = currentTimestamp;
@@ -195,31 +206,31 @@ public final class ProtoBufFormatStraceSerializer {
 
             //Semantic Compression
             if (almostEquals == -1) {
-                strace.addP(stracePoint.build());
+                lsof.addP(points.build());
             } else {
 
                 //we always store the first an the last point as supporting points
                 //Date-Delta-Compaction is within a defined start and end
                 if (lastPoint) {
 
-                    long calcPoint = calcPoint(startDate, strace.getPList(), almostEquals);
+                    long calcPoint = calcPoint(startDate, lsof.getPList(), almostEquals);
                     //Calc offset
                     long offsetToEnd = currentTimestamp - calcPoint;
 
                     //everything okay
                     if (offsetToEnd >= 0) {
                         if (safeLongToUInt(offsetToEnd)) {
-                            strace.addP(stracePoint.setTint((int) offsetToEnd).build());
+                            lsof.addP(points.setTint((int) offsetToEnd).build());
                         } else {
-                            strace.addP(stracePoint.setTlong(offsetToEnd).build());
+                            lsof.addP(points.setTlong(offsetToEnd).build());
                         }
 
                     } else {
                         //break the offset down on all points
-                        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (strace.getPCount() - 1));
+                        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (lsof.getPCount() - 1));
 
-                        for (int i = 1; i < strace.getPCount(); i++) {
-                            StraceProtocolBuffers.StracePoint mod = strace.getP(i);
+                        for (int i = 1; i < lsof.getPCount(); i++) {
+                            LsofProtocolBuffers.LsofPoints mod = lsof.getP(i);
                             long t = getT(mod);
 
                             //check if can correct the deltas
@@ -233,19 +244,19 @@ public final class ProtoBufFormatStraceSerializer {
                                 //if we have a t value
                                 if (t > avgPerDelta) {
                                     newOffset = t - avgPerDelta;
-                                    StraceProtocolBuffers.StracePoint.Builder modPoint = mod.toBuilder();
+                                    LsofProtocolBuffers.LsofPoints.Builder modPoint = mod.toBuilder();
                                     setT(modPoint, newOffset);
                                     mod = modPoint.build();
                                     offsetToEnd += avgPerDelta;
                                 }
 
                             }
-                            strace.setP(i, mod);
+                            lsof.setP(i, mod);
                         }
 
 
                         //Done
-                        long arragendPoint = calcPoint(startDate, strace.getPList(), almostEquals);
+                        long arragendPoint = calcPoint(startDate, lsof.getPList(), almostEquals);
 
                         long storedOffsetToEnd = currentTimestamp - arragendPoint;
                         if (storedOffsetToEnd < 0) {
@@ -253,9 +264,9 @@ public final class ProtoBufFormatStraceSerializer {
                             storedOffsetToEnd = 0;
                         }
                         if (safeLongToUInt(storedOffsetToEnd)) {
-                            strace.addP(stracePoint.setTintBP((int) storedOffsetToEnd).build());
+                            lsof.addP(points.setTintBP((int) storedOffsetToEnd).build());
                         } else {
-                            strace.addP(stracePoint.setTlongBP(storedOffsetToEnd).build());
+                            lsof.addP(points.setTlongBP(storedOffsetToEnd).build());
                         }
                     }
 
@@ -269,7 +280,7 @@ public final class ProtoBufFormatStraceSerializer {
                     }
 
                     if (isAlmostEquals && noDrift(drift, almostEquals, timesSinceLastOffset) && drift >= 0) {
-                        strace.addP(stracePoint.build());
+                        lsof.addP(points.build());
                         timesSinceLastOffset += 1;
                     } else {
                         long timeStamp = offset;
@@ -279,21 +290,21 @@ public final class ProtoBufFormatStraceSerializer {
                             timeStamp = offset - previousDrift;
 
                             if (safeLongToUInt(timeStamp)) {
-                                stracePoint.setTintBP((int) timeStamp);
+                                points.setTintBP((int) timeStamp);
                             } else {
-                                stracePoint.setTlongBP(timeStamp);
+                                points.setTlongBP(timeStamp);
                             }
 
                         } else {
                             if (safeLongToUInt(timeStamp)) {
-                                stracePoint.setTint((int) timeStamp);
+                                points.setTint((int) timeStamp);
                             } else {
-                                stracePoint.setTlong(timeStamp);
+                                points.setTlong(timeStamp);
                             }
                         }
 
                         //Store offset
-                        strace.addP(stracePoint.build());
+                        lsof.addP(points.build());
                         //reset the offset counter
                         timesSinceLastOffset = 0;
                         lastStoredDate = p.getTimestamp();
@@ -307,7 +318,28 @@ public final class ProtoBufFormatStraceSerializer {
                 }
             }
         }
-        return strace.build().toByteArray();
+        lsof.setDdc(almostEquals);
+        return lsof.build().toByteArray();
+    }
+
+    private static List<LsofProtocolBuffers.LsofPoint> convertToProto(List<Lsof> value) {
+        List<LsofProtocolBuffers.LsofPoint> converted = new ArrayList<>();
+        LsofProtocolBuffers.LsofPoint.Builder point = LsofProtocolBuffers.LsofPoint.newBuilder();
+
+        for (Lsof lsof : value) {
+            converted.add(point
+                    .setCommand(lsof.getCommand())
+                    .setPid(lsof.getPid())
+                    .setUser(lsof.getUser())
+                    .setFd(lsof.getFd())
+                    .setDevice(lsof.getDevice())
+                    .setSize(lsof.getSize())
+                    .setNode(lsof.getNode())
+                    .setName(lsof.getName())
+                    .build());
+        }
+
+        return converted;
     }
 
     /**
@@ -316,7 +348,7 @@ public final class ProtoBufFormatStraceSerializer {
      * @param builder   the point builder
      * @param newOffset the new offset
      */
-    private static void setT(StraceProtocolBuffers.StracePoint.Builder builder, long newOffset) {
+    private static void setT(LsofProtocolBuffers.LsofPoints.Builder builder, long newOffset) {
         if (safeLongToUInt(newOffset)) {
             if (builder.hasTintBP()) {
                 builder.setTintBP((int) newOffset);
@@ -339,7 +371,7 @@ public final class ProtoBufFormatStraceSerializer {
      * @param point the current point
      * @return the value of t
      */
-    private static long getT(StraceProtocolBuffers.StracePoint point) {
+    private static long getT(LsofProtocolBuffers.LsofPoints point) {
         //only one is set, others are zero
         return point.getTlongBP() + point.getTlong() + point.getTint() + point.getTintBP();
     }
@@ -348,13 +380,13 @@ public final class ProtoBufFormatStraceSerializer {
         return !(l < 0 || l > Integer.MAX_VALUE);
     }
 
-    private static long calcPoint(long startDate, List<StraceProtocolBuffers.StracePoint> pList, long almostEquals) {
+    private static long calcPoint(long startDate, List<LsofProtocolBuffers.LsofPoints> pList, long almostEquals) {
 
         long lastOffset = almostEquals;
         long calculatedPointDate = startDate;
 
         for (int i = 1; i < pList.size(); i++) {
-            StraceProtocolBuffers.StracePoint p = pList.get(i);
+            LsofProtocolBuffers.LsofPoints p = pList.get(i);
             lastOffset = calculatePoint(p, lastOffset);
             calculatedPointDate += lastOffset;
         }

@@ -17,8 +17,8 @@ package de.qaware.chronix.converter;
 
 import de.qaware.chronix.converter.common.Compression;
 import de.qaware.chronix.converter.common.MetricTSSchema;
-import de.qaware.chronix.converter.serializer.ProtoBufFormatStraceSerializer;
-import de.qaware.chronix.timeseries.StraceTimeSeries;
+import de.qaware.chronix.converter.serializer.protobuf.ProtoBufLsofTimeSeriesSerializer;
+import de.qaware.chronix.timeseries.LsofTimeSeries;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,24 +26,24 @@ import org.slf4j.LoggerFactory;
 import java.io.InputStream;
 
 /**
- * The kassiopeia time series converter for the simple time series class
+ * The lsof time series converter for the simple time series class
  *
  * @author f.lautenschlager
  */
-public class FormatStraceConverter implements TimeSeriesConverter<StraceTimeSeries> {
+public class LsofTimeSeriesConverter implements TimeSeriesConverter<LsofTimeSeries> {
 
     public static final String DATA_AS_JSON_FIELD = "dataAsJson";
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FormatStraceConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(LsofTimeSeriesConverter.class);
 
     @Override
-    public StraceTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
-        LOGGER.debug("Converting {} to StraceTimeseries starting at {} and ending at {}", binaryTimeSeries, queryStart, queryEnd);
+    public LsofTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
+        LOGGER.debug("Converting {} to LsofTimeSeries starting at {} and ending at {}", binaryTimeSeries, queryStart, queryEnd);
         //get the metric
         String metric = binaryTimeSeries.get(MetricTSSchema.METRIC).toString();
 
         //Third build a minimal time series
-        StraceTimeSeries.Builder builder = new StraceTimeSeries.Builder(metric);
+        LsofTimeSeries.Builder builder = new LsofTimeSeries.Builder(metric);
 
         //add all user defined attributes
         binaryTimeSeries.getFields().forEach((field, value) -> {
@@ -70,26 +70,27 @@ public class FormatStraceConverter implements TimeSeriesConverter<StraceTimeSeri
         return builder.build();
     }
 
-    private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, StraceTimeSeries.Builder builder) {
+    private void fromProtocolBuffers(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, LsofTimeSeries.Builder builder) {
         final InputStream decompressed = Compression.decompressToStream(binaryTimeSeries.getPoints());
-        ProtoBufFormatStraceSerializer.from(decompressed, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd, builder);
+        ProtoBufLsofTimeSeriesSerializer.from(decompressed, binaryTimeSeries.getStart(), binaryTimeSeries.getEnd(), queryStart, queryEnd, builder);
         IOUtils.closeQuietly(decompressed);
     }
 
-    private void fromJson(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, StraceTimeSeries.Builder builder) {
-        String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
+    private void fromJson(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd, LsofTimeSeries.Builder builder) {
+       /* String jsonString = binaryTimeSeries.get(DATA_AS_JSON_FIELD).toString();
         //Second deserialize
-        // JsonKassiopeiaSimpleSerializer serializer = new JsonKassiopeiaSimpleSerializer();
-        //serializer.fromJson(jsonString.getBytes(Charset.forName(JsonKassiopeiaSimpleSerializer.UTF_8)), queryStart, queryEnd, builder);
+        JsonMetricTimeSeriesSerializer serializer = new JsonMetricTimeSeriesSerializer();
+        serializer.fromJson(jsonString.getBytes(Charset.forName(JsonMetricTimeSeriesSerializer.UTF_8)), queryStart, queryEnd, builder);
+        */
     }
 
     @Override
-    public BinaryTimeSeries to(StraceTimeSeries timeSeries) {
-        LOGGER.debug("Converting {} to BinaryTimeSeries", timeSeries);
+    public BinaryTimeSeries to(LsofTimeSeries timeSeries) {
+        LOGGER.debug("Converting {} to LsofTimeSeries", timeSeries);
         BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder();
 
         //serialize
-        byte[] serializedPoints = ProtoBufFormatStraceSerializer.to(timeSeries.points().iterator());
+        byte[] serializedPoints = ProtoBufLsofTimeSeriesSerializer.to(timeSeries.points().iterator());
         byte[] compressedPoints = Compression.compress(serializedPoints);
 
         //Add the minimum required fields
