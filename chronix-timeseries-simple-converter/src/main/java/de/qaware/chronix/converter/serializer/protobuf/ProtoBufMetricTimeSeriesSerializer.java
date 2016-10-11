@@ -18,7 +18,7 @@ package de.qaware.chronix.converter.serializer.protobuf;
 
 import de.qaware.chronix.converter.common.DoubleList;
 import de.qaware.chronix.converter.common.LongList;
-import de.qaware.chronix.converter.serializer.gen.SimpleProtocolBuffers;
+import de.qaware.chronix.converter.serializer.gen.MetricProtocolBuffers;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.Point;
 import org.slf4j.Logger;
@@ -89,12 +89,12 @@ public final class ProtoBufMetricTimeSeriesSerializer {
         }
 
         try {
-            SimpleProtocolBuffers.Points protocolBufferPoints = SimpleProtocolBuffers.Points.parseFrom(decompressedBytes);
+            MetricProtocolBuffers.Points protocolBufferPoints = MetricProtocolBuffers.Points.parseFrom(decompressedBytes);
 
-            List<SimpleProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
+            List<MetricProtocolBuffers.Point> pList = protocolBufferPoints.getPList();
 
             int size = pList.size();
-            SimpleProtocolBuffers.Point[] points = pList.toArray(new SimpleProtocolBuffers.Point[0]);
+            MetricProtocolBuffers.Point[] points = pList.toArray(new MetricProtocolBuffers.Point[0]);
 
             long[] timestamps = new long[pList.size()];
             double[] values = new double[pList.size()];
@@ -106,7 +106,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
             double value;
 
             for (int i = 0; i < size; i++) {
-                SimpleProtocolBuffers.Point p = points[i];
+                MetricProtocolBuffers.Point p = points[i];
 
                 //Decode the time
                 if (i > 0) {
@@ -136,7 +136,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
     }
 
-    private static long calculatePoint(SimpleProtocolBuffers.Point p, long lastOffset) {
+    private static long calculatePoint(MetricProtocolBuffers.Point p, long lastOffset) {
         //Normal delta
         if (p.hasTint() || p.hasTlong()) {
             lastOffset = p.getTint() + p.getTlong();
@@ -184,8 +184,8 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
         int index = 0;
 
-        SimpleProtocolBuffers.Point.Builder point = SimpleProtocolBuffers.Point.newBuilder();
-        SimpleProtocolBuffers.Points.Builder points = SimpleProtocolBuffers.Points.newBuilder();
+        MetricProtocolBuffers.Point.Builder point = MetricProtocolBuffers.Point.newBuilder();
+        MetricProtocolBuffers.Points.Builder points = MetricProtocolBuffers.Points.newBuilder();
 
         long offset = 0;
 
@@ -246,7 +246,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
                         long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (points.getPCount() - 1));
 
                         for (int i = 1; i < points.getPCount(); i++) {
-                            SimpleProtocolBuffers.Point mod = points.getP(i);
+                            MetricProtocolBuffers.Point mod = points.getP(i);
                             long t = getT(mod);
 
                             //check if can correct the deltas
@@ -260,7 +260,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
                                 //if we have a t value
                                 if (t > avgPerDelta) {
                                     newOffset = t - avgPerDelta;
-                                    SimpleProtocolBuffers.Point.Builder modPoint = mod.toBuilder();
+                                    MetricProtocolBuffers.Point.Builder modPoint = mod.toBuilder();
                                     setT(modPoint, newOffset);
                                     mod = modPoint.build();
                                     offsetToEnd += avgPerDelta;
@@ -346,7 +346,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
      * @param builder   the point builder
      * @param newOffset the new offset
      */
-    private static void setT(SimpleProtocolBuffers.Point.Builder builder, long newOffset) {
+    private static void setT(MetricProtocolBuffers.Point.Builder builder, long newOffset) {
         if (safeLongToUInt(newOffset)) {
             if (builder.hasTintBP()) {
                 builder.setTintBP((int) newOffset);
@@ -369,7 +369,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
      * @param point the current point
      * @return the value of t
      */
-    private static long getT(SimpleProtocolBuffers.Point point) {
+    private static long getT(MetricProtocolBuffers.Point point) {
         //only one is set, others are zero
         return point.getTlongBP() + point.getTlong() + point.getTint() + point.getTintBP();
     }
@@ -378,13 +378,13 @@ public final class ProtoBufMetricTimeSeriesSerializer {
         return !(l < 0 || l > Integer.MAX_VALUE);
     }
 
-    private static long calcPoint(long startDate, List<SimpleProtocolBuffers.Point> pList, long almostEquals) {
+    private static long calcPoint(long startDate, List<MetricProtocolBuffers.Point> pList, long almostEquals) {
 
         long lastOffset = almostEquals;
         long calculatedPointDate = startDate;
 
         for (int i = 1; i < pList.size(); i++) {
-            SimpleProtocolBuffers.Point p = pList.get(i);
+            MetricProtocolBuffers.Point p = pList.get(i);
             lastOffset = calculatePoint(p, lastOffset);
             calculatedPointDate += lastOffset;
         }
