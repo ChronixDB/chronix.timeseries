@@ -1,8 +1,7 @@
 [![Build Status](https://travis-ci.org/ChronixDB/chronix.timeseries.svg)](https://travis-ci.org/ChronixDB/chronix.timeseries)
-[![Coverage Status](https://coveralls.io/repos/ChronixDB/chronix.kassiopeia/badge.svg?branch=master&service=github)](https://coveralls.io/github/ChronixDB/chronix.kassiopeia?branch=master)
-[![Stories in Ready](https://badge.waffle.io/ChronixDB/chronix.kassiopeia.png?label=ready&title=Ready)](https://waffle.io/ChronixDB/chronix.kassiopeia)
-[![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.kassiopeia/blob/master/LICENSE)
-[ ![Download](https://api.bintray.com/packages/chronix/maven/chronix-kassiopeia/images/download.svg) ](https://bintray.com/chronix/maven/chronix-kassiopeia/_latestVersion)
+[![Coverage Status](https://coveralls.io/repos/github/ChronixDB/chronix.timeseries/badge.svg?branch=master)](https://coveralls.io/github/ChronixDB/chronix.timeseries?branch=master)
+[![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.timeseries/blob/master/LICENSE)
+[ ![Download](https://api.bintray.com/packages/chronix/maven/chronix-timeseries/images/download.svg) ](https://bintray.com/chronix/maven/chronix-timeseries/_latestVersion)
 
 # Chronix Time Series
 Chronix time series is a library that provides classes and functions to work with time related data and can easily plugged into Chronix.

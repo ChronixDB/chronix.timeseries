@@ -18,8 +18,8 @@ package de.qaware.chronix.converter.serializer.protobuf;
 
 import de.qaware.chronix.converter.common.DoubleList;
 import de.qaware.chronix.converter.common.LongList;
-import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.converter.serializer.gen.MetricProtocolBuffers;
+import de.qaware.chronix.timeseries.MetricTimeSeries;
 import de.qaware.chronix.timeseries.dts.Point;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,6 +153,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
      * @param metricDataPoints - the list with points
+     * @return the serialized points as byte[]
      */
     public static byte[] to(Iterator<Point> metricDataPoints) {
         return to(metricDataPoints, 0);
@@ -164,7 +165,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
      *
      * @param metricDataPoints - the list with points
      * @param almostEquals     - the aberration threshold for the deltas
-     * @return the serialized points
+     * @return the serialized points as byte[]
      */
     public static byte[] to(final Iterator<Point> metricDataPoints, final int almostEquals) {
 
