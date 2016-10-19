@@ -110,7 +110,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
                 //Decode the time
                 if (i > 0) {
-                    lastOffset = calculatePoint(p, lastOffset);
+                    lastOffset = getTimestamp(p, lastOffset);
                     calculatedPointDate += lastOffset;
                 }
 
@@ -136,14 +136,21 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
     }
 
-    private static long calculatePoint(MetricProtocolBuffers.Point p, long lastOffset) {
+    /**
+     * Gets the time stamp from the point.
+     *
+     * @param p          the protocol buffers point
+     * @param lastOffset the last stored offset
+     * @return the time stamp of the point or the last offset if the point do not have any information about the time stamp
+     */
+    private static long getTimestamp(final MetricProtocolBuffers.Point p, final long lastOffset) {
         //Normal delta
         if (p.hasTint() || p.hasTlong()) {
-            lastOffset = p.getTint() + p.getTlong();
+            return p.getTint() + p.getTlong();
         }
         //Base point delta
         if (p.hasTintBP() || p.hasTlongBP()) {
-            lastOffset = p.getTintBP() + p.getTlongBP();
+            return p.getTintBP() + p.getTlongBP();
         }
         return lastOffset;
     }
@@ -386,7 +393,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
         for (int i = 1; i < pList.size(); i++) {
             MetricProtocolBuffers.Point p = pList.get(i);
-            lastOffset = calculatePoint(p, lastOffset);
+            lastOffset = getTimestamp(p, lastOffset);
             calculatedPointDate += lastOffset;
         }
         return calculatedPointDate;
