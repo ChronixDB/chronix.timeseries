@@ -10,7 +10,7 @@ dependencies {
     compile project(':chronix-timeseries-common')
 
     compile 'com.google.protobuf:protobuf-java:2.6.1'
-    compile 'commons-io:commons-io:2.4'
+    compile 'commons-io:commons-io:2.5'
     compile 'com.google.code.gson:gson:2.7'
 
 
@@ -112,7 +112,7 @@ bintray {
         name = project.name
         desc = project.description
         licenses = ['Apache-2.0']
-        labels = ['java', 'time series', 'kassiopeia converter', 'chronix']
+        labels = ['java', 'time series', 'time series converter', 'chronix']
         websiteUrl = project.websiteUrl
         issueTrackerUrl = project.issueTrackerUrl
         vcsUrl = project.scmUrl
