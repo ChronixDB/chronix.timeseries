@@ -25,12 +25,13 @@ message Point {
     optional uint64 tlong = 1;
     //Perhaps we can store the delta as int
     optional uint32 tint = 2;
-    //time base point points
+    //timestamp base deltas
     optional uint64 tlongBP = 3;
     optional uint32 tintBP = 4;
 
-    //time base point
+    //Value
     optional double v = 5;
+    //Or the index of the value
     optional uint32 vIndex = 6;
 
 }
@@ -39,5 +40,6 @@ message Point {
 message Points {
     //The list of points
     repeated Point p = 1;
+    //the used ddc threshold
     optional uint32 ddc = 2;
 }
