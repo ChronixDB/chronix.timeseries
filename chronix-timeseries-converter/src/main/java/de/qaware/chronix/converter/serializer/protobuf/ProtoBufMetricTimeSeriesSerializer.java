@@ -99,7 +99,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
             long[] timestamps = new long[pList.size()];
             double[] values = new double[pList.size()];
 
-            long lastOffset = protocolBufferPoints.getDdc();
+            long lastDelta = protocolBufferPoints.getDdc();
             long calculatedPointDate = timeSeriesStart;
             int lastPointIndex = 0;
 
@@ -110,8 +110,8 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
                 //Decode the time
                 if (i > 0) {
-                    lastOffset = getTimestamp(p, lastOffset);
-                    calculatedPointDate += lastOffset;
+                    lastDelta = getTimestamp(p, lastDelta);
+                    calculatedPointDate += lastDelta;
                 }
 
                 //only add the point if it is within the date
@@ -171,22 +171,16 @@ public final class ProtoBufMetricTimeSeriesSerializer {
      * Converts the given iterator of our point class to protocol buffers and compresses (gzip) it.
      *
      * @param metricDataPoints - the list with points
-     * @param almostEquals     - the aberration threshold for the deltas
+     * @param ddcThreshold     - the aberration threshold for the deltas
      * @return the serialized points as byte[]
      */
-    public static byte[] to(final Iterator<Point> metricDataPoints, final int almostEquals) {
+    public static byte[] to(final Iterator<Point> metricDataPoints, final int ddcThreshold) {
 
-        long previousDate = 0;
-        long previousOffset = 0;
-        long previousDrift = 0;
+        long previousDate = 0, previousDelta = 0, previousDrift = 0;
 
-        int timesSinceLastOffset = 0;
-        long lastStoredDate = 0;
-        long lastStoredOffset = 0;
-
-        long startDate = 0;
-        int index = 0;
-        long offset = 0;
+        long startDate = 0, lastStoredDate = 0;
+        long delta = 0, lastStoredDelta = 0;
+        int timesSinceLastDelta = 0;
 
         Map<Double, Integer> valueIndex = new HashMap<>();
 
@@ -194,143 +188,182 @@ public final class ProtoBufMetricTimeSeriesSerializer {
         MetricProtocolBuffers.Points.Builder points = MetricProtocolBuffers.Points.newBuilder();
 
 
+        int index = 0;
         while (metricDataPoints.hasNext()) {
 
             Point p = metricDataPoints.next();
-
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
                 continue;
             }
 
-            boolean lastPoint = !metricDataPoints.hasNext();
             point.clear();
             long currentTimestamp = p.getTimestamp();
 
             //Add value or index, if the value already exists
-            addValueOrRefIndex(index, valueIndex, point, p);
+            setValueOrRefIndexOnPoint(valueIndex, index, p.getValue(), point);
+
+            //If one only want to store the values
+            if (ddcThreshold == -1) {
+                points.addP(point.build());
+                continue;
+            }
+
 
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp
                 lastStoredDate = currentTimestamp;
                 startDate = currentTimestamp;
             } else {
-                offset = currentTimestamp - previousDate;
+                delta = currentTimestamp - previousDate;
             }
 
-            //Semantic Compression
-            if (almostEquals == -1) {
+
+            //Last point
+            if (!metricDataPoints.hasNext()) {
+                handleLastPoint(ddcThreshold, startDate, point, points, currentTimestamp);
+                break;
+            }
+
+
+            //We have normal point
+            boolean isAlmostEquals = almostEquals(previousDelta, delta, ddcThreshold);
+            long drift = 0;
+
+            //The deltas of the timestamps are almost equals (delta < ddcThreshold)
+            if (isAlmostEquals) {
+                //calculate the drift to the actual timestamp
+                drift = calculateDrift(currentTimestamp, lastStoredDate, timesSinceLastDelta, lastStoredDelta);
+            }
+
+            if (isAlmostEquals && noDrift(drift, ddcThreshold, timesSinceLastDelta) && drift >= 0) {
                 points.addP(point.build());
-                continue;
-            }
-
-            //we always store the first an the last point as supporting points
-            //Date-Delta-Compaction is within a defined start and end
-            if (lastPoint) {
-                long calcPoint = calcPoint(startDate, points.getPList(), almostEquals);
-                //Calc offset
-                long offsetToEnd = currentTimestamp - calcPoint;
-
-                //everything okay
-                if (offsetToEnd >= 0) {
-                    setTimeStamp(point, offsetToEnd);
-                    points.addP(point);
-                } else {
-                    rearrangePoints(startDate, currentTimestamp, offsetToEnd, almostEquals, points, point);
-                }
+                timesSinceLastDelta += 1;
             } else {
-
-
-                boolean isAlmostEquals = almostEquals(previousOffset, offset, almostEquals);
-                long drift = 0;
-                if (isAlmostEquals) {
-                    drift = drift(currentTimestamp, lastStoredDate, timesSinceLastOffset, lastStoredOffset);
-                }
-
-                if (isAlmostEquals && noDrift(drift, almostEquals, timesSinceLastOffset) && drift >= 0) {
-                    points.addP(point.build());
-                    timesSinceLastOffset += 1;
+                long timeStamp = delta;
+                //If the previous offset was not stored, correct the following delta using the calculated drift
+                if (timesSinceLastDelta > 0 && delta > previousDrift) {
+                    timeStamp = delta - previousDrift;
+                    setBPTimeStamp(point, timeStamp);
                 } else {
-                    long timeStamp = offset;
-
-                    //If the previous offset was not stored, correct the following offset using the calculated drift
-                    if (timesSinceLastOffset > 0 && offset > previousDrift) {
-                        timeStamp = offset - previousDrift;
-                        setBPTimeStamp(point, timeStamp);
-                    } else {
-                        setTimeStamp(point, timeStamp);
-                    }
-
-                    //Store offset
-                    points.addP(point.build());
-                    //reset the offset counter
-                    timesSinceLastOffset = 0;
-                    lastStoredDate = p.getTimestamp();
-                    lastStoredOffset = timeStamp;
-
+                    setTimeStamp(point, timeStamp);
                 }
-                //set current as former previous date
-                previousDrift = drift;
-                previousOffset = offset;
-                previousDate = currentTimestamp;
+
+                //Store offset
+                points.addP(point.build());
+                //reset the offset counter
+                timesSinceLastDelta = 0;
+                lastStoredDate = p.getTimestamp();
+                lastStoredDelta = timeStamp;
+
             }
+            //set current as former previous date
+            previousDrift = drift;
+            previousDelta = delta;
+            previousDate = currentTimestamp;
+
             index++;
         }
         //set the ddc value
-        points.setDdc(almostEquals);
+        points.setDdc(ddcThreshold);
         return points.build().toByteArray();
     }
 
-    private static void addValueOrRefIndex(int index, Map<Double, Integer> valueIndex, MetricProtocolBuffers.Point.Builder point, Point p) {
-        double currentValue = p.getValue();
+    /**
+     * Handles the last point of a time series.  We always store the first an the last point as supporting points actualPoints[Last] == serializedPoints[Last]
+     *
+     * @param ddcThreshold     the ddc threshold
+     * @param startDate        the start date
+     * @param point            the current point
+     * @param points           the protocol buffer point
+     * @param currentTimestamp the current time stamp
+     */
+    private static void handleLastPoint(int ddcThreshold, long startDate, MetricProtocolBuffers.Point.Builder point, MetricProtocolBuffers.Points.Builder points, long currentTimestamp) {
+        long calcPoint = calculateTimeStamp(startDate, points.getPList(), ddcThreshold);
+        //Calc offset
+        long deltaToLastTimestamp = currentTimestamp - calcPoint;
 
-        //build value index
-        if (valueIndex.containsKey(currentValue)) {
-            point.setVIndex(valueIndex.get(currentValue));
+        //everything okay
+        if (deltaToLastTimestamp >= 0) {
+            setTimeStamp(point, deltaToLastTimestamp);
+            points.addP(point);
         } else {
-            valueIndex.put(currentValue, index);
-            point.setV(currentValue);
-        }
-    }
-
-    private static void setTimeStamp(MetricProtocolBuffers.Point.Builder point, long timeStamp) {
-        if (safeLongToUInt(timeStamp)) {
-            point.setTint((int) timeStamp);
-        } else {
-            point.setTlong(timeStamp);
-        }
-    }
-
-    private static void setBPTimeStamp(MetricProtocolBuffers.Point.Builder point, long storedOffsetToEnd) {
-        if (safeLongToUInt(storedOffsetToEnd)) {
-            point.setTintBP((int) storedOffsetToEnd);
-        } else {
-            point.setTlongBP(storedOffsetToEnd);
+            //we have to rearrange the points as we are already behind the actual end timestamp
+            rearrangePoints(startDate, currentTimestamp, deltaToLastTimestamp, ddcThreshold, points, point);
         }
     }
 
     /**
-     * @param startDate
-     * @param currentTimestamp
-     * @param offsetToEnd
-     * @param almostEquals
-     * @param points
-     * @param point
+     * Sets the given value or if the value exists in the index, the index position as value of the point.
+     *
+     * @param currentPointIndex the current index position
+     * @param index             the map holding the values and the indices
+     * @param point             the current point
+     * @param value             the current value
      */
-    private static void rearrangePoints(long startDate, long currentTimestamp, long offsetToEnd, int almostEquals, MetricProtocolBuffers.Points.Builder points, MetricProtocolBuffers.Point.Builder point) {
+    private static void setValueOrRefIndexOnPoint(Map<Double, Integer> index, int currentPointIndex, double value, MetricProtocolBuffers.Point.Builder point) {
+        //build value index
+        if (index.containsKey(value)) {
+            point.setVIndex(index.get(value));
+        } else {
+            index.put(value, currentPointIndex);
+            point.setV(value);
+        }
+    }
+
+    /**
+     * Set value as normal delta timestamp
+     *
+     * @param point          the point
+     * @param timestampDelta the timestamp delta
+     */
+    private static void setTimeStamp(MetricProtocolBuffers.Point.Builder point, long timestampDelta) {
+        if (safeLongToUInt(timestampDelta)) {
+            point.setTint((int) timestampDelta);
+        } else {
+            point.setTlong(timestampDelta);
+        }
+    }
+
+    /**
+     * Set value as a base point delta timestamp
+     * A base point delta timestamp is a corrected timestamp to the actual timestamp.
+     *
+     * @param point          the point
+     * @param timestampDelta the timestamp delta
+     */
+    private static void setBPTimeStamp(MetricProtocolBuffers.Point.Builder point, long timestampDelta) {
+        if (safeLongToUInt(timestampDelta)) {
+            point.setTintBP((int) timestampDelta);
+        } else {
+            point.setTlongBP(timestampDelta);
+        }
+    }
+
+    /**
+     * Rearranges the serialized points in order to fit the points within the start and end date of the actual time series
+     *
+     * @param startDate           the start date
+     * @param currentTimestamp    the current timestamp
+     * @param deltaToEndTimestamp the delta to the end timestamp
+     * @param ddcThreshold        the ddc threshold
+     * @param points              the serialized points
+     * @param point               the serialized point
+     */
+    private static void rearrangePoints(final long startDate, final long currentTimestamp, final long deltaToEndTimestamp, final int ddcThreshold, final MetricProtocolBuffers.Points.Builder points, final MetricProtocolBuffers.Point.Builder point) {
         //break the offset down on all points
-        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (points.getPCount() - 1));
+        long avgPerDelta = (long) Math.ceil((double) deltaToEndTimestamp * -1 + ddcThreshold / (double) (points.getPCount() - 1));
 
         for (int i = 1; i < points.getPCount(); i++) {
             MetricProtocolBuffers.Point mod = points.getP(i);
             long t = getT(mod);
 
             //check if can correct the deltas
-            if (offsetToEnd < 0) {
+            if (deltaToEndTimestamp < 0) {
                 long newOffset;
 
-                if (offsetToEnd + avgPerDelta > 0) {
-                    avgPerDelta = offsetToEnd * -1;
+                if (deltaToEndTimestamp + avgPerDelta > 0) {
+                    avgPerDelta = deltaToEndTimestamp * -1;
                 }
 
                 //if we have a t value
@@ -339,7 +372,6 @@ public final class ProtoBufMetricTimeSeriesSerializer {
                     MetricProtocolBuffers.Point.Builder modPoint = mod.toBuilder();
                     setT(modPoint, newOffset);
                     mod = modPoint.build();
-                    offsetToEnd += avgPerDelta;
                 }
 
             }
@@ -348,7 +380,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
 
         //Done
-        long arrangedPoint = calcPoint(startDate, points.getPList(), almostEquals);
+        long arrangedPoint = calculateTimeStamp(startDate, points.getPList(), ddcThreshold);
 
         long storedOffsetToEnd = currentTimestamp - arrangedPoint;
         if (storedOffsetToEnd < 0) {
@@ -365,23 +397,23 @@ public final class ProtoBufMetricTimeSeriesSerializer {
     /**
      * Sets the new t for the point. Checks which t was set.
      *
-     * @param builder   the point builder
-     * @param newOffset the new offset
+     * @param builder the point builder
+     * @param delta   the new delta to set on the given point
      */
-    private static void setT(MetricProtocolBuffers.Point.Builder builder, long newOffset) {
-        if (safeLongToUInt(newOffset)) {
+    private static void setT(MetricProtocolBuffers.Point.Builder builder, long delta) {
+        if (safeLongToUInt(delta)) {
             if (builder.hasTintBP()) {
-                builder.setTintBP((int) newOffset);
+                builder.setTintBP((int) delta);
             }
             if (builder.hasTint()) {
-                builder.setTint((int) newOffset);
+                builder.setTint((int) delta);
             }
         } else {
             if (builder.hasTlongBP()) {
-                builder.setTlongBP(newOffset);
+                builder.setTlongBP(delta);
             }
             if (builder.hasTlong()) {
-                builder.setTlong(newOffset);
+                builder.setTlong(delta);
             }
         }
 
@@ -396,40 +428,57 @@ public final class ProtoBufMetricTimeSeriesSerializer {
         return point.getTlongBP() + point.getTlong() + point.getTint() + point.getTintBP();
     }
 
-    private static boolean safeLongToUInt(long l) {
-        return !(l < 0 || l > Integer.MAX_VALUE);
+    /**
+     * Checks if the given long value could be cast to an integer
+     *
+     * @param value the long value
+     * @return true if value < INTEGER.MAX_VALUE
+     */
+    private static boolean safeLongToUInt(long value) {
+        return !(value < 0 || value > Integer.MAX_VALUE);
     }
 
-    private static long calcPoint(long startDate, List<MetricProtocolBuffers.Point> pList, long almostEquals) {
+    /**
+     * @param startDate    the first time stamp
+     * @param pList        the list with serialized points
+     * @param ddcThreshold the threshold of the ddc
+     * @return the calculated timestamp using the ddc threshold
+     */
+    private static long calculateTimeStamp(long startDate, List<MetricProtocolBuffers.Point> pList, long ddcThreshold) {
 
-        long lastOffset = almostEquals;
+        long lastDelta = ddcThreshold;
         long calculatedPointDate = startDate;
 
         for (int i = 1; i < pList.size(); i++) {
             MetricProtocolBuffers.Point p = pList.get(i);
-            lastOffset = getTimestamp(p, lastOffset);
-            calculatedPointDate += lastOffset;
+            lastDelta = getTimestamp(p, lastDelta);
+            calculatedPointDate += lastDelta;
         }
         return calculatedPointDate;
     }
 
-
-    private static boolean noDrift(long drift, long almostEquals, long timeSinceLastStoredOffset) {
-        return timeSinceLastStoredOffset == 0 || drift == 0 || drift < (almostEquals / 2);
+    /**
+     * @param drift                    the calculated drift (difference between calculated and actual time stamp)
+     * @param ddcThreshold             the ddc threshold
+     * @param timeSinceLastStoredDelta times since a delta was stored
+     * @return true if the drift is below ddcThreshold/2, otherwise false
+     */
+    private static boolean noDrift(long drift, long ddcThreshold, long timeSinceLastStoredDelta) {
+        return timeSinceLastStoredDelta == 0 || drift == 0 || drift < (ddcThreshold / 2);
     }
 
+
     /**
-     * Calculates the drift of the time stamp compaction
+     * Calculates the drift between the given timestamp and the reconstructed time stamp
      *
-     * @param timestamp            the current time stamp
-     * @param lastStoredDate       the last stored time stamp
-     * @param timesSinceLastOffset times since the last time stamp was stored
-     * @param lastStoredOffset     the last stored offset
+     * @param timestamp           the actual time stamp
+     * @param lastStoredDate      the last stored date
+     * @param timesSinceLastDelta the times no delta was stored
+     * @param lastStoredDelta     the last stored delta
+     * @return
      */
-
-
-    private static long drift(long timestamp, long lastStoredDate, int timesSinceLastOffset, long lastStoredOffset) {
-        long calculatedMaxOffset = lastStoredOffset * (timesSinceLastOffset + 1);
+    private static long calculateDrift(long timestamp, long lastStoredDate, int timesSinceLastDelta, long lastStoredDelta) {
+        long calculatedMaxOffset = lastStoredDelta * (timesSinceLastDelta + 1);
         return lastStoredDate + calculatedMaxOffset - timestamp;
     }
 
