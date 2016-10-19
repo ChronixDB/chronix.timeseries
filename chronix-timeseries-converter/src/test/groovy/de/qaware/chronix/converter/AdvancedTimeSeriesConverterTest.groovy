@@ -35,7 +35,7 @@ class AdvancedTimeSeriesConverterTest extends Specification {
 
         timeSeries.addAttribute("metric", "myMetric")
         timeSeries.addAttribute("host", "NB-Prod-01")
-        timeSeries.addAttribute("process", "kassiopeiaConverterTest")
+        timeSeries.addAttribute("process", "timeSeriesConverterTest")
         timeSeries.addAttribute("length", points.size())
         timeSeries.addAttribute("maxValue", 3d)
 
@@ -53,7 +53,7 @@ class AdvancedTimeSeriesConverterTest extends Specification {
         reconvertedTimeSeries.get(3).getSecond() == 3d
 
         reconvertedTimeSeries.getAttribute("host") == "NB-Prod-01"
-        reconvertedTimeSeries.getAttribute("process") == "kassiopeiaConverterTest"
+        reconvertedTimeSeries.getAttribute("process") == "timeSeriesConverterTest"
         reconvertedTimeSeries.getAttribute("length") == 3I
         reconvertedTimeSeries.getAttribute("maxValue") == 3d
     }

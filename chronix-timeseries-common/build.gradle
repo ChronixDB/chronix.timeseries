@@ -1,6 +1,6 @@
 sonarqube {
     properties {
-        property "sonar.projectName", "de.qaware.chronix:chronix-kassiopeia-common"
+        property "sonar.projectName", "de.qaware.chronix:chronix-timeseries-common"
     }
 }
 
@@ -97,7 +97,7 @@ bintray {
         name = project.name
         desc = project.description
         licenses = ['Apache-2.0']
-        labels = ['java', 'time series', 'kassiopeia converter', 'chronix']
+        labels = ['java', 'time series', 'time series converter', 'chronix']
         websiteUrl = project.websiteUrl
         issueTrackerUrl = project.issueTrackerUrl
         vcsUrl = project.scmUrl

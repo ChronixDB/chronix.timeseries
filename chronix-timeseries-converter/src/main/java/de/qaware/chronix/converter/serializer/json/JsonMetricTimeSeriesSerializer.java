@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The json serializer for the kassiopeia simple time series
+ * The json serializer for the json metric simple time series
  *
  * @author f.lautenschlager
  */

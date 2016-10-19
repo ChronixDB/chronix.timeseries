@@ -25,23 +25,17 @@ import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
 /**
- * Holds default group by and reduce functions for the kassiopeia-simple time series
+ * Holds default group by and reduce functions for the chronix metric time series
  *
  * @author f.lautenschlager
  */
 public final class ChronixTimeSeriesDefaults {
-
-    private ChronixTimeSeriesDefaults() {
-        //avoid instances
-    }
-
 
     /**
      * Default group by function for the metric time series class.
      * Groups time series on its metric name.
      */
     public static final Function<MetricTimeSeries, String> GROUP_BY = MetricTimeSeries::getMetric;
-
     /**
      * Default reduce function.
      * Attributes in both collected and reduced are merged using set holding both values.
@@ -77,4 +71,8 @@ public final class ChronixTimeSeriesDefaults {
 
         return collected;
     };
+
+    private ChronixTimeSeriesDefaults() {
+        //avoid instances
+    }
 }

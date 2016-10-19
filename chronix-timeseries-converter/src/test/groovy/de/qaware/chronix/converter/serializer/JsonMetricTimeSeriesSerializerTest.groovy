@@ -25,7 +25,7 @@ import spock.lang.Unroll
 import java.nio.charset.Charset
 
 /**
- * Unit test for the kassiopeia serializer
+ * Unit test for the time json metric series serializer
  * @author f.lautenschlager
  */
 class JsonMetricTimeSeriesSerializerTest extends Specification {
