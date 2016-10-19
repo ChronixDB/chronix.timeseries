@@ -185,40 +185,30 @@ public final class ProtoBufMetricTimeSeriesSerializer {
         long lastStoredOffset = 0;
 
         long startDate = 0;
-
-        double currentValue;
+        int index = 0;
+        long offset = 0;
 
         Map<Double, Integer> valueIndex = new HashMap<>();
-
-        int index = 0;
 
         MetricProtocolBuffers.Point.Builder point = MetricProtocolBuffers.Point.newBuilder();
         MetricProtocolBuffers.Points.Builder points = MetricProtocolBuffers.Points.newBuilder();
 
-        long offset = 0;
 
         while (metricDataPoints.hasNext()) {
 
             Point p = metricDataPoints.next();
-            boolean lastPoint = !metricDataPoints.hasNext();
-            point.clear();
 
             if (p == null) {
                 LOGGER.debug("Skipping 'null' point.");
                 continue;
             }
 
+            boolean lastPoint = !metricDataPoints.hasNext();
+            point.clear();
             long currentTimestamp = p.getTimestamp();
 
-            currentValue = p.getValue();
-
-            //build value index
-            if (valueIndex.containsKey(currentValue)) {
-                point.setVIndex(valueIndex.get(currentValue));
-            } else {
-                valueIndex.put(currentValue, index);
-                point.setV(currentValue);
-            }
+            //Add value or index, if the value already exists
+            addValueOrRefIndex(index, valueIndex, point, p);
 
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp
@@ -231,115 +221,58 @@ public final class ProtoBufMetricTimeSeriesSerializer {
             //Semantic Compression
             if (almostEquals == -1) {
                 points.addP(point.build());
+                continue;
+            }
+
+            //we always store the first an the last point as supporting points
+            //Date-Delta-Compaction is within a defined start and end
+            if (lastPoint) {
+                long calcPoint = calcPoint(startDate, points.getPList(), almostEquals);
+                //Calc offset
+                long offsetToEnd = currentTimestamp - calcPoint;
+
+                //everything okay
+                if (offsetToEnd >= 0) {
+                    setTimeStamp(point, offsetToEnd);
+                    points.addP(point);
+                } else {
+                    rearrangePoints(startDate, currentTimestamp, offsetToEnd, almostEquals, points, point);
+                }
             } else {
 
-                //we always store the first an the last point as supporting points
-                //Date-Delta-Compaction is within a defined start and end
-                if (lastPoint) {
 
-                    long calcPoint = calcPoint(startDate, points.getPList(), almostEquals);
-                    //Calc offset
-                    long offsetToEnd = currentTimestamp - calcPoint;
-
-                    //everything okay
-                    if (offsetToEnd >= 0) {
-                        if (safeLongToUInt(offsetToEnd)) {
-                            points.addP(point.setTint((int) offsetToEnd).build());
-                        } else {
-                            points.addP(point.setTlong(offsetToEnd).build());
-                        }
-
-                    } else {
-                        //break the offset down on all points
-                        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (points.getPCount() - 1));
-
-                        for (int i = 1; i < points.getPCount(); i++) {
-                            MetricProtocolBuffers.Point mod = points.getP(i);
-                            long t = getT(mod);
-
-                            //check if can correct the deltas
-                            if (offsetToEnd < 0) {
-                                long newOffset;
-
-                                if (offsetToEnd + avgPerDelta > 0) {
-                                    avgPerDelta = offsetToEnd * -1;
-                                }
-
-                                //if we have a t value
-                                if (t > avgPerDelta) {
-                                    newOffset = t - avgPerDelta;
-                                    MetricProtocolBuffers.Point.Builder modPoint = mod.toBuilder();
-                                    setT(modPoint, newOffset);
-                                    mod = modPoint.build();
-                                    offsetToEnd += avgPerDelta;
-                                }
-
-                            }
-                            points.setP(i, mod);
-                        }
-
-
-                        //Done
-                        long arragendPoint = calcPoint(startDate, points.getPList(), almostEquals);
-
-                        long storedOffsetToEnd = currentTimestamp - arragendPoint;
-                        if (storedOffsetToEnd < 0) {
-                            LOGGER.warn("Stored offset is negative. Setting to 0. But that is an error.");
-                            storedOffsetToEnd = 0;
-                        }
-                        if (safeLongToUInt(storedOffsetToEnd)) {
-                            points.addP(point.setTintBP((int) storedOffsetToEnd).build());
-                        } else {
-                            points.addP(point.setTlongBP(storedOffsetToEnd).build());
-                        }
-                    }
-
-                } else {
-
-
-                    boolean isAlmostEquals = almostEquals(previousOffset, offset, almostEquals);
-                    long drift = 0;
-                    if (isAlmostEquals) {
-                        drift = drift(currentTimestamp, lastStoredDate, timesSinceLastOffset, lastStoredOffset);
-                    }
-
-                    if (isAlmostEquals && noDrift(drift, almostEquals, timesSinceLastOffset) && drift >= 0) {
-                        points.addP(point.build());
-                        timesSinceLastOffset += 1;
-                    } else {
-                        long timeStamp = offset;
-
-                        //If the previous offset was not stored, correct the following offset using the calculated drift
-                        if (timesSinceLastOffset > 0 && offset > previousDrift) {
-                            timeStamp = offset - previousDrift;
-
-                            if (safeLongToUInt(timeStamp)) {
-                                point.setTintBP((int) timeStamp);
-                            } else {
-                                point.setTlongBP(timeStamp);
-                            }
-
-                        } else {
-                            if (safeLongToUInt(timeStamp)) {
-                                point.setTint((int) timeStamp);
-                            } else {
-                                point.setTlong(timeStamp);
-                            }
-                        }
-
-                        //Store offset
-                        points.addP(point.build());
-                        //reset the offset counter
-                        timesSinceLastOffset = 0;
-                        lastStoredDate = p.getTimestamp();
-                        lastStoredOffset = timeStamp;
-
-                    }
-                    //set current as former previous date
-                    previousDrift = drift;
-                    previousOffset = offset;
-                    previousDate = currentTimestamp;
+                boolean isAlmostEquals = almostEquals(previousOffset, offset, almostEquals);
+                long drift = 0;
+                if (isAlmostEquals) {
+                    drift = drift(currentTimestamp, lastStoredDate, timesSinceLastOffset, lastStoredOffset);
                 }
+
+                if (isAlmostEquals && noDrift(drift, almostEquals, timesSinceLastOffset) && drift >= 0) {
+                    points.addP(point.build());
+                    timesSinceLastOffset += 1;
+                } else {
+                    long timeStamp = offset;
+
+                    //If the previous offset was not stored, correct the following offset using the calculated drift
+                    if (timesSinceLastOffset > 0 && offset > previousDrift) {
+                        timeStamp = offset - previousDrift;
+                        setBPTimeStamp(point, timeStamp);
+                    } else {
+                        setTimeStamp(point, timeStamp);
+                    }
+
+                    //Store offset
+                    points.addP(point.build());
+                    //reset the offset counter
+                    timesSinceLastOffset = 0;
+                    lastStoredDate = p.getTimestamp();
+                    lastStoredOffset = timeStamp;
+
+                }
+                //set current as former previous date
+                previousDrift = drift;
+                previousOffset = offset;
+                previousDate = currentTimestamp;
             }
             index++;
         }
@@ -347,6 +280,87 @@ public final class ProtoBufMetricTimeSeriesSerializer {
         points.setDdc(almostEquals);
         return points.build().toByteArray();
     }
+
+    private static void addValueOrRefIndex(int index, Map<Double, Integer> valueIndex, MetricProtocolBuffers.Point.Builder point, Point p) {
+        double currentValue = p.getValue();
+
+        //build value index
+        if (valueIndex.containsKey(currentValue)) {
+            point.setVIndex(valueIndex.get(currentValue));
+        } else {
+            valueIndex.put(currentValue, index);
+            point.setV(currentValue);
+        }
+    }
+
+    private static void setTimeStamp(MetricProtocolBuffers.Point.Builder point, long timeStamp) {
+        if (safeLongToUInt(timeStamp)) {
+            point.setTint((int) timeStamp);
+        } else {
+            point.setTlong(timeStamp);
+        }
+    }
+
+    private static void setBPTimeStamp(MetricProtocolBuffers.Point.Builder point, long storedOffsetToEnd) {
+        if (safeLongToUInt(storedOffsetToEnd)) {
+            point.setTintBP((int) storedOffsetToEnd);
+        } else {
+            point.setTlongBP(storedOffsetToEnd);
+        }
+    }
+
+    /**
+     * @param startDate
+     * @param currentTimestamp
+     * @param offsetToEnd
+     * @param almostEquals
+     * @param points
+     * @param point
+     */
+    private static void rearrangePoints(long startDate, long currentTimestamp, long offsetToEnd, int almostEquals, MetricProtocolBuffers.Points.Builder points, MetricProtocolBuffers.Point.Builder point) {
+        //break the offset down on all points
+        long avgPerDelta = (long) Math.ceil((double) offsetToEnd * -1 + almostEquals / (double) (points.getPCount() - 1));
+
+        for (int i = 1; i < points.getPCount(); i++) {
+            MetricProtocolBuffers.Point mod = points.getP(i);
+            long t = getT(mod);
+
+            //check if can correct the deltas
+            if (offsetToEnd < 0) {
+                long newOffset;
+
+                if (offsetToEnd + avgPerDelta > 0) {
+                    avgPerDelta = offsetToEnd * -1;
+                }
+
+                //if we have a t value
+                if (t > avgPerDelta) {
+                    newOffset = t - avgPerDelta;
+                    MetricProtocolBuffers.Point.Builder modPoint = mod.toBuilder();
+                    setT(modPoint, newOffset);
+                    mod = modPoint.build();
+                    offsetToEnd += avgPerDelta;
+                }
+
+            }
+            points.setP(i, mod);
+        }
+
+
+        //Done
+        long arrangedPoint = calcPoint(startDate, points.getPList(), almostEquals);
+
+        long storedOffsetToEnd = currentTimestamp - arrangedPoint;
+        if (storedOffsetToEnd < 0) {
+            LOGGER.warn("Stored offset is negative. Setting to 0. But that is an error.");
+            storedOffsetToEnd = 0;
+        }
+
+        setBPTimeStamp(point, storedOffsetToEnd);
+
+        points.addP(point);
+    }
+
 
     /**
      * Sets the new t for the point. Checks which t was set.
