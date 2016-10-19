@@ -16,8 +16,8 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.dts.Pair;
-import de.qaware.chronix.iterators.ImmutableIterator;
+import de.qaware.chronix.timeseries.dts.Pair;
+import de.qaware.chronix.timeseries.iterators.ImmutableIterator;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import java.util.Iterator;

@@ -16,8 +16,8 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.dts.Pair;
-import de.qaware.chronix.dts.WeakLogic;
+import de.qaware.chronix.timeseries.dts.Pair;
+import de.qaware.chronix.timeseries.dts.WeakLogic;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -26,15 +26,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static de.qaware.chronix.dts.Pair.pairOf;
-import static de.qaware.chronix.dts.WeakLogic.weakComparator;
-import static de.qaware.chronix.iterators.Iterators.of;
-import static de.qaware.chronix.iterators.Iterators.takeAll;
+
 import static de.qaware.chronix.timeseries.TimeSeries.merge;
+import static de.qaware.chronix.timeseries.dts.Pair.pairOf;
+import static de.qaware.chronix.timeseries.dts.WeakLogic.weakComparator;
+import static de.qaware.chronix.timeseries.iterators.Iterators.takeAll;
 import static java.util.Arrays.asList;
 import static junit.framework.TestCase.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
+import static de.qaware.chronix.timeseries.iterators.Iterators.*;
+
 
 /**
  * Basic unit test for the time series.
@@ -101,6 +103,7 @@ public class TimeSeriesTest {
         ts = takeAll(sf.iterator());
         assertEquals(ts.size(), 4);
     }
+
 
     @Test
     public void testMerge1() {

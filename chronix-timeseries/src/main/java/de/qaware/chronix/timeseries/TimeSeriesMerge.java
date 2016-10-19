@@ -16,13 +16,13 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.dts.Pair;
-import de.qaware.chronix.iterators.ImmutableIterator;
+import de.qaware.chronix.timeseries.dts.Pair;
+import de.qaware.chronix.timeseries.iterators.ImmutableIterator;
 
 import java.util.*;
 
-import static de.qaware.chronix.dts.WeakLogic.weakComparator;
-import static de.qaware.chronix.iterators.Iterators.any;
+import static de.qaware.chronix.timeseries.dts.WeakLogic.weakComparator;
+import static de.qaware.chronix.timeseries.iterators.Iterators.any;
 
 /**
  * This class merges a list of time series. They are are given as iterators of (time, value)-pairs.

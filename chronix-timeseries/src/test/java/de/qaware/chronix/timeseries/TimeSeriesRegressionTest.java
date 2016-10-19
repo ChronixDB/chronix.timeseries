@@ -15,16 +15,16 @@
  */
 package de.qaware.chronix.timeseries;
 
-
-import de.qaware.chronix.dts.Pair;
+import de.qaware.chronix.timeseries.dts.Pair;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static de.qaware.chronix.iterators.Iterators.empty;
-import static de.qaware.chronix.iterators.Iterators.takeAll;
+
+import static de.qaware.chronix.timeseries.iterators.Iterators.empty;
+import static de.qaware.chronix.timeseries.iterators.Iterators.takeAll;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 

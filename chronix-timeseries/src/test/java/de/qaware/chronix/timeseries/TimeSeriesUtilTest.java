@@ -16,7 +16,7 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.dts.Pair;
+import de.qaware.chronix.timeseries.dts.Pair;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -25,8 +25,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.Function;
 
-import static de.qaware.chronix.iterators.Iterators.takeAll;
-import static de.qaware.chronix.iterators.Iterators.unaryGenerator;
+import static de.qaware.chronix.timeseries.iterators.Iterators.takeAll;
+import static de.qaware.chronix.timeseries.iterators.Iterators.unaryGenerator;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;

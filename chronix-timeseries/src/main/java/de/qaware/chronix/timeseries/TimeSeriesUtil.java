@@ -16,17 +16,19 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.dts.Pair;
+import de.qaware.chronix.timeseries.dts.Pair;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
-import static de.qaware.chronix.dts.Pair.pairOf;
-import static de.qaware.chronix.dts.WeakLogic.weakBinaryOperator;
-import static de.qaware.chronix.iterators.FluentIterator.fluent;
-import static de.qaware.chronix.iterators.Iterators.*;
+import static de.qaware.chronix.timeseries.dts.Pair.pairOf;
+import static de.qaware.chronix.timeseries.dts.WeakLogic.weakBinaryOperator;
+import static de.qaware.chronix.timeseries.iterators.FluentIterator.fluent;
+import static de.qaware.chronix.timeseries.iterators.Iterators.asIterator;
+import static de.qaware.chronix.timeseries.iterators.Iterators.map;
+import static de.qaware.chronix.timeseries.iterators.Iterators.reduce;
 
 
 /**

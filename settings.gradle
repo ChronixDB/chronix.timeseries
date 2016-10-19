@@ -3,6 +3,3 @@ rootProject.name = 'chronix.timeseries'
 include 'chronix-timeseries-common'
 include 'chronix-timeseries'
 include 'chronix-timeseries-converter'
-include 'chronix-timeseries-simple'
-include 'chronix-timeseries-simple-converter'
-

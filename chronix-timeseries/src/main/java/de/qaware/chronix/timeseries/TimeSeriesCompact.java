@@ -16,8 +16,8 @@
 package de.qaware.chronix.timeseries;
 
 
-import de.qaware.chronix.dts.Pair;
-import de.qaware.chronix.iterators.ImmutableIterator;
+import de.qaware.chronix.timeseries.dts.Pair;
+import de.qaware.chronix.timeseries.iterators.ImmutableIterator;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -15,20 +15,21 @@
  */
 package de.qaware.chronix.timeseries;
 
-import de.qaware.chronix.dts.Pair;
-import de.qaware.chronix.dts.WeakLogic;
-import de.qaware.chronix.iterators.FluentIterator;
+
+import de.qaware.chronix.timeseries.dts.Pair;
+import de.qaware.chronix.timeseries.dts.WeakLogic;
+import de.qaware.chronix.timeseries.iterators.FluentIterator;
 
 import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.Function;
 
-import static de.qaware.chronix.dts.Pair.pairOf;
-import static de.qaware.chronix.dts.WeakLogic.weakBinaryOperator;
-import static de.qaware.chronix.dts.WeakLogic.weakComparator;
-import static de.qaware.chronix.iterators.FluentIterator.fluent;
-import static de.qaware.chronix.iterators.Iterators.*;
+import static de.qaware.chronix.timeseries.dts.Pair.pairOf;
+import static de.qaware.chronix.timeseries.dts.WeakLogic.weakBinaryOperator;
+import static de.qaware.chronix.timeseries.dts.WeakLogic.weakComparator;
+import static de.qaware.chronix.timeseries.iterators.FluentIterator.fluent;
+import static de.qaware.chronix.timeseries.iterators.Iterators.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.binarySearch;
 
