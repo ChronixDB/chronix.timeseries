@@ -51,7 +51,7 @@ public final class MetricTimeSeries implements Serializable {
 
     //Marks if the time series needs a sort
     //Used to avoid unnecessary sorts.
-    private boolean needsSort;
+    private boolean needsSort = true;
 
     /**
      * Private constructor.
@@ -332,6 +332,77 @@ public final class MetricTimeSeries implements Serializable {
     }
 
     /**
+     * @return maximum of the values of the list
+     */
+    public double max() {
+        return values.max();
+    }
+
+    /**
+     * @return minimum of the values of the list
+     */
+    public double min() {
+        return values.min();
+    }
+
+    /**
+     * @param scale to be applied to the values of this list
+     * @return a new instance scaled with the given parameter
+     */
+    public MetricTimeSeries scale(final double scale) {
+        return new Builder(metric + " scaled by " + scale).points(timestamps, values.scale(scale)).build();
+    }
+
+    /**
+     * @return average of the values of the list
+     */
+    public double avg() {
+        return values.avg();
+    }
+
+    /**
+     * @param delta the whole list is shifted
+     * @return a new instance with shifted values
+     */
+    public MetricTimeSeries shift(final long delta) {
+        return new Builder(metric + " shifted by " + delta).points(timestamps.shift(delta), values).build();
+    }
+
+    /**
+     * Calculates the standard deviation
+     *
+     * @return the standard deviation
+     */
+    public double stdDeviation() {
+        return values.stdDeviation();
+    }
+
+    /**
+     * Implemented the quantile type 7 referred to
+     * http://tolstoy.newcastle.edu.au/R/e17/help/att-1067/Quartiles_in_R.pdf
+     * and
+     * http://stat.ethz.ch/R-manual/R-patched/library/stats/html/quantile.html
+     * as its the default quantile implementation
+     * <p>
+     * <code>
+     * QuantileType7 = function (v, p) {
+     * v = sort(v)
+     * h = ((length(v)-1)*p)+1
+     * v[floor(h)]+((h-floor(h))*(v[floor(h)+1]- v[floor(h)]))
+     * }
+     * </code>
+     *
+     * @param percentile - the percentile (0 - 1), e.g. 0.25
+     * @return the value of the n-th percentile
+     */
+    public double percentile(final double percentile) {
+        if (values.isEmpty()) {
+            return Double.NaN;
+        }
+        return values.percentile(percentile);
+    }
+
+    /**
      * The Builder class
      */
     public static final class Builder {
@@ -431,76 +502,5 @@ public final class MetricTimeSeries implements Serializable {
             metricTimeSeries.start = start;
             return this;
         }
-    }
-
-    /**
-     * @return maximum of the values of the list
-     */
-    public double max() {
-        return values.max();
-    }
-
-    /**
-     * @return minimum of the values of the list
-     */
-    public double min() {
-        return values.min();
-    }
-
-    /**
-     * @param scale to be applied to the values of this list
-     * @return a new instance scaled with the given parameter
-     */
-    public MetricTimeSeries scale(final double scale) {
-        return new Builder(metric + " scaled by " + scale).points(timestamps, values.scale(scale)).build();
-    }
-
-    /**
-     * @return average of the values of the list
-     */
-    public double avg() {
-        return values.avg();
-    }
-
-    /**
-     * @param delta the whole list is shifted
-     * @return a new instance with shifted values
-     */
-    public MetricTimeSeries shift(final long delta) {
-        return new Builder(metric + " shifted by " + delta).points(timestamps.shift(delta), values).build();
-    }
-
-    /**
-     * Calculates the standard deviation
-     *
-     * @return the standard deviation
-     */
-    public double stdDeviation() {
-        return values.stdDeviation();
-    }
-
-    /**
-     * Implemented the quantile type 7 referred to
-     * http://tolstoy.newcastle.edu.au/R/e17/help/att-1067/Quartiles_in_R.pdf
-     * and
-     * http://stat.ethz.ch/R-manual/R-patched/library/stats/html/quantile.html
-     * as its the default quantile implementation
-     * <p>
-     * <code>
-     * QuantileType7 = function (v, p) {
-     * v = sort(v)
-     * h = ((length(v)-1)*p)+1
-     * v[floor(h)]+((h-floor(h))*(v[floor(h)+1]- v[floor(h)]))
-     * }
-     * </code>
-     *
-     * @param percentile - the percentile (0 - 1), e.g. 0.25
-     * @return the value of the n-th percentile
-     */
-    public double percentile(final double percentile) {
-        if (values.isEmpty()) {
-            return Double.NaN;
-        }
-        return values.percentile(percentile);
     }
 }
