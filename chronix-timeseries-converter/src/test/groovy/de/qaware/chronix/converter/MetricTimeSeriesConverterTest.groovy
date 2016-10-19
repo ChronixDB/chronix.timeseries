@@ -21,7 +21,7 @@ import spock.lang.Specification
 import java.time.Instant
 
 /**
- * Unit test for the kassiopeia simple converter
+ * Unit test for the metric time series converter
  * @author f.lautenschlager
  */
 class MetricTimeSeriesConverterTest extends Specification {

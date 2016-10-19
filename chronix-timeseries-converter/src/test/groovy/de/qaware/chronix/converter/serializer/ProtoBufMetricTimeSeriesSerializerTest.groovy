@@ -309,7 +309,9 @@ class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
         points.add(new Point(2, 305, 30))
         points.add(new Point(3, 401, 39))
         points.add(new Point(4, 509, 48))
-        points.add(new Point(5, 510, 10))
+        points.add(new Point(5, 510, 48))
+        points.add(new Point(6, 511, 48))
+        points.add(new Point(7, 509, 10))
 
         def builder = new MetricTimeSeries.Builder("rearrange");
 
@@ -321,7 +323,7 @@ class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
         def listPoints = ts.points().collect(Collectors.toList()) as List<Point>
 
         then:
-        listPoints.get(5).timestamp == 510
+        listPoints.get(7).timestamp == 509
 
     }
 
@@ -379,7 +381,7 @@ class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
 
 
         when:
-        def file = new File("ddc-threshold.csv")
+        def file = new File("build/ddc-threshold.csv")
         file.write("")
         writeToFile(file, "Index;AlmostEquals;Legend;Value")
 
