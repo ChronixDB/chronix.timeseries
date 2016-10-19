@@ -176,6 +176,10 @@ public final class ProtoBufMetricTimeSeriesSerializer {
      */
     public static byte[] to(final Iterator<Point> metricDataPoints, final int ddcThreshold) {
 
+        if (ddcThreshold < 0) {
+            throw new IllegalArgumentException("DDC Threshold must not be lower than 0. Current value is: " + ddcThreshold);
+        }
+
         long previousDate = 0, previousDelta = 0, previousDrift = 0;
 
         long startDate = 0, lastStoredDate = 0;
@@ -202,13 +206,6 @@ public final class ProtoBufMetricTimeSeriesSerializer {
 
             //Add value or index, if the value already exists
             setValueOrRefIndexOnPoint(valueIndex, index, p.getValue(), point);
-
-            //If one only want to store the values
-            if (ddcThreshold == -1) {
-                points.addP(point.build());
-                continue;
-            }
-
 
             if (previousDate == 0) {
                 // set lastStoredDate to the value of the first timestamp

@@ -300,7 +300,6 @@ class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
 
     }
 
-
     def "test rearrange points"() {
         given:
         def points = []
@@ -327,6 +326,12 @@ class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
 
     }
 
+    def "test ddc threshold -1"() {
+        when:
+        ProtoBufMetricTimeSeriesSerializer.to(null, -1)
+        then:
+        thrown(IllegalArgumentException)
+    }
 
     def "test raw time series with almost_equals = 0"() {
         given:
