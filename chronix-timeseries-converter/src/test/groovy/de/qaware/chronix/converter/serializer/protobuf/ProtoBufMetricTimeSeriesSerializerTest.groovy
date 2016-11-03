@@ -13,10 +13,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-package de.qaware.chronix.converter.serializer
+package de.qaware.chronix.converter.serializer.protobuf
 
 import de.qaware.chronix.converter.common.Compression
-import de.qaware.chronix.converter.serializer.protobuf.ProtoBufMetricTimeSeriesSerializer
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import de.qaware.chronix.timeseries.dts.Point
 import spock.lang.Shared
@@ -38,7 +37,7 @@ class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
         given:
         def points = []
         100.times {
-            points.add(new Point(it, it + 1, it * 100))
+            points.add(new Point(it, it, it * 100))
         }
         def compressedProtoPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator())
 

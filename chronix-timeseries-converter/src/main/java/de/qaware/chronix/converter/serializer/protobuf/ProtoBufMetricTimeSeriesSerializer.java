@@ -180,10 +180,15 @@ public final class ProtoBufMetricTimeSeriesSerializer {
             throw new IllegalArgumentException("DDC Threshold must not be lower than 0. Current value is: " + ddcThreshold);
         }
 
-        long previousDate = 0, previousDelta = 0, previousDrift = 0;
+        long previousDate = -1;
+        long previousDelta = 0;
+        long previousDrift = 0;
 
-        long startDate = 0, lastStoredDate = 0;
-        long delta = 0, lastStoredDelta = 0;
+        long startDate = 0;
+        long lastStoredDate = 0;
+        long delta = 0;
+        long lastStoredDelta = 0;
+
         int timesSinceLastDelta = 0;
 
         Map<Double, Integer> valueIndex = new HashMap<>();
@@ -207,7 +212,7 @@ public final class ProtoBufMetricTimeSeriesSerializer {
             //Add value or index, if the value already exists
             setValueOrRefIndexOnPoint(valueIndex, index, p.getValue(), point);
 
-            if (previousDate == 0) {
+            if (previousDate == -1) {
                 // set lastStoredDate to the value of the first timestamp
                 lastStoredDate = currentTimestamp;
                 startDate = currentTimestamp;
