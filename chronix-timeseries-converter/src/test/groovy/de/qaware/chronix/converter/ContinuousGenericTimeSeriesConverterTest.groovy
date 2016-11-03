@@ -15,7 +15,7 @@
  */
 package de.qaware.chronix.converter
 
-import de.qaware.chronix.timeseries.TimeSeries
+import de.qaware.chronix.timeseries.GenericTimeSeries
 import de.qaware.chronix.timeseries.dts.Pair
 import spock.lang.Specification
 
@@ -23,15 +23,15 @@ import spock.lang.Specification
  * Unit test for the advanced time series converter
  * @author f.lautenschlager
  */
-class AdvancedTimeSeriesConverterTest extends Specification {
+class ContinuousGenericTimeSeriesConverterTest extends Specification {
 
     def "test to and from storage time series"() {
         given:
-        def converter = new AdvancedTimeSeriesConverter()
+        def converter = new GenericTimeSeriesConverter()
         def points = [Pair.pairOf(1l, 1d),
                       Pair.pairOf(20l, 2d),
                       Pair.pairOf(50l, 3d)]
-        def timeSeries = new TimeSeries<Long, Double>(points.iterator())
+        def timeSeries = new GenericTimeSeries<Long, Double>(points.iterator())
 
         timeSeries.addAttribute("metric", "myMetric")
         timeSeries.addAttribute("host", "NB-Prod-01")
@@ -60,14 +60,14 @@ class AdvancedTimeSeriesConverterTest extends Specification {
 
     def "test from storage series with range query"() {
         given:
-        def converter = new AdvancedTimeSeriesConverter()
+        def converter = new GenericTimeSeriesConverter()
         def points = [Pair.pairOf(1l, 1d),
                       Pair.pairOf(20l, 2d),
                       Pair.pairOf(50l, 3d),
                       Pair.pairOf(80l, 4d),
                       Pair.pairOf(115l, 5d),
                       Pair.pairOf(189l, 6d)]
-        def timeSeries = new TimeSeries<Long, Double>(points.iterator())
+        def timeSeries = new GenericTimeSeries<Long, Double>(points.iterator())
 
         timeSeries.addAttribute("metric", "someMetricName")
 
@@ -88,11 +88,11 @@ class AdvancedTimeSeriesConverterTest extends Specification {
     def "test to with empty time series"() {
 
         given:
-        def converter = new AdvancedTimeSeriesConverter()
+        def converter = new GenericTimeSeriesConverter()
         def points = []
 
         when:
-        def binaryTimeSeries = converter.to(new TimeSeries<Long, Double>(points.iterator()))
+        def binaryTimeSeries = converter.to(new GenericTimeSeries<Long, Double>(points.iterator()))
 
         then:
         binaryTimeSeries.points == new byte[0];

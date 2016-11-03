@@ -24,7 +24,7 @@ import java.time.Instant
  * Unit test for the metric time series converter
  * @author f.lautenschlager
  */
-class MetricTimeSeriesConverterTest extends Specification {
+class MetricGenericTimeSeriesConverterTest extends Specification {
 
     def "test to and from compressed data"() {
         given:

@@ -17,7 +17,6 @@ package de.qaware.chronix.converter.serializer.json
 
 import de.qaware.chronix.converter.common.DoubleList
 import de.qaware.chronix.converter.common.LongList
-import de.qaware.chronix.converter.serializer.json.JsonMetricTimeSeriesSerializer
 import de.qaware.chronix.timeseries.MetricTimeSeries
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -28,7 +27,7 @@ import java.nio.charset.Charset
  * Unit test for the time json metric series serializer
  * @author f.lautenschlager
  */
-class JsonMetricTimeSeriesSerializerTest extends Specification {
+class JsonMetricGenericTimeSeriesSerializerTest extends Specification {
 
     def "test serialize to and deserialize from json"() {
         given:

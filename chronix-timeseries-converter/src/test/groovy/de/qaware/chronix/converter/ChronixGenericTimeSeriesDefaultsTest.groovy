@@ -25,7 +25,7 @@ import java.util.stream.Collectors
  * Unit test for the reduce and group by defaults
  * @author f.lautenschlager
  */
-class ChronixTimeSeriesDefaultsTest extends Specification {
+class ChronixGenericTimeSeriesDefaultsTest extends Specification {
 
     def "test default group by"() {
         given:

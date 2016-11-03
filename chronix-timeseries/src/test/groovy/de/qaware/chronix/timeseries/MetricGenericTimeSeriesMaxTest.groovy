@@ -23,7 +23,7 @@ import spock.lang.Specification
  * Unit test for the metric time series
  * @author f.lautenschlager
  */
-class MetricTimeSeriesMaxTest extends Specification {
+class MetricGenericTimeSeriesMaxTest extends Specification {
 
     def "test max"() {
         given:

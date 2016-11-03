@@ -23,7 +23,7 @@ import spock.lang.Specification
  * Unit test for the metric time series
  * @author f.lautenschlager
  */
-class MetricTimeSeriesMinTest extends Specification {
+class MetricGenericTimeSeriesMinTest extends Specification {
 
 
     def "test min"() {

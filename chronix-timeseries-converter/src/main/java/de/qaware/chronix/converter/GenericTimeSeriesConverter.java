@@ -15,8 +15,8 @@
  */
 package de.qaware.chronix.converter;
 
+import de.qaware.chronix.timeseries.GenericTimeSeries;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
-import de.qaware.chronix.timeseries.TimeSeries;
 import de.qaware.chronix.timeseries.dts.Pair;
 import de.qaware.chronix.timeseries.dts.Point;
 import org.slf4j.Logger;
@@ -30,19 +30,19 @@ import java.util.stream.Stream;
  *
  * @author f.lautenschlager
  */
-public class AdvancedTimeSeriesConverter implements TimeSeriesConverter<TimeSeries<Long, Double>> {
+public class GenericTimeSeriesConverter implements TimeSeriesConverter<GenericTimeSeries<Long, Double>> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(AdvancedTimeSeriesConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GenericTimeSeriesConverter.class);
 
     @Override
-    public TimeSeries<Long, Double> from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
+    public GenericTimeSeries<Long, Double> from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
 
         //This is a hack
         MetricTimeSeries metricTimeSeries = new MetricTimeSeriesConverter().from(binaryTimeSeries, queryStart, queryEnd);
-        TimeSeries<Long, Double> timeSeries = new TimeSeries<>(map(metricTimeSeries.points()));
-        metricTimeSeries.getAttributesReference().forEach(timeSeries::addAttribute);
+        GenericTimeSeries<Long, Double> genericTimeSeries = new GenericTimeSeries<>(map(metricTimeSeries.points()));
+        metricTimeSeries.getAttributesReference().forEach(genericTimeSeries::addAttribute);
 
-        return timeSeries;
+        return genericTimeSeries;
     }
 
     private Iterator<Pair<Long, Double>> map(Stream<Point> points) {
@@ -51,11 +51,11 @@ public class AdvancedTimeSeriesConverter implements TimeSeriesConverter<TimeSeri
 
 
     @Override
-    public BinaryTimeSeries to(TimeSeries<Long, Double> timeSeries) {
+    public BinaryTimeSeries to(GenericTimeSeries<Long, Double> genericTimeSeries) {
 
         //-oo is represented through the first element that is null, hence if the size is one the time series is empty
-        if (timeSeries.size() == 1) {
-            LOGGER.info("Empty time series detected. {}", timeSeries);
+        if (genericTimeSeries.size() == 1) {
+            LOGGER.info("Empty time series detected. {}", genericTimeSeries);
             //Create a builder with the minimal required fields
             BinaryTimeSeries.Builder builder = new BinaryTimeSeries.Builder()
                     .data(new byte[]{})
@@ -63,16 +63,16 @@ public class AdvancedTimeSeriesConverter implements TimeSeriesConverter<TimeSeri
                     .end(0);
             return builder.build();
         } else {
-            return new MetricTimeSeriesConverter().to(map(timeSeries));
+            return new MetricTimeSeriesConverter().to(map(genericTimeSeries));
         }
     }
 
-    private MetricTimeSeries map(TimeSeries<Long, Double> timeSeries) {
-        MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(timeSeries.getAttribute("metric").toString());
+    private MetricTimeSeries map(GenericTimeSeries<Long, Double> genericTimeSeries) {
+        MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(genericTimeSeries.getAttribute("metric").toString());
 
 
         //add points
-        Iterator<Pair<Long, Double>> it = timeSeries.iterator();
+        Iterator<Pair<Long, Double>> it = genericTimeSeries.iterator();
 
         //ignore the first element
         if (it.hasNext()) {
@@ -85,7 +85,7 @@ public class AdvancedTimeSeriesConverter implements TimeSeriesConverter<TimeSeri
         }
 
          //add attributes
-        timeSeries.getAttributes().forEachRemaining(attribute -> builder.attribute(attribute.getKey(), attribute.getValue()));
+        genericTimeSeries.getAttributes().forEachRemaining(attribute -> builder.attribute(attribute.getKey(), attribute.getValue()));
 
         return builder.build();
     }

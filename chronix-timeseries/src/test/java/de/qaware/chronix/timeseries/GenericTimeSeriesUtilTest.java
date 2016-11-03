@@ -34,7 +34,7 @@ import static org.hamcrest.core.Is.is;
 /**
  * Basic unit test for the TimeSeriesUtil.
  */
-public class TimeSeriesUtilTest {
+public class GenericTimeSeriesUtilTest {
 
 
     @Test

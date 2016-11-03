@@ -20,11 +20,10 @@ import spock.lang.Specification
 /**
  * Created by c.hillmann on 07.04.2016.
  */
-class MetricTimeSeriesStdDeviationTest extends Specification {
-
-    def "test execute"() {
+class MetricGenericTimeSeriesPercentileTest extends Specification {
+    def "test percentile"() {
         given:
-        MetricTimeSeries.Builder timeSeries = new MetricTimeSeries.Builder("Stddev");
+        MetricTimeSeries.Builder timeSeries = new MetricTimeSeries.Builder("P");
         10.times {
             timeSeries.point(it, it * 10)
         }
@@ -33,18 +32,17 @@ class MetricTimeSeriesStdDeviationTest extends Specification {
 
 
         when:
-        def result = ts.stdDeviation()
+        def result = ts.percentile(0.5)
         then:
-        result == 3001.381363790528
+        result == 50.0
     }
 
     def "test for empty time series"() {
         when:
         MetricTimeSeries.Builder timeSeries = new MetricTimeSeries.Builder("Empty");
 
-        def result = timeSeries.build().stdDeviation()
+        def result = timeSeries.build().percentile(0.5)
         then:
         result == Double.NaN
     }
-
 }
