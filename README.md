@@ -1,13 +1,11 @@
-[![Build Status](https://travis-ci.org/ChronixDB/chronix.kassiopeia.svg)](https://travis-ci.org/ChronixDB/chronix.kassiopeia)
-[![Coverage Status](https://coveralls.io/repos/ChronixDB/chronix.kassiopeia/badge.svg?branch=master&service=github)](https://coveralls.io/github/ChronixDB/chronix.kassiopeia?branch=master)
-[![Stories in Ready](https://badge.waffle.io/ChronixDB/chronix.kassiopeia.png?label=ready&title=Ready)](https://waffle.io/ChronixDB/chronix.kassiopeia)
-[![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.kassiopeia/blob/master/LICENSE)
-[ ![Download](https://api.bintray.com/packages/chronix/maven/chronix-kassiopeia/images/download.svg) ](https://bintray.com/chronix/maven/chronix-kassiopeia/_latestVersion)
+[![Build Status](https://travis-ci.org/ChronixDB/chronix.timeseries.svg)](https://travis-ci.org/ChronixDB/chronix.timeseries)
+[![Coverage Status](https://coveralls.io/repos/github/ChronixDB/chronix.timeseries/badge.svg?branch=master)](https://coveralls.io/github/ChronixDB/chronix.timeseries?branch=master)
+[![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.timeseries/blob/master/LICENSE)
+[ ![Download](https://api.bintray.com/packages/chronix/maven/chronix-timeseries/images/download.svg) ](https://bintray.com/chronix/maven/chronix-timeseries/_latestVersion)
 
-# Chronix Kassiopeia
-Chronix Kassiopeia is a library that provides classes and functions to work with time series.
-Kassiopeia can easily plugged into Chronix.
-Kassiopeia is split up into different time series classes with its belonging converters.
+# Chronix Time Series
+Chronix time series is a library that provides classes and functions to work with time related data and can easily plugged into Chronix.
+It is split up into different time series classes with its belonging converters.
 The first implementation is Chronix-Kassiopeia. 
 It consists of the following packages: 
 - Chronix-Kassiopeia
@@ -17,12 +15,8 @@ The second implementation is Chronix-Kassiopeia-Simple.
 - Chronix-Kassiopeia-Simple
 - Chronix-Kassiopeia-Simple-Converter
 
-The third implementation is Chronix-Kassiopeia-Strace (experimental)
-- Chronix-Kassiopeia-Strace
-- Chronix-Kassiopeia-Strace-Converter
-
 ## Chronix-Kassiopeia
-Chronix-Kassiopeia has no dependencies to Chronix.
+Chronix time series has no dependencies to Chronix.
 Hence it can be used in any project without putting any Chronix libraries to the classpath.
 
 ### Chronix-Kassiopeia Time Series

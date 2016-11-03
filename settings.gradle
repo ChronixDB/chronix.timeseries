@@ -1,7 +1,5 @@
-rootProject.name = 'chronix.kassiopeia'
+rootProject.name = 'chronix.timeseries'
 
-include 'chronix-kassiopeia-converter'
-include 'chronix-kassiopeia'
-include 'chronix-kassiopeia-simple'
-include 'chronix-kassiopeia-simple-converter'
-include 'chronix-kassiopeia-common'
+include 'chronix-timeseries-common'
+include 'chronix-timeseries'
+include 'chronix-timeseries-converter'
