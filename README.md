@@ -126,6 +126,7 @@ Furthermore, the DDC keeps track of the accumulated drift as the difference betw
 adds up with the number of data points stored.
 As soon as the drift is above the threshold, DDC stores a correcting delta that brings the reconstruction back to of the actual timestamp.
 ![ddc](https://cloud.githubusercontent.com/assets/3796738/19962421/c83f5fc0-a1b7-11e6-8c40-08dca99d46fb.png)
+
 DDC calculates deltas (0, 10000, 10002, 10004) of timestamps and compares them (0, 10000, 2, 4).
 It removes deltas that are below a threshold (\_, 10000, \_, \_) and checks the drift of the reconstructed timestamps.
 As _r4_ is too far off from _t4_, DDC stores a correcting delta instead.
