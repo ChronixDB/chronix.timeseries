@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-	compile 'de.qaware.chronix:chronix-kassiopeia:latestVersion'
+	compile 'de.qaware.chronix:chronix-timeseries:latestVersion'
 }
 ```
 
