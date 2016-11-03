@@ -1,9 +1,10 @@
-# Chronix Time Series
-Chronix Time Series is a library that provides classes and functions to work with time series.
+# Chronix Generic Time Series
+Chronix Generic Time Series is a library that provides classes and functions to work with time series.
 
 ## Usage
 
 ### Dependencies
+**Note:** Replace latestVersion with the latest version number.
 
 If you are using Maven to build your project, add the following to the `pom.xml` file:
 ```xml
@@ -21,8 +22,8 @@ If you are using Maven to build your project, add the following to the `pom.xml`
 <dependencies>
     <dependency>
         <groupId>de.qaware.chronix</groupId>
-        <artifactId>chronix-kassiopeia</artifactId>
-        <version>0.1.1</version>
+        <artifactId>chronix-timeseries</artifactId>
+        <version>latestVersion</version>
     </dependency>
 </dependencies>
 ```
@@ -37,30 +38,30 @@ repositories {
 }
 
 dependencies {
-	compile 'de.qaware.chronix:chronix-kassiopeia:0.1.1'
+	compile 'de.qaware.chronix:chronix-kassiopeia:latestVersion'
 }
 ```
 
-### TimeSeries
+### GenericTimeSeries
 
-A time series is a list of timestamps, each timestamp being a (T, V)-pair
+A generic time series is a list of timestamps, each timestamp being a (T, V)-pair
 with T (for type of time) a Comparable and no assumptions about V (for type of value). Throughout the package,
 the T-values (time) of a time series are assumed non-decreasing.
 
 There are two approaches:
-a) Put the list into an object of class TimeSeries. This class guarantees its integrity and provides several useful methods.
+a) Put the list into an object of class GenericTimeSeries. This class guarantees its integrity and provides several useful methods.
 b) Forget about the class and apply static methods of TimeSeriesUtil directly to iterators of timestamps, 
    unwinding the input iterators stepwise. This can be an enormous advantage. 
 
 We describe (a) first and then (b).
 
-TimeSeries can be created from iterables or iterators of (time, value)-pairs.
+GenericTimeSeries can be created from iterables or iterators of (time, value)-pairs.
 The idea behind this class is mainly that it considers time series stepwise constant functions defined for values of T.
-So, the TimeSeries created by the pairs [(0, 7), (10, 70)] would evaluate to null (= undefined) on the interval 
-(-oo, 0), to 7 on [0, 10) and to 70 on [10, oo). The pairs [(null, 3), (5, 30)] create a TimeSeries evaluating to 3 
-on (-oo, 5) and to 30 on [5, +oo). This shows how TimeSeries implements the method *apply(T)* of UnaryFunction.
+So, the GenericTimeSeries created by the pairs [(0, 7), (10, 70)] would evaluate to null (= undefined) on the interval 
+(-oo, 0), to 7 on [0, 10) and to 70 on [10, oo). The pairs [(null, 3), (5, 30)] create a GenericTimeSeries evaluating to 3 
+on (-oo, 5) and to 30 on [5, +oo). This shows how GenericTimeSeries implements the method *apply(T)* of UnaryFunction.
 The principle of left closed and right open intervals holds throughout the class.
-TimeSeries has been designed for handling -oo and +oo as valid time and for coping with missing values
+GenericTimeSeries has been designed for handling -oo and +oo as valid time and for coping with missing values
 which are represented by null. All time series go from -oo to +oo, the first value
 might be defined (not null) or undefined (null). null is considered the smallest element of the universe.
 This class guarantees:
@@ -71,23 +72,23 @@ This class guarantees:
 
  * The value changes at each timestamp.
 
-The crucial methods of TimeSeries are three varieties of merge. What they have in common is to
-create a new TimeSeries from the ones given by merging (unioning) all timestamps. They differ in how they compute
+The crucial methods of GenericTimeSeries are three varieties of merge. What they have in common is to
+create a new GenericTimeSeries from the ones given by merging (unioning) all timestamps. They differ in how they compute
 the new value from the values available. They are all static.
 
-*merge(TimeSeries\<V\> tv, TimeSeries\<V\> tw, BinaryOperator\<V, V, U\>)*
+*merge(GenericTimeSeries\<V\> tv, GenericTimeSeries\<V\> tw, BinaryOperator\<V, V, U\>)*
 
-*merge(Iterable\<TimeSeries\>, BinaryOperator\<V\>)*
+*merge(GenericTimeSeries\<GenericTimeSeries\>, BinaryOperator\<V\>)*
 
-*merge(Iterable\<TimeSeries\>)*
+*merge(GenericTimeSeries\<GenericTimeSeries\>)*
 
 The first *merge* applies the BinaryOperator to the two values available. Applying
-this method to two Integer-valued TimeSeries tv and tw with (x, y) -> x < y as BinaryOperator yields
-a Boolean-valued TimeSeries indicating where tv is less than tw. With tv created by
+this method to two Integer-valued GenericTimeSeries tv and tw with (x, y) -> x < y as BinaryOperator yields
+a Boolean-valued GenericTimeSeries indicating where tv is less than tw. With tv created by
 [(0, 7), (10, 70)] and tw by [(null, 3), (5, 30)] the result would be
 [(null, True), (0, False), (5, True), (10, False)].
 
-The second *merge* accepts any number of TimeSeries as an Iterable and reduces the available values
+The second *merge* accepts any number of GenericTimeSeries as an Iterable and reduces the available values
 to one using the given Binary Operator.
 
 The third *merge* returns the vector of available values.
@@ -102,7 +103,7 @@ Some examples:
 	ArrayList<Pair<Integer, Integer>> aux = new ArrayList<>();
 	aux.add(pairOf(0, 7));
 	aux.add(pairOf(10, 70));
-	TimeSeries<Integer, Integer> tv = new TimeSeries<>(aux);
+	GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(aux);
 	sf.apply(-10000);          // returns null
 	sf.apply(0);               // returns 7
 	sf.apply(10);              // returns 70
@@ -111,18 +112,18 @@ Some examples:
 	aux.clear();
 	aux.add(pairOf(null, 3));
 	aux.add(pairOf(5, 30));
-	TimeSeries<Integer, Integer> tw = new TimeSeries<>(aux);
+	GenericTimeSeries<Integer, Integer> tw = new GenericTimeSeries<>(aux);
 
-	TimeSeries<Integer, Boolean> tr = merge(tv, tw, (x, y) -> x < y);
+	GenericTimeSeries<Integer, Boolean> tr = merge(tv, tw, (x, y) -> x < y);
 	tr.apply(-10000);          // returns True
 	tr.apply(0);               // returns False
 	tr.apply(5);               // returns True
 	tr.apply(10);              // returns False
 ```
 
-We now turn to TimeSeriesUtil. *cleanse* behaves exactly as the constructor of TimeSeries: it removes all but the last
+We now turn to TimeSeriesUtil. *cleanse* behaves exactly as the constructor of GenericTimeSeries: it removes all but the last
 of timestamps with equal t (time) and all but the first of timestamps with equal v (value). *compact* could be used to
-replace seconds-based mesures with minutes-based values of the avg, min or max within that minute. 
+replace seconds-based measures with minutes-based values of the avg, min or max within that minute. 
 The last method method *linearize* computes a stepwise linear approximation of the given time series with epsilon 
 (the last argument) being the maximum deviation. *linearize* uses SimpleRegression of apache.commons and works only 
 for time series of <Double, Double>.

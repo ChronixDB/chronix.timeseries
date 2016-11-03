@@ -15,7 +15,7 @@ That's how the Chronix generic time series looks (A detailed description could b
 	ArrayList<Pair<Integer, Integer>> aux = new ArrayList<>();
 	aux.add(pairOf(0, 7));
 	aux.add(pairOf(10, 70));
-	TimeSeries<Integer, Integer> tv = new TimeSeries<>(aux);
+	GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(aux);
 	sf.apply(-10000);          // returns null
 	sf.apply(0);               // returns 7
 	sf.apply(10);              // returns 70
@@ -24,9 +24,9 @@ That's how the Chronix generic time series looks (A detailed description could b
 	aux.clear();
 	aux.add(pairOf(null, 3));
 	aux.add(pairOf(5, 30));
-	TimeSeries<Integer, Integer> tw = new TimeSeries<>(aux);
+	GenericTimeSeries<Integer, Integer> tw = new GenericTimeSeries<>(aux);
 
-	TimeSeries<Integer, Boolean> tr = merge(tv, tw, (x, y) -> x < y);
+	GenericTimeSeries<Integer, Boolean> tr = merge(tv, tw, (x, y) -> x < y);
 	tr.apply(-10000);          // returns True
 	tr.apply(0);               // returns False
 	tr.apply(5);               // returns True
