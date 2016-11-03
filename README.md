@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/ChronixDB/chronix.timeseries.svg)](https://travis-ci.org/ChronixDB/chronix.timeseries)
 [![Coverage Status](https://coveralls.io/repos/github/ChronixDB/chronix.timeseries/badge.svg?branch=master)](https://coveralls.io/github/ChronixDB/chronix.timeseries?branch=master)
+[![Dependency Status](https://dependencyci.com/github/ChronixDB/chronix.timeseries/badge)](https://dependencyci.com/github/ChronixDB/chronix.timeseries)
+[![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/ChronixDB/chronix.timeseries)
 [![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.timeseries/blob/master/LICENSE)
 [ ![Download](https://api.bintray.com/packages/chronix/maven/chronix-timeseries/images/download.svg) ](https://bintray.com/chronix/maven/chronix-timeseries/_latestVersion)
 
@@ -15,7 +17,7 @@ That's how the Chronix generic time series looks (A detailed description could b
 	ArrayList<Pair<Integer, Integer>> aux = new ArrayList<>();
 	aux.add(pairOf(0, 7));
 	aux.add(pairOf(10, 70));
-	TimeSeries<Integer, Integer> tv = new TimeSeries<>(aux);
+	GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(aux);
 	sf.apply(-10000);          // returns null
 	sf.apply(0);               // returns 7
 	sf.apply(10);              // returns 70
@@ -24,9 +26,9 @@ That's how the Chronix generic time series looks (A detailed description could b
 	aux.clear();
 	aux.add(pairOf(null, 3));
 	aux.add(pairOf(5, 30));
-	TimeSeries<Integer, Integer> tw = new TimeSeries<>(aux);
+	GenericTimeSeries<Integer, Integer> tw = new GenericTimeSeries<>(aux);
 
-	TimeSeries<Integer, Boolean> tr = merge(tv, tw, (x, y) -> x < y);
+	GenericTimeSeries<Integer, Boolean> tr = merge(tv, tw, (x, y) -> x < y);
 	tr.apply(-10000);          // returns True
 	tr.apply(0);               // returns False
 	tr.apply(5);               // returns True
