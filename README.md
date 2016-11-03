@@ -1,5 +1,7 @@
 [![Build Status](https://travis-ci.org/ChronixDB/chronix.timeseries.svg)](https://travis-ci.org/ChronixDB/chronix.timeseries)
 [![Coverage Status](https://coveralls.io/repos/github/ChronixDB/chronix.timeseries/badge.svg?branch=master)](https://coveralls.io/github/ChronixDB/chronix.timeseries?branch=master)
+[![Dependency Status](https://dependencyci.com/github/ChronixDB/chronix.timeseries/badge)](https://dependencyci.com/github/ChronixDB/chronix.timeseries)
+[![Sputnik](https://sputnik.ci/conf/badge)](https://sputnik.ci/app#/builds/ChronixDB/chronix.timeseries)
 [![Apache License 2](http://img.shields.io/badge/license-ASF2-blue.svg)](https://github.com/ChronixDB/chronix.timeseries/blob/master/LICENSE)
 [ ![Download](https://api.bintray.com/packages/chronix/maven/chronix-timeseries/images/download.svg) ](https://bintray.com/chronix/maven/chronix-timeseries/_latestVersion)
 
