@@ -8,7 +8,7 @@ Chronix time series is a library that provides classes and functions to work wit
 It is split up into different time series classes with its belonging converters.
 It has no dependencies to Chronix and can be used in any project without putting other Chronix libraries on the classpath.
 
-### Chronix generic time series
+## Chronix generic time series
 That's how the Chronix generic time series looks (A detailed description could be found here:
 [Chronix-TimeSeries](https://github.com/ChronixDB/chronix.timeseries/tree/master/chronix-timeseries)):
 ```java
