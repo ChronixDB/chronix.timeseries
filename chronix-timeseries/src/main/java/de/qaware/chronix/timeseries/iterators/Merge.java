@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.function.Function;
 
-
 import static de.qaware.chronix.timeseries.iterators.Iterators.all;
 import static de.qaware.chronix.timeseries.iterators.Iterators.any;
 

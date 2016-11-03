@@ -26,16 +26,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 
-
 import static de.qaware.chronix.timeseries.TimeSeries.merge;
 import static de.qaware.chronix.timeseries.dts.Pair.pairOf;
 import static de.qaware.chronix.timeseries.dts.WeakLogic.weakComparator;
+import static de.qaware.chronix.timeseries.iterators.Iterators.of;
 import static de.qaware.chronix.timeseries.iterators.Iterators.takeAll;
 import static java.util.Arrays.asList;
 import static junit.framework.TestCase.*;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static de.qaware.chronix.timeseries.iterators.Iterators.*;
 
 
 /**

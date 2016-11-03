@@ -26,9 +26,7 @@ import java.util.function.Function;
 import static de.qaware.chronix.timeseries.dts.Pair.pairOf;
 import static de.qaware.chronix.timeseries.dts.WeakLogic.weakBinaryOperator;
 import static de.qaware.chronix.timeseries.iterators.FluentIterator.fluent;
-import static de.qaware.chronix.timeseries.iterators.Iterators.asIterator;
-import static de.qaware.chronix.timeseries.iterators.Iterators.map;
-import static de.qaware.chronix.timeseries.iterators.Iterators.reduce;
+import static de.qaware.chronix.timeseries.iterators.Iterators.*;
 
 
 /**

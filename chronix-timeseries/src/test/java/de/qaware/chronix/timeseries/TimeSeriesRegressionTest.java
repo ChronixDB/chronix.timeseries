@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-
 import static de.qaware.chronix.timeseries.iterators.Iterators.empty;
 import static de.qaware.chronix.timeseries.iterators.Iterators.takeAll;
 import static org.hamcrest.MatcherAssert.assertThat;

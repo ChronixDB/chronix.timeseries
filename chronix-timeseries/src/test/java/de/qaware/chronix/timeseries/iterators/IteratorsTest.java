@@ -31,12 +31,12 @@ import java.util.function.Predicate;
 import static de.qaware.chronix.timeseries.dts.Functions.compose;
 import static de.qaware.chronix.timeseries.dts.Pair.pairOf;
 import static de.qaware.chronix.timeseries.dts.WeakLogic.weakBinaryOperator;
+import static de.qaware.chronix.timeseries.iterators.Iterators.*;
 import static java.util.Arrays.asList;
 import static junit.framework.TestCase.assertTrue;
 import static junit.framework.TestCase.fail;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static de.qaware.chronix.timeseries.iterators.Iterators.*;
 
 /**
  * Basic Iterators tests.

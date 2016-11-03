@@ -25,7 +25,6 @@ import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.UnaryOperator;
 
-
 import static de.qaware.chronix.timeseries.iterators.Iterators.*;
 import static de.qaware.chronix.timeseries.iterators.MathIterators.*;
 import static java.lang.StrictMath.abs;

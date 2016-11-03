@@ -22,9 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
-import static de.qaware.chronix.timeseries.dts.Functions.compose;
-import static de.qaware.chronix.timeseries.dts.Functions.curryLeft;
-import static de.qaware.chronix.timeseries.dts.Functions.curryRight;
+import static de.qaware.chronix.timeseries.dts.Functions.*;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
