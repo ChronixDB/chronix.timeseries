@@ -129,7 +129,7 @@ As soon as the drift is above the threshold, DDC stores a correcting delta that 
 DDC calculates deltas (0, 10000, 10002, 10004) of timestamps and compares them (0, 10000, 2, 4).
 It removes deltas that are below a threshold (\_, 10000, \_, \_) and checks the drift of the reconstructed timestamps.
 As _r4_ is too far off from _t4_, DDC stores a correcting delta instead.
-Result: DDC only needs to store two deltas (\_, 10000, \_, 10006) for a correct reconstruction.
+Result: DDC only needs to store two deltas (\_, 10000, \_, 10006) for a reconstruction.
 
 
 ## Usage
