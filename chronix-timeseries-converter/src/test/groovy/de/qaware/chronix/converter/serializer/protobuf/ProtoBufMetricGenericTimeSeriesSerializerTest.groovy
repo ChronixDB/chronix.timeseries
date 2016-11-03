@@ -31,7 +31,7 @@ import java.util.zip.GZIPInputStream
  * Unit test for the protocol buffers serializer
  * @author f.lautenschlager
  */
-class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
+class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
 
     def "test from without range query"() {
         given:
@@ -577,7 +577,7 @@ class ProtoBufMetricTimeSeriesSerializerTest extends Specification {
 
 
     static def readTimeSeriesData() {
-        def url = ProtoBufMetricTimeSeriesSerializerTest.getResource("/data-mini");
+        def url = ProtoBufMetricGenericTimeSeriesSerializerTest.getResource("/data-mini");
         def tsDir = new File(url.toURI())
 
         def documents = new HashMap<String, MetricTimeSeries>()

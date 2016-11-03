@@ -26,7 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import static de.qaware.chronix.timeseries.TimeSeries.merge;
+import static de.qaware.chronix.timeseries.GenericTimeSeries.merge;
 import static de.qaware.chronix.timeseries.dts.Pair.pairOf;
 import static de.qaware.chronix.timeseries.dts.WeakLogic.weakComparator;
 import static de.qaware.chronix.timeseries.iterators.Iterators.of;
@@ -40,7 +40,7 @@ import static org.junit.Assert.assertNull;
 /**
  * Basic unit test for the time series.
  */
-public class TimeSeriesTest {
+public class GenericTimeSeriesTest {
 
     @Test
     public void testApply() {
@@ -55,7 +55,7 @@ public class TimeSeriesTest {
         ts.add(pairOf(10, 17));
         ts.add(pairOf(20, 27));
 
-        TimeSeries<Integer, Integer> sf = new TimeSeries<>(ts);
+        GenericTimeSeries<Integer, Integer> sf = new GenericTimeSeries<>(ts);
         assertEquals(sf.size(), 4);
         assertEquals(sf.apply(null), null);
         assertEquals(sf.apply(-1), null);
@@ -72,7 +72,7 @@ public class TimeSeriesTest {
         ts.add(pairOf(10, 17));
         ts.add(pairOf(20, null));
 
-        sf = new TimeSeries<>(ts);
+        sf = new GenericTimeSeries<>(ts);
         assertEquals(sf.apply(-10000), Integer.valueOf(-7));
         assertNull(sf.apply(20));
         assertNull(sf.apply(10000));
@@ -90,7 +90,7 @@ public class TimeSeriesTest {
         ts.add(pairOf(50, null));   // ignore
         ts.add(pairOf(60, null));   // ignore
 
-        sf = new TimeSeries<>(ts);
+        sf = new GenericTimeSeries<>(ts);
         assertEquals(sf.apply(-10000), Integer.valueOf(-7));
         assertEquals(sf.apply(0), Integer.valueOf(70));
         assertEquals(sf.apply(10), Integer.valueOf(200));
@@ -111,7 +111,7 @@ public class TimeSeriesTest {
                 pairOf(0, 31),
                 pairOf(10, 41),
                 pairOf(20, (Integer) null));
-        TimeSeries<Integer, Integer> t = new TimeSeries<>(ts);
+        GenericTimeSeries<Integer, Integer> t = new GenericTimeSeries<>(ts);
 
         ts = of(
                 pairOf((Integer) null, (Integer) null),
@@ -119,9 +119,9 @@ public class TimeSeriesTest {
                 pairOf(5, 23),
                 pairOf(15, 53),
                 pairOf(20, (Integer) null));
-        TimeSeries<Integer, Integer> r = new TimeSeries<>(ts);
+        GenericTimeSeries<Integer, Integer> r = new GenericTimeSeries<>(ts);
 
-        TimeSeries<Integer, Integer> sh = merge(asList(r, t), (a, b) -> a + b);
+        GenericTimeSeries<Integer, Integer> sh = merge(asList(r, t), (a, b) -> a + b);
 
         assertNull(sh.apply(-1));
         assertEquals(sh.apply(0), Integer.valueOf(94));
@@ -147,7 +147,7 @@ public class TimeSeriesTest {
                 pairOf(10, 100),
                 pairOf(20, 200),
                 pairOf(30, (Integer) null));
-        TimeSeries<Integer, Integer> t = new TimeSeries<>(ts);
+        GenericTimeSeries<Integer, Integer> t = new GenericTimeSeries<>(ts);
 
         Iterator<Pair<Integer, Integer>> rs = of(
                 pairOf((Integer) null, (Integer) null),
@@ -155,9 +155,9 @@ public class TimeSeriesTest {
                 pairOf(10, 200),
                 pairOf(20, 100),
                 pairOf(30, (Integer) null));
-        TimeSeries<Integer, Integer> r = new TimeSeries<>(rs);
+        GenericTimeSeries<Integer, Integer> r = new GenericTimeSeries<>(rs);
 
-        TimeSeries<Integer, Integer> sh = merge(asList(r, t), (a, b) -> a + b);
+        GenericTimeSeries<Integer, Integer> sh = merge(asList(r, t), (a, b) -> a + b);
 
         assertNull(sh.apply(-1));
         assertEquals(sh.apply(0), new Integer(300));
@@ -171,8 +171,8 @@ public class TimeSeriesTest {
         Iterator<Pair<Integer, Integer>> rr = of(
                 pairOf((Integer) null, (Integer) null),
                 pairOf(0, 700));
-        t = new TimeSeries<>(ts);
-        r = new TimeSeries<>(rr);
+        t = new GenericTimeSeries<>(ts);
+        r = new GenericTimeSeries<>(rr);
 
         sh = merge(asList(r, t), (a, b) -> a + b);
 
@@ -191,10 +191,10 @@ public class TimeSeriesTest {
         Iterator<Pair<Integer, Integer>> rr = of(
                 pairOf((Integer) null, (Integer) null),
                 pairOf(0, 700));
-        TimeSeries<Integer, Integer> t = new TimeSeries<>(ts);
-        TimeSeries<Integer, Integer> r = new TimeSeries<>(rr);
+        GenericTimeSeries<Integer, Integer> t = new GenericTimeSeries<>(ts);
+        GenericTimeSeries<Integer, Integer> r = new GenericTimeSeries<>(rr);
 
-        TimeSeries<Integer, Integer> sh = merge(asList(r, t), (a, b) -> a + b);
+        GenericTimeSeries<Integer, Integer> sh = merge(asList(r, t), (a, b) -> a + b);
 
         assertEquals(sh.apply(-1000), new Integer(500));
         assertEquals(sh.apply(-100), new Integer(500));
@@ -206,10 +206,10 @@ public class TimeSeriesTest {
     @Test
     public void testMerge4() {
         Pair<Integer, Boolean> p = pairOf(null, false);
-        TimeSeries<Integer, Boolean> as = new TimeSeries<>(of(p));
+        GenericTimeSeries<Integer, Boolean> as = new GenericTimeSeries<>(of(p));
         Pair<Integer, Boolean> q = pairOf(null, true);
-        TimeSeries<Integer, Boolean> bs = new TimeSeries<>(of(q));
-        TimeSeries<Integer, Boolean> result = merge(as, bs, (x, y) -> !x || y);
+        GenericTimeSeries<Integer, Boolean> bs = new GenericTimeSeries<>(of(q));
+        GenericTimeSeries<Integer, Boolean> result = merge(as, bs, (x, y) -> !x || y);
         assertEquals(1, result.size());
         assertTrue(result.apply(0));
 
@@ -218,14 +218,14 @@ public class TimeSeriesTest {
                 pairOf(0, 7),
                 pairOf(10, 17),
                 pairOf(20, 27));
-        TimeSeries<Integer, Integer> sv = new TimeSeries<>(ts);
+        GenericTimeSeries<Integer, Integer> sv = new GenericTimeSeries<>(ts);
 
         Iterator<Pair<Integer, Integer>> rs = of(
                 pairOf((Integer) null, (Integer) null),
                 pairOf(5, 6),
                 pairOf(15, 12),
                 pairOf(22, 24));
-        TimeSeries<Integer, Integer> tv = new TimeSeries<>(rs);
+        GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(rs);
 
         Comparator<Integer> c = weakComparator();
 
@@ -243,7 +243,7 @@ public class TimeSeriesTest {
         ts.add(pairOf(0, 7));
         ts.add(pairOf(10, 17));
         ts.add(pairOf(20, 27));
-        TimeSeries<Integer, Integer> tv = new TimeSeries<>(ts.iterator());
+        GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(ts.iterator());
 
         try {
             tv.subSeries(0, 0);
@@ -281,8 +281,8 @@ public class TimeSeriesTest {
 
         Iterator<Iterator<Pair<Integer, Boolean>>> xx =
                 of(asList(p, q).iterator(), asList(p, r).iterator());
-        Iterator<Pair<Integer, List<Boolean>>> tt = new TimeSeriesMerge<>(xx);
-        TimeSeries<Integer, List<Boolean>> vv = new TimeSeries<>(tt);
+        Iterator<Pair<Integer, List<Boolean>>> tt = new GenericTimeSeriesMerge<>(xx);
+        GenericTimeSeries<Integer, List<Boolean>> vv = new GenericTimeSeries<>(tt);
         assertEquals(3, vv.size());
     }
 
@@ -293,8 +293,8 @@ public class TimeSeriesTest {
                 pairOf(5, 6),
                 pairOf(15, 12),
                 pairOf(22, 24));
-        TimeSeries<Integer, Integer> tv = new TimeSeries<>(pt);
-        TimeSeries<Integer, Integer> tw = new TimeSeries<>(tv);
+        GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(pt);
+        GenericTimeSeries<Integer, Integer> tw = new GenericTimeSeries<>(tv);
 
         assertEquals(tv, tv);
         assertEquals(tv, tw);
@@ -303,7 +303,7 @@ public class TimeSeriesTest {
         assertEquals(tv.hashCode(), tw.hashCode());
 
         BiFunction<Integer, Integer, Boolean> f = WeakLogic::weakEquals;
-        TimeSeries<Integer, Boolean> tb = merge(tv, tw, f);
+        GenericTimeSeries<Integer, Boolean> tb = merge(tv, tw, f);
         assertEquals(tb.size(), 1);
         assertTrue(tb.apply(null));
     }
@@ -315,9 +315,9 @@ public class TimeSeriesTest {
                 pairOf(50, 6),
                 pairOf(150, 12),
                 pairOf(220, 24));
-        TimeSeries<Integer, Integer> tv = new TimeSeries<>(ps);
+        GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(ps);
 
-        TimeSeries<Integer, Integer> qs = tv.relocate(of(60, 160));
+        GenericTimeSeries<Integer, Integer> qs = tv.relocate(of(60, 160));
         assertSame(qs.apply(50), null);
         assertSame(qs.apply(60), 6);
         assertSame(qs.apply(150), 6);
@@ -333,7 +333,7 @@ public class TimeSeriesTest {
                 pairOf(50, 6),
                 pairOf(150, 12),
                 pairOf(220, 24));
-        TimeSeries<Integer, Integer> tv = new TimeSeries<>(ps);
+        GenericTimeSeries<Integer, Integer> tv = new GenericTimeSeries<>(ps);
 
         assertTrue(tv.sameLeg(null, 0));
         assertTrue(tv.sameLeg(0, 49));

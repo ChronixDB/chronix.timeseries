@@ -45,7 +45,7 @@ import static java.util.Collections.binarySearch;
  * @param <V> type of value axis
  * @author johannes.siedersleben
  */
-public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, Iterable<Pair<T, V>> {
+public class GenericTimeSeries<T extends Comparable<T>, V> implements Function<T, V>, Iterable<Pair<T, V>> {
 
     private List<T> times = new ArrayList<>();
     private List<V> values = new ArrayList<>();
@@ -59,7 +59,7 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      *                   Timestamps must be non-descending
      *                   A timestamp (null, null) will be inserted if missing
      */
-    public TimeSeries(Iterator<Pair<T, V>> timestamps) {
+    public GenericTimeSeries(Iterator<Pair<T, V>> timestamps) {
         FluentIterator<Pair<T, V>> aux =
                 fluent(of(pairOf((T) null, (V) null)))
                         .concat(timestamps)
@@ -80,7 +80,7 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      *                   Timestamps must be non-descending
      *                   A timestamp (null, null) will be inserted if missing
      */
-    public TimeSeries(Iterable<Pair<T, V>> timestamps) {
+    public GenericTimeSeries(Iterable<Pair<T, V>> timestamps) {
         this(timestamps.iterator());
     }
 
@@ -88,7 +88,7 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      * @param t an iterator of non-descending timestamps
      * @param f a function mapping timestamps to values
      */
-    public TimeSeries(Iterator<T> t, Function<T, V> f) {
+    public GenericTimeSeries(Iterator<T> t, Function<T, V> f) {
         this(map(t, x -> pairOf(x, f.apply(x))));
     }
 
@@ -100,9 +100,9 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      * the value being the list of all values valid at that time
      */
     public static <T extends Comparable<T>, V>
-    TimeSeries<T, List<V>> merge(Iterable<TimeSeries<T, V>> ts) {
-        Iterator<Pair<T, List<V>>> aux = new TimeSeriesMerge<>(map(asIterator(ts), Iterable::iterator));
-        return new TimeSeries<>(aux);
+    GenericTimeSeries<T, List<V>> merge(Iterable<GenericTimeSeries<T, V>> ts) {
+        Iterator<Pair<T, List<V>>> aux = new GenericTimeSeriesMerge<>(map(asIterator(ts), Iterable::iterator));
+        return new GenericTimeSeries<>(aux);
     }
 
     /**
@@ -114,12 +114,12 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      * the value being the result of the reducing by op (e.g. min, max, avg)
      */
     public static <T extends Comparable<T>, V>
-    TimeSeries<T, V> merge(Iterable<TimeSeries<T, V>> ts, BinaryOperator<V> op) {
+    GenericTimeSeries<T, V> merge(Iterable<GenericTimeSeries<T, V>> ts, BinaryOperator<V> op) {
         BinaryOperator<V> wop = weakBinaryOperator(op);
-        Iterator<Pair<T, List<V>>> aux1 = new TimeSeriesMerge<>(map(asIterator(ts), Iterable::iterator));
+        Iterator<Pair<T, List<V>>> aux1 = new GenericTimeSeriesMerge<>(map(asIterator(ts), Iterable::iterator));
         Iterator<Pair<T, V>> aux2 =
                 map(aux1, (Pair<T, List<V>> p) -> pairOf(p.getFirst(), reduce(asIterator(p.getSecond()), wop)));
-        return new TimeSeries<>(aux2);
+        return new GenericTimeSeries<>(aux2);
     }
 
     /**
@@ -133,11 +133,11 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      * the value being the result of f (e.g. lessThan, equals)
      */
     public static <T extends Comparable<T>, V, U>
-    TimeSeries<T, U> merge(TimeSeries<T, V> tv, TimeSeries<T, V> tw, BiFunction<V, V, U> f) {
+    GenericTimeSeries<T, U> merge(GenericTimeSeries<T, V> tv, GenericTimeSeries<T, V> tw, BiFunction<V, V, U> f) {
         Iterator<Pair<T, List<V>>> aux1 = asIterator(merge(asList(tv, tw)));
         Iterator<Pair<T, U>> aux2 = map(aux1, (Pair<T, List<V>> p) ->
                 pairOf(p.getFirst(), f.apply(p.getSecond().get(0), p.getSecond().get(1))));
-        return new TimeSeries<>(aux2);
+        return new GenericTimeSeries<>(aux2);
     }
 
     /**
@@ -159,8 +159,8 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      * @param t an iterator of non-descending timestamps
      * @return a timeSeries identical to this but relocated to t
      */
-    public TimeSeries<T, V> relocate(Iterator<T> t) {
-        return new TimeSeries<>(t, this);
+    public GenericTimeSeries<T, V> relocate(Iterator<T> t) {
+        return new GenericTimeSeries<>(t, this);
     }
 
     /**
@@ -196,7 +196,7 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
      * @param b right border
      * @return returns a time series identical with this on [a, b) and undefined otherwise
      */
-    public TimeSeries<T, V> subSeries(T a, T b) {
+    public GenericTimeSeries<T, V> subSeries(T a, T b) {
         if (cmp.compare(a, b) >= 0) {
             throw new IllegalArgumentException();
         }
@@ -207,7 +207,7 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
         Iterator<Pair<T, V>> result = fluent(of(pairOf(a, this.apply(a))))
                 .concat(zip(pairOf(times.subList(i, j + 1).iterator(), values.subList(i, j + 1).iterator()), true),
                         of(pairOf(b, null)));
-        return new TimeSeries<>(result);
+        return new GenericTimeSeries<>(result);
     }
 
     /**
@@ -249,14 +249,14 @@ public class TimeSeries<T extends Comparable<T>, V> implements Function<T, V>, I
         if (this == x) {
             return true;
         }
-        if (!(x instanceof TimeSeries)) {
+        if (!(x instanceof GenericTimeSeries)) {
             return false;
         }
 
-        TimeSeries that = (TimeSeries) x;
+        GenericTimeSeries that = (GenericTimeSeries) x;
 
         BiFunction<V, V, Boolean> f = WeakLogic::weakEquals;
-        TimeSeries aux = merge(this, that, f);
+        GenericTimeSeries aux = merge(this, that, f);
         return Boolean.TRUE.equals(aux.apply(null)) && (aux.size() == 1);
     }
 

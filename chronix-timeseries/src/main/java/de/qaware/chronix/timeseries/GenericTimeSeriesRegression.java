@@ -27,7 +27,7 @@ import java.util.Iterator;
  *
  * @author johannes.siedersleben
  */
-class TimeSeriesRegression implements ImmutableIterator<Pair<Double, Pair<Double, Double>>> {
+class GenericTimeSeriesRegression implements ImmutableIterator<Pair<Double, Pair<Double, Double>>> {
 
     private Iterator<Pair<Double, Double>> input;
     private double epsilon;
@@ -40,7 +40,7 @@ class TimeSeriesRegression implements ImmutableIterator<Pair<Double, Pair<Double
     /**
      * @param input iterator to be linearized
      */
-    public TimeSeriesRegression(Iterator<Pair<Double, Double>> input, double epsilon) {
+    public GenericTimeSeriesRegression(Iterator<Pair<Double, Double>> input, double epsilon) {
         this.input = input;
         this.epsilon = epsilon;
         if (input.hasNext()) {

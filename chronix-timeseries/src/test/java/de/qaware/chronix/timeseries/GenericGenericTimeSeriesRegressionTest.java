@@ -28,9 +28,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 /**
- * Basic unit test for the TimeSeriesRegression.
+ * Basic unit test for the GenericTimeSeriesRegression.
  */
-public class TimeSeriesRegressionTest {
+public class GenericGenericTimeSeriesRegressionTest {
 
 
     @Test

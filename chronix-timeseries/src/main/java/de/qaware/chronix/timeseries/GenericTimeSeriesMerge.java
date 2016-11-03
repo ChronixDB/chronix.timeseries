@@ -27,13 +27,13 @@ import static de.qaware.chronix.timeseries.iterators.Iterators.any;
 /**
  * This class merges a list of time series. They are are given as iterators of (time, value)-pairs.
  * TimeMerge produces a new such iterator by unioning all input series. It may have identical
- * timestamps and/or identical subsequent values. It is to be used as input for the constructor of TimeSeries.
+ * timestamps and/or identical subsequent values. It is to be used as input for the constructor of GenericTimeSeries.
  *
  * @param <T> class of arguments. Must be comparable
  * @param <V> class of values. Can be any class.
  * @author johannes.siedersleben
  */
-class TimeSeriesMerge<T extends Comparable, V> implements ImmutableIterator<Pair<T, List<V>>> {
+class GenericTimeSeriesMerge<T extends Comparable, V> implements ImmutableIterator<Pair<T, List<V>>> {
 
     private final Comparator<T> cmp = weakComparator();         // compare by step (first element of pair)
     private List<Iterator<Pair<T, V>>> iterators = new ArrayList<>();   // iterators to be merged
@@ -43,7 +43,7 @@ class TimeSeriesMerge<T extends Comparable, V> implements ImmutableIterator<Pair
     /**
      * @param iterators to be merged
      */
-    public TimeSeriesMerge(Iterator<Iterator<Pair<T, V>>> iterators) {
+    public GenericTimeSeriesMerge(Iterator<Iterator<Pair<T, V>>> iterators) {
         while (iterators.hasNext()) {
             Iterator<Pair<T, V>> t = iterators.next();
             this.iterators.add(t);
@@ -55,7 +55,7 @@ class TimeSeriesMerge<T extends Comparable, V> implements ImmutableIterator<Pair
     /**
      * @param iterators to be merged
      */
-    public TimeSeriesMerge(Iterable<Iterator<Pair<T, V>>> iterators) {
+    public GenericTimeSeriesMerge(Iterable<Iterator<Pair<T, V>>> iterators) {
         this(iterators.iterator());
     }
 

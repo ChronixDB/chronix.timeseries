@@ -23,7 +23,7 @@ import spock.lang.Specification
  * Unit test for the metric time series
  * @author c.hillmann
  */
-class MetricTimeSeriesAvgTest extends Specification {
+class MetricGenericTimeSeriesAvgTest extends Specification {
 
 
     def "test avg"() {

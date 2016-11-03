@@ -29,7 +29,7 @@ import java.util.function.Function;
  *
  * @author johannes.siedersleben
  */
-class TimeSeriesCompact<T extends Comparable<T>, V, W> implements ImmutableIterator<Pair<T, W>> {
+class GenericTimeSeriesCompact<T extends Comparable<T>, V, W> implements ImmutableIterator<Pair<T, W>> {
 
     private final Iterator<T> samples;
     private final Iterator<Pair<T, V>> input;
@@ -48,7 +48,7 @@ class TimeSeriesCompact<T extends Comparable<T>, V, W> implements ImmutableItera
      *                  input must stop before last sample.
      * @param compactor the compactor (sum, average, max, min, ...)
      */
-    public TimeSeriesCompact(Iterator<Pair<T, V>> input, Iterator<T> samples, Function<List<V>, W> compactor) {
+    public GenericTimeSeriesCompact(Iterator<Pair<T, V>> input, Iterator<T> samples, Function<List<V>, W> compactor) {
         this.input = input;
         this.samples = samples;
         this.currentSample = samples.next();

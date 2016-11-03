@@ -73,7 +73,7 @@ public final class TimeSeriesUtil {
      */
     public static <T extends Comparable<T>, V> Iterator<Pair<T, List<V>>>
     merge(Iterable<Iterator<Pair<T, V>>> input) {
-        return new TimeSeriesMerge<>(input);
+        return new GenericTimeSeriesMerge<>(input);
     }
 
 
@@ -116,7 +116,7 @@ public final class TimeSeriesUtil {
 
     public static <T extends Comparable<T>, V, W> Iterator<Pair<T, W>>
     compact(Iterator<Pair<T, V>> input, Iterator<T> samples, Function<List<V>, W> compactor) {
-        return new TimeSeriesCompact<>(input, samples, compactor);
+        return new GenericTimeSeriesCompact<>(input, samples, compactor);
     }
 
 
@@ -139,6 +139,6 @@ public final class TimeSeriesUtil {
 
     public static Iterator<Pair<Double, Pair<Double, Double>>>
     linearize(Iterator<Pair<Double, Double>> input, double epsilon) {
-        return new TimeSeriesRegression(input, epsilon);
+        return new GenericTimeSeriesRegression(input, epsilon);
     }
 }
