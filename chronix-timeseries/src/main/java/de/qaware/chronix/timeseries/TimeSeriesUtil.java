@@ -132,7 +132,8 @@ public final class TimeSeriesUtil {
      * If it does, the segment is stored as Pair(start of segment, Pair(intercept, alpha))
      * and the process starts over.
      *
-     * @param input the time series to be linearized
+     * @param input   the time series to be linearized
+     * @param epsilon the epsilon value
      * @return a stepwise linear function approximating input by epsilon give by an iterator of
      * (start of segment, (intercept, slope))
      */
