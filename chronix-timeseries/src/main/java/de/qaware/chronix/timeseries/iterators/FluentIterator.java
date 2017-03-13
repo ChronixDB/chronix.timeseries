@@ -155,12 +155,16 @@ public class FluentIterator<T> implements ImmutableIterator<T> {
 
 
     /**
-     * @param <S> any type
-     * @param s   an iterator to be zipped to this
+     * weak = true  : stop at the last exhausted iterator
+     * weak = false : stop at the first exhausted iterator
+     *
+     * @param <S>  any type
+     * @param s    an iterator to be zipped to this
+     * @param weak param to stop (see above)
      * @return an iterator of pairs
      */
     public <S> FluentIterator<Pair<T, S>> zip(Iterator<S> s, boolean weak) {
-        Pair<Iterator<T>, Iterator<S>> p = pairOf((Iterator<T>) this, s);
+        Pair<Iterator<T>, Iterator<S>> p = pairOf(this, s);
         return fluent(Iterators.zip(p, weak));
     }
 

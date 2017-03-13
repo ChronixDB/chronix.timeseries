@@ -355,6 +355,7 @@ public final class MetricTimeSeries implements Serializable {
          * Constructs a new Builder
          *
          * @param name of the time series
+         * @param type of the time series
          */
         public Builder(String name, String type) {
             metricTimeSeries = new MetricTimeSeries();

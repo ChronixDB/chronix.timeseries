@@ -16,8 +16,6 @@
 package de.qaware.chronix.timeseries.iterators;
 
 
-
-
 import de.qaware.chronix.timeseries.dts.Pair;
 import de.qaware.chronix.timeseries.dts.WeakLogic;
 
@@ -265,6 +263,7 @@ public final class Iterators {
     }
 
     /**
+     * @param t   the iterator
      * @param cs  the consumer to be applied
      * @param <T> any type
      * @return an iterator which applies cs to each object before returning it
@@ -409,8 +408,12 @@ public final class Iterators {
 
 
     /**
-     * @param <T> any type
-     * @param ts  list of iterators
+     * weak = true  : stop at the last exhausted iterator
+     * weak = false : stop at the first exhausted iterator
+     *
+     * @param <T>  any type
+     * @param ts   list of iterators
+     * @param weak see above
      * @return iterator of lists: the n-th element is the list of all
      * n-th elements of the input iterators.
      * weak = true  : stop at the last exhausted iterator
@@ -445,9 +448,13 @@ public final class Iterators {
     }
 
     /**
+     * weak = true  : stop at the last exhausted iterator
+     * weak = false : stop at the first exhausted iterator
+     *
      * @param <A>       any type
      * @param <B>       any type
      * @param iterators a pair of iterators
+     * @param weak      see above
      * @return an iterator of pairs
      */
     public static <A, B> ImmutableIterator<Pair<A, B>>

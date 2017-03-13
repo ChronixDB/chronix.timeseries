@@ -413,6 +413,8 @@ public class LongList implements Serializable {
      * This call shortens the list by {@code (toIndex - fromIndex)} elements.
      * (If {@code toIndex==fromIndex}, this operation has no effect.)
      *
+     * @param fromIndex from index
+     * @param toIndex   to index
      * @throws IndexOutOfBoundsException if {@code fromIndex} or
      *                                   {@code toIndex} is out of range
      *                                   ({@code fromIndex < 0 ||

@@ -40,6 +40,9 @@ public final class ListUtil {
      * runtime exception.  This method does *not* check if the index is
      * negative: It is always used immediately prior to an array access,
      * which throws an ArrayIndexOutOfBoundsException if index is negative.
+     *
+     * @param index to access an element
+     * @param size  the size of the elements
      */
     public static void rangeCheck(int index, int size) {
         if (index >= size) {

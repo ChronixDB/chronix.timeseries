@@ -414,6 +414,8 @@ public class DoubleList implements Serializable {
      * This call shortens the list by {@code (toIndex - fromIndex)} elements.
      * (If {@code toIndex==fromIndex}, this operation has no effect.)
      *
+     * @param fromIndex from index
+     * @param toIndex   to index
      * @throws IndexOutOfBoundsException if {@code fromIndex} or
      *                                   {@code toIndex} is out of range
      *                                   ({@code fromIndex < 0 ||
@@ -431,8 +433,12 @@ public class DoubleList implements Serializable {
 
     /**
      * Trims the capacity of this <tt>ArrayList</tt> instance to be the
-     * list's current size.  An application can use this operation to minimize
+     * list's current size. An application can use this operation to minimize
      * the storage of an <tt>ArrayList</tt> instance.
+     *
+     * @param size     current size
+     * @param elements the current elements
+     * @return the trimmed elements
      */
     private double[] trimToSize(int size, double[] elements) {
         double[] copy = Arrays.copyOf(elements, elements.length);
