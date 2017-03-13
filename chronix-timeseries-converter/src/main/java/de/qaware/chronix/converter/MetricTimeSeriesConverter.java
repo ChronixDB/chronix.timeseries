@@ -15,8 +15,8 @@
  */
 package de.qaware.chronix.converter;
 
+import de.qaware.chronix.Schema;
 import de.qaware.chronix.converter.common.Compression;
-import de.qaware.chronix.converter.common.MetricTSSchema;
 import de.qaware.chronix.converter.serializer.json.JsonMetricTimeSeriesSerializer;
 import de.qaware.chronix.converter.serializer.protobuf.ProtoBufMetricTimeSeriesSerializer;
 import de.qaware.chronix.timeseries.MetricTimeSeries;
@@ -41,15 +41,12 @@ public class MetricTimeSeriesConverter implements TimeSeriesConverter<MetricTime
     @Override
     public MetricTimeSeries from(BinaryTimeSeries binaryTimeSeries, long queryStart, long queryEnd) {
         LOGGER.debug("Converting {} to MetricTimeSeries starting at {} and ending at {}", binaryTimeSeries, queryStart, queryEnd);
-        //get the metric
-        String metric = binaryTimeSeries.get(MetricTSSchema.METRIC).toString();
 
-        //Third build a minimal time series
-        MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(metric);
+        MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(binaryTimeSeries.getName(), binaryTimeSeries.getType());
 
         //add all user defined attributes
         binaryTimeSeries.getFields().forEach((field, value) -> {
-            if (MetricTSSchema.isUserDefined(field)) {
+            if (Schema.isUserDefined(field)) {
                 builder.attribute(field, value);
             }
         });
@@ -95,12 +92,11 @@ public class MetricTimeSeriesConverter implements TimeSeriesConverter<MetricTime
         byte[] compressedPoints = Compression.compress(serializedPoints);
 
         //Add the minimum required fields
-        builder.start(timeSeries.getStart())
+        builder.name(timeSeries.getName())
+                .type(timeSeries.getType())
+                .start(timeSeries.getStart())
                 .end(timeSeries.getEnd())
                 .data(compressedPoints);
-
-        //Currently we only have a metric
-        builder.field(MetricTSSchema.METRIC, timeSeries.getMetric());
 
         //Add a list of user defined attributes
         timeSeries.attributes().forEach(builder::field);

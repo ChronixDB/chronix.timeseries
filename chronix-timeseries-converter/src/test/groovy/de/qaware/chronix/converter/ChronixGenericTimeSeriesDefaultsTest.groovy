@@ -29,27 +29,27 @@ class ChronixGenericTimeSeriesDefaultsTest extends Specification {
 
     def "test default group by"() {
         given:
-        def metricTimeSeries = new MetricTimeSeries.Builder("metric").build();
+        def metricTimeSeries = new MetricTimeSeries.Builder("name", "metric").build()
 
         when:
         def groupBy = ChronixTimeSeriesDefaults.GROUP_BY.apply(metricTimeSeries)
 
         then:
-        groupBy == "metric"
+        groupBy == "name"
     }
 
     def "test default reduce"() {
 
         given:
-        def ts1 = new MetricTimeSeries.Builder("metric")
+        def ts1 = new MetricTimeSeries.Builder("name", "metric")
                 .attribute("existsInBoth", 1)
                 .attribute("onlyInTs1", "value only in ts1")
                 .attribute("simpleList", ["one", "two", "three"])
                 .point(1, 2)
                 .point(3, 6)
                 .point(5, 10)
-                .build();
-        def ts2 = new MetricTimeSeries.Builder("metric")
+                .build()
+        def ts2 = new MetricTimeSeries.Builder("name", "metric")
                 .attribute("existsInBoth", 2)
                 .attribute("onlyInTs2", "ts1 would never see me")
                 .attribute("simpleList", ["four", "five", "six"])
@@ -57,7 +57,7 @@ class ChronixGenericTimeSeriesDefaultsTest extends Specification {
                 .point(2, 4)
                 .point(4, 8)
                 .point(6, 12)
-                .build();
+                .build()
         when:
         def merged = ChronixTimeSeriesDefaults.REDUCE.apply(ts1, ts2)
 

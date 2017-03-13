@@ -68,7 +68,9 @@ public class GenericTimeSeriesConverter implements TimeSeriesConverter<GenericTi
     }
 
     private MetricTimeSeries map(GenericTimeSeries<Long, Double> genericTimeSeries) {
-        MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(genericTimeSeries.getAttribute("metric").toString());
+        MetricTimeSeries.Builder builder = new MetricTimeSeries.Builder(
+                genericTimeSeries.getAttribute("name").toString(),
+                genericTimeSeries.getAttribute("type").toString());
 
 
         //add points
@@ -84,7 +86,7 @@ public class GenericTimeSeriesConverter implements TimeSeriesConverter<GenericTi
             builder.point(pair.getFirst(), pair.getSecond());
         }
 
-         //add attributes
+        //add attributes
         genericTimeSeries.getAttributes().forEachRemaining(attribute -> builder.attribute(attribute.getKey(), attribute.getValue()));
 
         return builder.build();
