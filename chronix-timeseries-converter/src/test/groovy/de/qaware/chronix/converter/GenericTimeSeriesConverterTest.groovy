@@ -23,7 +23,7 @@ import spock.lang.Specification
  * Unit test for the advanced time series converter
  * @author f.lautenschlager
  */
-class ContinuousGenericTimeSeriesConverterTest extends Specification {
+class GenericTimeSeriesConverterTest extends Specification {
 
     def "test to and from storage time series"() {
         given:
@@ -33,7 +33,8 @@ class ContinuousGenericTimeSeriesConverterTest extends Specification {
                       Pair.pairOf(50l, 3d)]
         def timeSeries = new GenericTimeSeries<Long, Double>(points.iterator())
 
-        timeSeries.addAttribute("metric", "myMetric")
+        timeSeries.addAttribute("name", "myMetric")
+        timeSeries.addAttribute("type", "metric")
         timeSeries.addAttribute("host", "NB-Prod-01")
         timeSeries.addAttribute("process", "timeSeriesConverterTest")
         timeSeries.addAttribute("length", points.size())
@@ -69,8 +70,8 @@ class ContinuousGenericTimeSeriesConverterTest extends Specification {
                       Pair.pairOf(189l, 6d)]
         def timeSeries = new GenericTimeSeries<Long, Double>(points.iterator())
 
-        timeSeries.addAttribute("metric", "someMetricName")
-
+        timeSeries.addAttribute("name", "myMetric")
+        timeSeries.addAttribute("type", "metric")
 
         when:
         def binaryTimeSeries = converter.to(timeSeries)

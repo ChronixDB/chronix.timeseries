@@ -33,9 +33,9 @@ public final class ChronixTimeSeriesDefaults {
 
     /**
      * Default group by function for the metric time series class.
-     * Groups time series on its metric name.
+     * Groups time series on its name.
      */
-    public static final Function<MetricTimeSeries, String> GROUP_BY = MetricTimeSeries::getMetric;
+    public static final Function<MetricTimeSeries, String> GROUP_BY = MetricTimeSeries::getName;
     /**
      * Default reduce function.
      * Attributes in both collected and reduced are merged using set holding both values.

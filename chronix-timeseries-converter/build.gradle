@@ -14,7 +14,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
 
 
-    compile 'de.qaware.chronix:chronix-api:0.1'
+    compile 'de.qaware.chronix:chronix-api:0.2-beta'
 }
 
 //add the generated classes to the sources

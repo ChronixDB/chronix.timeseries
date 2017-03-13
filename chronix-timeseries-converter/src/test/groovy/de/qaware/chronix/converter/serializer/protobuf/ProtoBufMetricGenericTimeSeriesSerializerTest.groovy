@@ -42,9 +42,9 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         def compressedProtoPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator())
 
         when:
-        def builder = new MetricTimeSeries.Builder("metric");
+        def builder = new MetricTimeSeries.Builder("name", "metric")
         ProtoBufMetricTimeSeriesSerializer.from(new ByteArrayInputStream(compressedProtoPoints), 0, points.size(), 0, points.size(), builder)
-        def ts = builder.build();
+        def ts = builder.build()
         then:
         100.times {
             ts.getValue(it) == it * 100
@@ -65,11 +65,11 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
             points.add(new Point(it, start.plusSeconds(it).toEpochMilli(), it * 100))
         }
         def serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator())
-        def builder = new MetricTimeSeries.Builder("metric");
+        def builder = new MetricTimeSeries.Builder("name", "metric")
 
         when:
         ProtoBufMetricTimeSeriesSerializer.from(new ByteArrayInputStream(serializedPoints), start.toEpochMilli(), end.toEpochMilli(), from, to, builder)
-        def ts = builder.build();
+        def ts = builder.build()
 
         then:
         List<Point> list = ts.points().collect(Collectors.toList())
@@ -96,7 +96,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         }
         //Points that are null are ignored
         points.add(null)
-        def builder = new MetricTimeSeries.Builder("");
+        def builder = new MetricTimeSeries.Builder("", "metric")
         when:
         def serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator())
         ProtoBufMetricTimeSeriesSerializer.from(new ByteArrayInputStream(serializedPoints), 0, 114, builder)
@@ -107,7 +107,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
 
     def "test iterator with invalid arguments"() {
         when:
-        ProtoBufMetricTimeSeriesSerializer.from(null, 0, 0, from, to, new MetricTimeSeries.Builder(""))
+        ProtoBufMetricTimeSeriesSerializer.from(null, 0, 0, from, to, new MetricTimeSeries.Builder("", ""))
         then:
         thrown IllegalArgumentException
         where:
@@ -133,7 +133,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         points.add(new Point(3, 16, 40))
         points.add(new Point(4, 21, 50))
 
-        def builder = new MetricTimeSeries.Builder("metric");
+        def builder = new MetricTimeSeries.Builder("name", "metric")
 
         when:
         def serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator())
@@ -159,7 +159,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         points.add(new Point(3, 16, 40))
         points.add(new Point(4, 21, 50))
 
-        def builder = new MetricTimeSeries.Builder("metric");
+        def builder = new MetricTimeSeries.Builder("name", "metric")
 
         when:
         def serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator(), 4)
@@ -196,7 +196,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         points.add(new Point(13, 129, -127))
         points.add(new Point(14, 138, -136))
 
-        def builder = new MetricTimeSeries.Builder("metric");
+        def builder = new MetricTimeSeries.Builder("name", "metric")
 
         when:
         def serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator(), 10)
@@ -243,7 +243,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         points.add(new Point(13, 1462892529, 127))
         points.add(new Point(14, 1462892538, 136))
 
-        def builder = new MetricTimeSeries.Builder("metric1");
+        def builder = new MetricTimeSeries.Builder("metric1", "metric")
 
         when:
         def serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator(), 10)
@@ -311,7 +311,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         points.add(new Point(6, 511, 48))
         points.add(new Point(7, 509, 10))
 
-        def builder = new MetricTimeSeries.Builder("rearrange");
+        def builder = new MetricTimeSeries.Builder("rearrange", "metric")
 
         when:
         def serializedPoints = ProtoBufMetricTimeSeriesSerializer.to(points.iterator(), 10)
@@ -339,7 +339,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         when:
         rawTimeSeriesList.each {
             println "Checking file ${it.key}"
-            def rawTimeSeries = it.value;
+            def rawTimeSeries = it.value
             rawTimeSeries.sort()
 
             def start = System.currentTimeMillis()
@@ -348,7 +348,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
 
             println "Serialization took ${end - start} ms"
 
-            def builder = new MetricTimeSeries.Builder("heap");
+            def builder = new MetricTimeSeries.Builder("heap", "metric")
 
             start = System.currentTimeMillis()
             ProtoBufMetricTimeSeriesSerializer.from(new ByteArrayInputStream(serializedPoints), rawTimeSeries.start, rawTimeSeries.end, builder)
@@ -357,18 +357,18 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
             println "Deserialization took ${end - start} ms"
             def modifiedTimeSeries = builder.build()
 
-            def count = rawTimeSeries.size();
+            def count = rawTimeSeries.size()
             println "Checking $count points for almost_equals = 0"
 
             for (int i = 0; i < count; i++) {
                 if (rawTimeSeries.getTime(i) != modifiedTimeSeries.getTime(i)) {
                     long delta = rawTimeSeries.getTime(i) - modifiedTimeSeries.getTime(i)
-                    throw new IllegalStateException("Points are not equals at " + i + ". Should " + rawTimeSeries.getTime(i) + " but is " + modifiedTimeSeries.getTime(i) + " a delta of " + delta);
+                    throw new IllegalStateException("Points are not equals at " + i + ". Should " + rawTimeSeries.getTime(i) + " but is " + modifiedTimeSeries.getTime(i) + " a delta of " + delta)
                 }
                 if (rawTimeSeries.getValue(i) != modifiedTimeSeries.getValue(i)) {
                     double delta = rawTimeSeries.getValue(i) - modifiedTimeSeries.getValue(i)
 
-                    throw new IllegalStateException("Values not equals at " + i + ". Should " + rawTimeSeries.getValue(i) + " but is " + modifiedTimeSeries.getValue(i) + " a delta of " + delta);
+                    throw new IllegalStateException("Values not equals at " + i + ". Should " + rawTimeSeries.getValue(i) + " but is " + modifiedTimeSeries.getValue(i) + " a delta of " + delta)
 
                 }
             }
@@ -404,8 +404,8 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
             def indexwiseDeltaMod = 0
             def averageDeviation = 0
 
-            def totalBytes = 0;
-            def totalSerializedBytes = 0;
+            def totalBytes = 0
+            def totalSerializedBytes = 0
 
 
             rawTimeSeriesList.each { pair, rawTimeSeries ->
@@ -419,9 +419,9 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
                 def indexwiseDeltaModTS = 0
                 def averageDeviationTS = 0
                 def rawBytes = rawTimeSeries.attribute("bytes") as Integer
-                def compressedBytes = 0;
+                def compressedBytes = 0
 
-                def builder = new MetricTimeSeries.Builder(rawTimeSeries.getMetric())
+                def builder = new MetricTimeSeries.Builder(rawTimeSeries.getName(), "metric")
                 def modTimeSeries = ProtoBufMetricTimeSeriesSerializer.to(rawTimeSeries.points().iterator(), almostEquals)
 
                 def bytes = modTimeSeries.length
@@ -439,20 +439,20 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
 
                 for (int j = 0; j < rawTimeSeries.size(); j++) {
 
-                    def rawTS = rawTimeSeries.getTime(j);
-                    def modTS = modTimeSeries.getTime(j);
+                    def rawTS = rawTimeSeries.getTime(j)
+                    def modTS = modTimeSeries.getTime(j)
 
-                    def deviation = Math.abs(rawTS - modTS);
+                    def deviation = Math.abs(rawTS - modTS)
 
                     averageDeviationTS += deviation
                     averageDeviation += deviation
 
                     if (deviation > maxDeviation) {
-                        maxDeviation = deviation;
+                        maxDeviation = deviation
                     }
 
                     if (deviation > maxDeviationTS) {
-                        maxDeviationTS = deviation;
+                        maxDeviationTS = deviation
                     }
 
                     if (j + 1 < rawTimeSeries.size()) {
@@ -464,13 +464,13 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
                     }
 
                     if (rawTS != modTS) {
-                        changes++;
-                        changesTS++;
+                        changes++
+                        changesTS++
                     }
                 }
                 println "======================================================="
-                println "TS ${rawTimeSeries.getMetric()} start: ${Instant.ofEpochMilli(rawTimeSeries.getStart())} end: ${Instant.ofEpochMilli(rawTimeSeries.getEnd())}"
-                println "TS-MOD ${modTimeSeries.getMetric()} start: ${Instant.ofEpochMilli(modTimeSeries.getStart())} end: ${Instant.ofEpochMilli(modTimeSeries.getEnd())}"
+                println "TS ${rawTimeSeries.getName()} start: ${Instant.ofEpochMilli(rawTimeSeries.getStart())} end: ${Instant.ofEpochMilli(rawTimeSeries.getEnd())}"
+                println "TS-MOD ${modTimeSeries.getName()} start: ${Instant.ofEpochMilli(modTimeSeries.getStart())} end: ${Instant.ofEpochMilli(modTimeSeries.getEnd())}"
                 println "Max deviation: $maxDeviationTS in milliseconds"
                 println "Raw: Sum of deltas: $indexwiseDeltaRawTS in minutes"
                 println "Mod: Sum of deltas: $indexwiseDeltaModTS in minutes"
@@ -508,7 +508,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
         noExceptionThrown()
     }
 
-    public void writeToFile(def file, def message) {
+    void writeToFile(file, message) {
         file.append(message)
         file.append("\n")
     }
@@ -524,7 +524,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
             def rawTimeSeries = it.value;
             rawTimeSeries.sort()
 
-            def unique = new MetricTimeSeries.Builder("Unique");
+            def unique = new MetricTimeSeries.Builder("Unique", "metric")
 
             List<Point> list = rawTimeSeries.points().collect(Collectors.toList());
 
@@ -537,7 +537,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
                 if (currentDate != prevDate) {
                     unique.point(currentDate, list.get(i).value);
                 }
-                prevDate = currentDate;
+                prevDate = currentDate
 
             }
 
@@ -550,7 +550,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
 
             println "Serialization took ${end - start} ms"
 
-            def builder = new MetricTimeSeries.Builder("heap");
+            def builder = new MetricTimeSeries.Builder("heap", "metric")
 
             start = System.currentTimeMillis()
             ProtoBufMetricTimeSeriesSerializer.from(new ByteArrayInputStream(serializedPoints), uniqueTS.getStart(), uniqueTS.getEnd(), builder)
@@ -577,7 +577,7 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
 
 
     static def readTimeSeriesData() {
-        def url = ProtoBufMetricGenericTimeSeriesSerializerTest.getResource("/data-mini");
+        def url = ProtoBufMetricGenericTimeSeriesSerializerTest.getResource("/data-mini")
         def tsDir = new File(url.toURI())
 
         def documents = new HashMap<String, MetricTimeSeries>()
@@ -586,12 +586,12 @@ class ProtoBufMetricGenericTimeSeriesSerializerTest extends Specification {
             println("Processing file $file")
             def bytes = new GZIPInputStream(new FileInputStream(file)).getBytes()
 
-            documents.put(file.name, new MetricTimeSeries.Builder(file.name).attribute("bytes", bytes.length).build())
+            documents.put(file.name, new MetricTimeSeries.Builder(file.name, "metric").attribute("bytes", bytes.length).build())
 
-            def nf = DecimalFormat.getInstance(Locale.ENGLISH);
+            def nf = DecimalFormat.getInstance(Locale.ENGLISH)
             def filePoints = 0
 
-            def unzipped = new GZIPInputStream(new FileInputStream(file));
+            def unzipped = new GZIPInputStream(new FileInputStream(file))
 
             unzipped.splitEachLine(";") { fields ->
                 //Its the first line of a csv file

@@ -24,16 +24,17 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * A metric time series that have at least the following fields:
- * - metric name,
+ * A name time series that have at least the following fields:
+ * - name,
  * - start and end,
  * - arbitrary attributes
- * and a list of metric data points (timestamp, double value)
+ * and a list of name data points (timestamp, double value)
  *
  * @author f.lautenschlager
  */
@@ -41,7 +42,9 @@ public final class MetricTimeSeries implements Serializable {
 
     private static final long serialVersionUID = 5497398456431471102L;
 
-    private String metric;
+    private String name;
+    private String type;
+
     private LongList timestamps;
     private DoubleList values;
 
@@ -55,7 +58,7 @@ public final class MetricTimeSeries implements Serializable {
 
     /**
      * Private constructor.
-     * To instantiate a metric time series use the builder class.
+     * To instantiate a time series use the builder class.
      */
     private MetricTimeSeries() {
         timestamps = new LongList(500);
@@ -76,7 +79,7 @@ public final class MetricTimeSeries implements Serializable {
     }
 
     /**
-     * @return a copy of the metric data points
+     * @return a copy of the timestamps
      */
     public LongList getTimestamps() {
         return timestamps.copy();
@@ -93,7 +96,7 @@ public final class MetricTimeSeries implements Serializable {
     }
 
     /**
-     * @return a copy of the metric data points
+     * @return a copy of the data points
      */
     public DoubleList getValues() {
         return values.copy();
@@ -110,10 +113,10 @@ public final class MetricTimeSeries implements Serializable {
     }
 
     /**
-     * Gets the metric data point at the index i
+     * Gets the data point at the index i
      *
-     * @param i the index position of the metric value
-     * @return the metric value
+     * @param i the index position of the value
+     * @return the value
      */
     public double getValue(int i) {
         return values.get(i);
@@ -138,7 +141,7 @@ public final class MetricTimeSeries implements Serializable {
             LongList sortedTimes = new LongList(timestamps.size());
             DoubleList sortedValues = new DoubleList(values.size());
 
-            points().sorted((o1, o2) -> Long.compare(o1.getTimestamp(), o2.getTimestamp())).forEachOrdered(p -> {
+            points().sorted(Comparator.comparingLong(Point::getTimestamp)).forEachOrdered(p -> {
                 sortedTimes.add(p.getTimestamp());
                 sortedValues.add(p.getValue());
             });
@@ -217,10 +220,10 @@ public final class MetricTimeSeries implements Serializable {
     }
 
     /**
-     * @return the metric name
+     * @return the name
      */
-    public String getMetric() {
-        return metric;
+    public String getName() {
+        return name;
     }
 
     /**
@@ -281,21 +284,21 @@ public final class MetricTimeSeries implements Serializable {
         }
         MetricTimeSeries rhs = (MetricTimeSeries) obj;
         return new EqualsBuilder()
-                .append(this.getMetric(), rhs.getMetric())
+                .append(this.getName(), rhs.getName())
                 .isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
-                .append(getMetric())
+                .append(getName())
                 .toHashCode();
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
-                .append("metric", metric)
+                .append("name", name)
                 .append("attributes", attributes)
                 .toString();
     }
@@ -332,74 +335,10 @@ public final class MetricTimeSeries implements Serializable {
     }
 
     /**
-     * @return maximum of the values of the list
+     * @return the type
      */
-    public double max() {
-        return values.max();
-    }
-
-    /**
-     * @return minimum of the values of the list
-     */
-    public double min() {
-        return values.min();
-    }
-
-    /**
-     * @param scale to be applied to the values of this list
-     * @return a new instance scaled with the given parameter
-     */
-    public MetricTimeSeries scale(final double scale) {
-        return new Builder(metric + " scaled by " + scale).points(timestamps, values.scale(scale)).build();
-    }
-
-    /**
-     * @return average of the values of the list
-     */
-    public double avg() {
-        return values.avg();
-    }
-
-    /**
-     * @param delta the whole list is shifted
-     * @return a new instance with shifted values
-     */
-    public MetricTimeSeries shift(final long delta) {
-        return new Builder(metric + " shifted by " + delta).points(timestamps.shift(delta), values).build();
-    }
-
-    /**
-     * Calculates the standard deviation
-     *
-     * @return the standard deviation
-     */
-    public double stdDeviation() {
-        return values.stdDeviation();
-    }
-
-    /**
-     * Implemented the quantile type 7 referred to
-     * http://tolstoy.newcastle.edu.au/R/e17/help/att-1067/Quartiles_in_R.pdf
-     * and
-     * http://stat.ethz.ch/R-manual/R-patched/library/stats/html/quantile.html
-     * as its the default quantile implementation
-     * <p>
-     * <code>
-     * QuantileType7 = function (v, p) {
-     * v = sort(v)
-     * h = ((length(v)-1)*p)+1
-     * v[floor(h)]+((h-floor(h))*(v[floor(h)+1]- v[floor(h)]))
-     * }
-     * </code>
-     *
-     * @param percentile - the percentile (0 - 1), e.g. 0.25
-     * @return the value of the n-th percentile
-     */
-    public double percentile(final double percentile) {
-        if (values.isEmpty()) {
-            return Double.NaN;
-        }
-        return values.percentile(percentile);
+    public String getType() {
+        return type;
     }
 
     /**
@@ -415,11 +354,12 @@ public final class MetricTimeSeries implements Serializable {
         /**
          * Constructs a new Builder
          *
-         * @param metric the metric name
+         * @param name of the time series
          */
-        public Builder(String metric) {
+        public Builder(String name, String type) {
             metricTimeSeries = new MetricTimeSeries();
-            metricTimeSeries.metric = metric;
+            metricTimeSeries.name = name;
+            metricTimeSeries.type = type;
         }
 
 
